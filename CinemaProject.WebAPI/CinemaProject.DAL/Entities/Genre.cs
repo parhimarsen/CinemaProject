@@ -4,16 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CinemaProject.DAL.Entities
 {
-    public class Hall
+    public class Genre
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid CinemaId { get; set; }
         public string Name { get; set; }
-
-        public Cinema Cinema { get; set; }
-
-        public IList<Session> Sessions { get; set; }
-        public IList<Seat> Seats { get; set; }
+        
+        public IList<FilmGenre> Films { get; set; }
     }
 }

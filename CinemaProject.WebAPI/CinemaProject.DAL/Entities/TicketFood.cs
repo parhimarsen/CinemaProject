@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CinemaProject.DAL.Entities
 {
-    public class TicketSeat
+    public class TicketFood
     {
         [Key]
         public Guid TicketId { get; set; }
         [Key]
-        public Guid SeatId { get; set; }
+        public Guid FoodId { get; set; }
 
         public Ticket Ticket { get; set; }
-        public Seat Seat { get; set; }
+        public Food Food { get; set; }
     }
 }

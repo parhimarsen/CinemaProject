@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CinemaProject.DAL.Entities
 {
     public class RefreshToken
     {
+        [Key]
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
 

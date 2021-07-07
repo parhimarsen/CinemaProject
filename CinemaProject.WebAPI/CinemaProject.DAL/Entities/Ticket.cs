@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CinemaProject.DAL.Entities
 {
     public class Ticket
     {
+        [Key]
         public Guid Id { get; set; }
         public Guid SessionId { get; set; }
         public Guid UserId { get; set; }
@@ -12,8 +14,8 @@ namespace CinemaProject.DAL.Entities
 
         public User User { get; set; }
         public Session Session { get; set; }
-        public TicketSeat Seat { get; set; }
 
-        public IList<Food> Food { get; set; }
+        public IList<TicketSeat> Seats { get; set; }
+        public IList<TicketFood> Food { get; set; }
     }
 }
