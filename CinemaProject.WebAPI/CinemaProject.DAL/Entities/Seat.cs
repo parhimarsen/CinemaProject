@@ -6,7 +6,6 @@ namespace CinemaProject.DAL.Entities
 {
     public class Seat
     {
-        [Key]
         public Guid Id { get; set; }
         public Guid HallId { get; set; }
         public Guid TypeOfSeatId { get; set; }

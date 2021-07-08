@@ -6,7 +6,6 @@ namespace CinemaProject.DAL.Entities
 {
     public class Ticket
     {
-        [Key]
         public Guid Id { get; set; }
         public Guid SessionId { get; set; }
         public Guid UserId { get; set; }

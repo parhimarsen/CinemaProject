@@ -6,7 +6,6 @@ namespace CinemaProject.DAL.Entities
 {
     public class Hall
     {
-        [Key]
         public Guid Id { get; set; }
         public Guid CinemaId { get; set; }
         public string Name { get; set; }

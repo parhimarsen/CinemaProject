@@ -6,7 +6,6 @@ namespace CinemaProject.DAL.Entities
 {
     public class Film
     {
-        [Key]
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
