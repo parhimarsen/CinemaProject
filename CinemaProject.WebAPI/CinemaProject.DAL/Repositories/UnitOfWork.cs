@@ -8,16 +8,16 @@ namespace CinemaProject.DAL.Repositories
 {
     public class UnitOfWork : IDisposable
     {
-        public IGenericRepository<User> Users => new GenericRepository<User>(_context);
-        public IGenericRepository<RefreshToken> RefreshTokens => new GenericRepository<RefreshToken>(_context);
-        public IGenericRepository<Ticket> Tickets => new GenericRepository<Ticket>(_context);
-        public IGenericRepository<Food> Food => new GenericRepository<Food>(_context);
-        public IGenericRepository<TicketFood> TicketFood => new GenericRepository<TicketFood>(_context);
-        public IGenericRepository<Film> Films => new GenericRepository<Film>(_context);
-        public IGenericRepository<Cast> Cast => new GenericRepository<Cast>(_context);
-        public IGenericRepository<Actor> Actors => new GenericRepository<Actor>(_context);
-        public IGenericRepository<Genre> Genres => new GenericRepository<Genre>(_context);
-        public IGenericRepository<FilmGenre> FilmGenres => new GenericRepository<FilmGenre>(_context);
+        public IGenericRepository<UserEntity> Users => new GenericRepository<UserEntity>(_context);
+        public IGenericRepository<RefreshTokenEntity> RefreshTokens => new GenericRepository<RefreshTokenEntity>(_context);
+        public IGenericRepository<TicketEntity> Tickets => new GenericRepository<TicketEntity>(_context);
+        public IGenericRepository<FoodEntity> Food => new GenericRepository<FoodEntity>(_context);
+        public IGenericRepository<TicketFoodEntity> TicketFood => new GenericRepository<TicketFoodEntity>(_context);
+        public IGenericRepository<FilmEntity> Films => new GenericRepository<FilmEntity>(_context);
+        public IGenericRepository<CastEntity> Cast => new GenericRepository<CastEntity>(_context);
+        public IGenericRepository<ActorEntity> Actors => new GenericRepository<ActorEntity>(_context);
+        public IGenericRepository<GenreEntity> Genres => new GenericRepository<GenreEntity>(_context);
+        public IGenericRepository<FilmGenreEntity> FilmGenres => new GenericRepository<FilmGenreEntity>(_context);
 
         private readonly CinemaContext _context;
         private bool disposed = false;

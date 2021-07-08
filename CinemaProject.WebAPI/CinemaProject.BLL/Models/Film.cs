@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace CinemaProject.DAL.Entities
+namespace CinemaProject.BLL.Models
 {
     public class Film
     {
@@ -12,8 +11,7 @@ namespace CinemaProject.DAL.Entities
         public TimeSpan Duration { get; set; }
         public string Director { get; set; }
 
-        public IList<FilmGenre> Genres { get; set; }
-        public IList<Cast> Actors { get; set; }
-        public IList<Session> Sessions { get; set; }
+        public Actor[] Actors { get; set; }
+        public Genre[] Genres { get; set; }
     }
 }

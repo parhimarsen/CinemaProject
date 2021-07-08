@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace CinemaProject.DAL.Entities
+namespace CinemaProject.BLL.Models
 {
     public class Food
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public decimal Cost { get; set; }
-        public Guid TicketId { get; set; }
-
-        public IList<TicketFood> Tickets { get; set; }
+        public Ticket Ticket { get; set; }
     }
 }
