@@ -2,10 +2,11 @@
 
 namespace CinemaProject.BLL.Models
 {
-    public class TypeOfSeatDTO
+    public class Cinema
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public int ExtraPaymentPercent { get; set; }
+
+        public City City { get; set; }
     }
 }

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CinemaProject.DAL.Entities
 {
-    public class TypeOfSeat
+    [Table("TypeOfSeat")]
+    public class TypeOfSeatEntity
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int ExtraPaymentPercent { get; set; }
 
-        public IList<Seat> Seats { get; set; }
+        public IList<SeatEntity> Seats { get; set; }
     }
 }

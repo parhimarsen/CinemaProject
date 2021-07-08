@@ -2,7 +2,7 @@
 
 namespace CinemaProject.BLL.Models
 {
-    public class FilmDTO
+    public class Film
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -11,7 +11,7 @@ namespace CinemaProject.BLL.Models
         public TimeSpan Duration { get; set; }
         public string Director { get; set; }
 
-        public ActorDTO[] Actors { get; set; }
-        public GenreDTO[] Genres { get; set; }
+        public Actor[] Actors { get; set; }
+        public Genre[] Genres { get; set; }
     }
 }

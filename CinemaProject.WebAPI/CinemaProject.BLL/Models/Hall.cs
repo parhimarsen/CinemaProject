@@ -1,13 +1,14 @@
-﻿using CinemaProject.DAL.Entities;
-using System;
+﻿using System;
 
 namespace CinemaProject.BLL.Models
 {
-    public class HallDTO
+    public class Hall
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
 
         public Cinema Cinema { get; set; }
+
+        public Seat[] Seats { get; set; }
     }
 }

@@ -2,12 +2,11 @@
 
 namespace CinemaProject.BLL.Models
 {
-    public class TicketDTO
+    public class Ticket
     {
         public Guid Id { get; set; }
         public bool Status { get; set; }
 
-        public UserDTO User { get; set; }
-        public SessionDTO Session { get; set; }
+        public Session Session { get; set; }
     }
 }

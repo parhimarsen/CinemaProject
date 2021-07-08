@@ -29,6 +29,7 @@ namespace CinemaProject.WebAPI
                 context.Database.EnsureCreated();
             }
 
+            services.AddDbContext<CinemaContext>();
             services.AddScoped<UnitOfWork>();
 
             services.AddControllers();

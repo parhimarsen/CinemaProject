@@ -1,11 +1,15 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CinemaProject.BLL.Models
+namespace CinemaProject.DAL.Entities
 {
-    public class RefreshTokenDTO
+    [Table("RefreshToken")]
+    public class RefreshTokenEntity
     {
         public Guid Id { get; set; }
-        public string Token { get; set; }
+        public Guid UserId { get; set; }
+
+        public String Token { get; set; }
         public DateTime Expires { get; set; }
         public bool IsExpired => DateTime.UtcNow >= Expires;
 
@@ -18,6 +22,6 @@ namespace CinemaProject.BLL.Models
         public string ReplacedByToken { get; set; }
         public bool IsActive => Revoked == null && !IsExpired;
 
-        public UserDTO User { get; set; }
+        public UserEntity User { get; set; }
     }
 }

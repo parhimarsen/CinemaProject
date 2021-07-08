@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CinemaProject.DAL.Entities
 {
-    public class User
+    [Table("User")]
+    public class UserEntity
     {
         public Guid Id { get; set; }
         public string Email { get; set; }
@@ -11,12 +13,12 @@ namespace CinemaProject.DAL.Entities
         public string Password { get; set; }
         public bool IsAdmin { get; set; }
 
-        public IList<RefreshToken> RefreshTokens { get; set; }
-        public IList<Ticket> Tickets { get; set; }
+        public IList<RefreshTokenEntity> RefreshTokens { get; set; }
+        public IList<TicketEntity> Tickets { get; set; }
 
-        public User()
+        public UserEntity()
         {
-            RefreshTokens = new List<RefreshToken>();
+            RefreshTokens = new List<RefreshTokenEntity>();
         }
     }
 }

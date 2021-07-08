@@ -2,7 +2,7 @@
 
 namespace CinemaProject.BLL.Models
 {
-    public class ActorDTO
+    public class Genre
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
