@@ -1,4 +1,5 @@
 using CinemaProject.DAL.Contexts;
+using CinemaProject.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,8 @@ namespace CinemaProject.WebAPI
             {
                 context.Database.EnsureCreated();
             }
+
+            services.AddScoped<UnitOfWork>();
 
             services.AddControllers();
         }
