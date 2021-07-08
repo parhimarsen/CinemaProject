@@ -23,6 +23,12 @@ namespace CinemaProject.DAL.Contexts
         public DbSet<TypeOfSeat> TypeOfSeats { get; set; }
         public DbSet<TicketSeat> Reservation { get; set; }
 
+        public CinemaContext(DbContextOptions<CinemaContext> options)
+            : base(options)
+        {
+
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RefreshToken>()
@@ -126,11 +132,6 @@ namespace CinemaProject.DAL.Contexts
                 .HasOne(e => e.Seat)
                 .WithMany(e => e.SeatReservations)
                 .HasForeignKey(e => e.SeatId);
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            const string connection = @"Data Source=WSA-105-74;Initial Catalog=CinemaDB;Integrated Security=SSPI;";
-            optionsBuilder.UseSqlServer(connection);
         }
     }
 }

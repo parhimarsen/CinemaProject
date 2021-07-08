@@ -20,11 +20,12 @@ namespace CinemaProject.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = Configuration.GetConnectionString("CinemaConnection");
 
-            using (CinemaContext db = new CinemaContext())
+            var optionsBuilder = new DbContextOptionsBuilder<CinemaContext>();
+            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("CinemaConnection"));
+            using (CinemaContext context = new CinemaContext(optionsBuilder.Options))
             {
-                db.Database.EnsureCreated();
+                context.Database.EnsureCreated();
             }
 
             services.AddControllers();
