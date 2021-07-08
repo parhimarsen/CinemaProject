@@ -1,15 +1,10 @@
+using CinemaProject.DAL.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CinemaProject.WebAPI
 {
@@ -25,6 +20,13 @@ namespace CinemaProject.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var optionsBuilder = new DbContextOptionsBuilder<CinemaContext>();
+            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("CinemaConnection"));
+            using (CinemaContext context = new CinemaContext(optionsBuilder.Options))
+            {
+                context.Database.EnsureCreated();
+            }
 
             services.AddControllers();
         }

@@ -2,12 +2,12 @@
 
 namespace CinemaProject.DAL.Entities
 {
-    public class TicketSeat
+    public class TicketFood
     {
         public Guid TicketId { get; set; }
-        public Guid SeatId { get; set; }
+        public Guid FoodId { get; set; }
 
         public Ticket Ticket { get; set; }
-        public Seat Seat { get; set; }
+        public Food Food { get; set; }
     }
 }

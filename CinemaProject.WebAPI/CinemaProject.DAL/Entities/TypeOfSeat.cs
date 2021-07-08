@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CinemaProject.DAL.Entities
 {
@@ -7,5 +8,7 @@ namespace CinemaProject.DAL.Entities
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int ExtraPaymentPercent { get; set; }
+
+        public IList<Seat> Seats { get; set; }
     }
 }

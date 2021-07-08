@@ -12,8 +12,8 @@ namespace CinemaProject.DAL.Entities
 
         public User User { get; set; }
         public Session Session { get; set; }
-        public TicketSeat Seat { get; set; }
 
-        public IList<Food> Food { get; set; }
+        public IList<TicketSeat> Seats { get; set; }
+        public IList<TicketFood> Food { get; set; }
     }
 }

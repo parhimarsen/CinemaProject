@@ -8,11 +8,11 @@ namespace CinemaProject.DAL.Entities
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
-        public string Year { get; set; }
+        public DateTime Year { get; set; }
         public TimeSpan Duration { get; set; }
         public string Director { get; set; }
-        public string Genre { get; set; }
 
+        public IList<FilmGenre> Genres { get; set; }
         public IList<Cast> Actors { get; set; }
         public IList<Session> Sessions { get; set; }
     }
