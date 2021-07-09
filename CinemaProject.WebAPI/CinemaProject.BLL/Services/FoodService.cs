@@ -43,34 +43,36 @@ namespace CinemaProject.BLL.Services
             return foodsOfTicket.ToArray();
         }
 
-        public async Task<Food> InsertAsync(Guid ticketId, Food food)
+        public async Task<Food> InsertAsync(Food food)
         {
-            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticketId))
-            {
-                return null;
-            }
-
             FoodEntity foodEntity = new FoodEntity
             {
                 Id = Guid.NewGuid(),
                 Name = food.Name,
                 Cost = food.Cost,
-                TicketId = ticketId
-            };
-
-            TicketFoodEntity ticketFoodEntity = new TicketFoodEntity
-            {
-                TicketId = ticketId,
-                FoodId = foodEntity.Id
             };
 
             await _unitOfWork.FoodRepository.InsertAsync(foodEntity);
             await _unitOfWork.SaveAsync();
 
+            return foodEntity.ToModel();
+        }
+
+        public async Task InsertToTicketAsync(Guid ticketId, Guid foodId)
+        {
+            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticketId) && !await _unitOfWork.FoodRepository.ExistsAsync(foodId))
+            {
+                return;
+            }
+
+            TicketFoodEntity ticketFoodEntity = new TicketFoodEntity
+            {
+                TicketId = ticketId,
+                FoodId = foodId
+            };
+
             await _unitOfWork.TicketFoodRepository.InsertAsync(ticketFoodEntity);
             await _unitOfWork.SaveAsync();
-
-            return foodEntity.ToModel();
         }
 
         public async Task RemoveAsync(Guid ticketId)
@@ -87,6 +89,12 @@ namespace CinemaProject.BLL.Services
             }
 
             await _unitOfWork.FoodRepository.RemoveAsync(ticketId);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task RemoveFromTicketAsync(Guid ticketId, Guid foodId)
+        {
+            await _unitOfWork.TicketFoodRepository.RemoveAsync(ticketId, foodId);
             await _unitOfWork.SaveAsync();
         }
 
