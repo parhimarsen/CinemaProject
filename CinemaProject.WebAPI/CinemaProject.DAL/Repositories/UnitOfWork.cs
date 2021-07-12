@@ -8,16 +8,23 @@ namespace CinemaProject.DAL.Repositories
 {
     public class UnitOfWork : IDisposable
     {
-        public IGenericRepository<UserEntity> Users => new GenericRepository<UserEntity>(_context);
-        public IGenericRepository<RefreshTokenEntity> RefreshTokens => new GenericRepository<RefreshTokenEntity>(_context);
-        public IGenericRepository<TicketEntity> Tickets => new GenericRepository<TicketEntity>(_context);
-        public IGenericRepository<FoodEntity> Food => new GenericRepository<FoodEntity>(_context);
-        public IGenericRepository<TicketFoodEntity> TicketFood => new GenericRepository<TicketFoodEntity>(_context);
-        public IGenericRepository<FilmEntity> Films => new GenericRepository<FilmEntity>(_context);
-        public IGenericRepository<CastEntity> Cast => new GenericRepository<CastEntity>(_context);
-        public IGenericRepository<ActorEntity> Actors => new GenericRepository<ActorEntity>(_context);
-        public IGenericRepository<GenreEntity> Genres => new GenericRepository<GenreEntity>(_context);
-        public IGenericRepository<FilmGenreEntity> FilmGenres => new GenericRepository<FilmGenreEntity>(_context);
+        public UsersRepository UsersRepository => new UsersRepository(_context);
+        public IGenericRepository<RefreshTokenEntity> RefreshTokensRepository => new GenericRepository<RefreshTokenEntity>(_context);
+        public IGenericRepository<TicketEntity> TicketsRepository => new GenericRepository<TicketEntity>(_context);
+        public IGenericRepository<FoodEntity> FoodsRepository => new GenericRepository<FoodEntity>(_context);
+        public TicketFoodsRepository TicketFoodsRepository => new TicketFoodsRepository(_context);
+        public IGenericRepository<FilmEntity> FilmsRepository => new GenericRepository<FilmEntity>(_context);
+        public CastsRepository CastsRepository => new CastsRepository(_context);
+        public IGenericRepository<ActorEntity> ActorsRepository => new GenericRepository<ActorEntity>(_context);
+        public IGenericRepository<GenreEntity> GenresRepository => new GenericRepository<GenreEntity>(_context);
+        public FilmGenresRepository FilmGenresRepository => new FilmGenresRepository(_context);
+        public IGenericRepository<SessionEntity> SessionsRepository => new GenericRepository<SessionEntity>(_context);
+        public IGenericRepository<HallEntity> HallsRepository => new GenericRepository<HallEntity>(_context);
+        public IGenericRepository<CinemaEntity> CinemasRepository => new GenericRepository<CinemaEntity>(_context);
+        public IGenericRepository<SeatEntity> SeatsRepository => new GenericRepository<SeatEntity>(_context);
+        public IGenericRepository<TypeOfSeatEntity> TypesOfSeatRepository => new GenericRepository<TypeOfSeatEntity>(_context);
+        public IGenericRepository<CityEntity> CitiesRepository => new GenericRepository<CityEntity>(_context);
+        public TicketSeatsRepository TicketSeatsRepository => new TicketSeatsRepository(_context);
 
         private readonly CinemaContext _context;
         private bool disposed = false;

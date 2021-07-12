@@ -65,13 +65,13 @@ namespace CinemaProject.DAL.Contexts
                 .HasOne(e => e.Film)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.FilmId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<SessionEntity>()
                 .HasOne(e => e.Hall)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.HallId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<FilmGenreEntity>().HasKey(e => new { e.FilmId, e.GenreId });
 
