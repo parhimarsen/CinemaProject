@@ -8,8 +8,7 @@ namespace CinemaProject.BLL.Models
         public decimal Cost { get; set; }
         public DateTime ShowStart { get; set; }
         public DateTime ShowEnd { get; set; }
-
-        public Hall Hall { get; set; }
-        public Film Film { get; set; }
+        public Guid HallId { get; set; }
+        public Guid FilmId { get; set; } 
     }
 }
