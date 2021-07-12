@@ -138,7 +138,8 @@ namespace CinemaProject.BLL.Mappers
             return new Cinema
             {
                 Id = @this.Id,
-                Name = @this.Name
+                Name = @this.Name,
+                CityId = @this.CityId
             };
         }
     }
