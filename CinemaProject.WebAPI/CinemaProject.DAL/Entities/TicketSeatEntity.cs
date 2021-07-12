@@ -8,6 +8,7 @@ namespace CinemaProject.DAL.Entities
     {
         public Guid TicketId { get; set; }
         public Guid SeatId { get; set; }
+        public decimal CostWithPercent { get; set; }
 
         public TicketEntity Ticket { get; set; }
         public SeatEntity Seat { get; set; }
