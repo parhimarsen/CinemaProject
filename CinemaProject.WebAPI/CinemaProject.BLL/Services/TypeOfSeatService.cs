@@ -3,7 +3,6 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,11 +17,11 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<TypeOfSeat[]> GetAllAsync()
+        public TypeOfSeat[] GetAllAsync()
         {
-            IEnumerable<TypeOfSeatEntity> typesOfSeat = await _unitOfWork.TypesOfSeatRepository.GetAllAsync();
+            IQueryable<TypeOfSeatEntity> typeOfSeatQuery = _unitOfWork.TypesOfSeatRepository.GetAll();
 
-            return typesOfSeat
+            return typeOfSeatQuery
                 .Select(typeOfSeat => typeOfSeat.ToModel())
                 .ToArray();
         }

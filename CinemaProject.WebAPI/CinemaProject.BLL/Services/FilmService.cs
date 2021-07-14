@@ -20,12 +20,12 @@ namespace CinemaProject.BLL.Services
 
         public async Task<Film[]> GetAllAsync()
         {
-            IEnumerable<FilmEntity> filmsEntitie = await _unitOfWork.FilmsRepository.GetAllAsync();
+            IQueryable<FilmEntity> filmQuery = _unitOfWork.FilmsRepository.GetAll();
 
             List<Film> films = new List<Film>();
             Film film;
 
-            foreach (FilmEntity filmEntity in filmsEntitie)
+            foreach (FilmEntity filmEntity in filmQuery)
             {
                 film = filmEntity.ToModel();
 

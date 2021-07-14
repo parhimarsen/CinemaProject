@@ -3,7 +3,6 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,30 +17,30 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Cinema[]> GetAllAsync()
+        public Cinema[] GetAll()
         {
-            IEnumerable<CinemaEntity> cinemaEntities = await _unitOfWork.CinemasRepository.GetAllAsync();
+            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
 
-            return cinemaEntities
+            return cinemaQuery
                 .Select(cinema => cinema.ToModel())
                 .ToArray();
         }
 
-        public async Task<Cinema[]> GetOfCityAsync(Guid cityId)
+        public Cinema[] GetOfCity(Guid cityId)
         {
-            IEnumerable<CinemaEntity> cinemaEntities = await _unitOfWork.CinemasRepository.GetAllAsync();
+            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
 
-            return cinemaEntities
+            return cinemaQuery
                 .Select(cinema => cinema.ToModel())
                 .Where(cinema => cinema.CityId == cityId)
                 .ToArray();
         }
 
-        public async Task<Cinema> GetAsync(Guid id)
+        public Cinema GetAsync(Guid id)
         {
-            IEnumerable<CinemaEntity> cinemaEntities = await _unitOfWork.CinemasRepository.GetAllAsync();
+            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
 
-            return cinemaEntities
+            return cinemaQuery
                 .Select(cinema => cinema.ToModel())
                 .Where(cinema => cinema.Id == id)
                 .FirstOrDefault();

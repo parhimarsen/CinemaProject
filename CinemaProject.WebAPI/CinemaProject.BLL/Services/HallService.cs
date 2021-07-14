@@ -71,11 +71,11 @@ namespace CinemaProject.BLL.Services
             return hallEntity.ToModel();
         }
 
-        public async Task<Hall> UpdateAsync(Hall hall)
+        public async Task UpdateAsync(Hall hall)
         {
             if (!await _unitOfWork.HallsRepository.ExistsAsync(hall.Id))
             {
-                return null;
+                return;
             }
 
             HallEntity hallEntity = await _unitOfWork.HallsRepository.GetAsync(hall.Id);
@@ -85,8 +85,6 @@ namespace CinemaProject.BLL.Services
 
             await _unitOfWork.HallsRepository.InsertAsync(hallEntity);
             await _unitOfWork.SaveAsync();
-
-            return hallEntity.ToModel();
         }
 
         public async Task RemoveAsync(Guid id)

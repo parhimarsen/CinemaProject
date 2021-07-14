@@ -3,7 +3,6 @@ using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -19,9 +18,9 @@ namespace CinemaProject.DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<UserEntity>> GetAllAsync()
+        public IQueryable<UserEntity> GetAll()
         {
-            return await _context.Set<UserEntity>().ToListAsync();
+            return _context.Set<UserEntity>();
         }
 
         public async Task<UserEntity> GetAsync(Guid id)
@@ -29,9 +28,11 @@ namespace CinemaProject.DAL.Repositories
             return await _context.Set<UserEntity>().FindAsync(id);
         }
 
-        public IEnumerable<UserEntity> GetWithInclude(params Expression<Func<UserEntity, object>>[] includeProperties)
+        public IQueryable<UserEntity> GetWithInclude(params Expression<Func<UserEntity, object>>[] includeProperties)
         {
-            return Include(includeProperties).ToList();
+            IQueryable<UserEntity> query = _context.Set<UserEntity>();
+            return includeProperties
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
         public async Task<UserEntity> InsertAsync(UserEntity userEntity)
@@ -74,13 +75,6 @@ namespace CinemaProject.DAL.Repositories
             }
 
             return true;
-        }
-
-        private IQueryable<UserEntity> Include(params Expression<Func<UserEntity, object>>[] includeProperties)
-        {
-            IQueryable<UserEntity> query = _context.Set<UserEntity>();
-            return includeProperties
-                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
     }
 }

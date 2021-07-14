@@ -3,9 +3,9 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace CinemaProject.BLL.Services
 {
@@ -18,9 +18,9 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Actor[]> GetAllAsync()
+        public Actor[] GetAll()
         {
-            IEnumerable<ActorEntity> actorEntities = await _unitOfWork.ActorsRepository.GetAllAsync();
+            IQueryable<ActorEntity> actorEntities = _unitOfWork.ActorsRepository.GetAll();
 
             return actorEntities
                 .Select(actor => actor.ToModel())
@@ -43,16 +43,11 @@ namespace CinemaProject.BLL.Services
 
         public async Task RemoveAsync(Guid id)
         {
-            IEnumerable<CastEntity> castEntities = await _unitOfWork.CastsRepository.GetAllAsync();
+            IQueryable<CastEntity> castQuery = _unitOfWork.CastsRepository.GetAll();
 
-            CastEntity[] casts = castEntities
+            castQuery
                 .Where(cast => cast.ActorId == id)
-                .ToArray();
-
-            foreach (var cast in casts)
-            {
-                await _unitOfWork.CastsRepository.RemoveAsync(cast.FilmId, cast.ActorId);
-            }
+                .Delete();
 
             await _unitOfWork.ActorsRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();

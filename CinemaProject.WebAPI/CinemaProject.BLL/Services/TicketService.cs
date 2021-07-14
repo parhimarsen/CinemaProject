@@ -148,7 +148,5 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.TicketsRepository.UpdateAsync(ticket.Id);
             await _unitOfWork.SaveAsync();
         }
-
-
     }
 }

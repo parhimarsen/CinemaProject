@@ -3,7 +3,6 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,11 +17,11 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<City[]> GetAllAsync()
+        public City[] GetAllAsync()
         {
-            IEnumerable<CityEntity> citiesEntity = await _unitOfWork.CitiesRepository.GetAllAsync();
+            IQueryable<CityEntity> citiyQuery = _unitOfWork.CitiesRepository.GetAll();
 
-            return citiesEntity
+            return citiyQuery
                 .Select(city => city.ToModel())
                 .ToArray();
         }

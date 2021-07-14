@@ -2,7 +2,6 @@
 using CinemaProject.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -18,9 +17,9 @@ namespace CinemaProject.DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public IQueryable<T> GetAll()
         {
-            return await _context.Set<T>().ToListAsync();
+            return _context.Set<T>();
         }
 
         public async Task<T> GetAsync(Guid id)
@@ -28,9 +27,11 @@ namespace CinemaProject.DAL.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public IEnumerable<T> GetWithInclude(params Expression<Func<T, object>>[] includeProperties)
+        public IQueryable<T> GetWithInclude(params Expression<Func<T, object>>[] includeProperties)
         {
-            return Include(includeProperties).ToList();
+            IQueryable<T> query = _context.Set<T>();
+            return includeProperties
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
         public async Task<T> InsertAsync(T item)
@@ -67,13 +68,6 @@ namespace CinemaProject.DAL.Repositories
             }
 
             return true;
-        }
-
-        private IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
-        {
-            IQueryable<T> query = _context.Set<T>();
-            return includeProperties
-                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
     }
 }

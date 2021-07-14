@@ -3,9 +3,9 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace CinemaProject.BLL.Services
 {
@@ -18,11 +18,11 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Genre[]> GetAllAsync()
+        public Genre[] GetAllAsync()
         {
-            IEnumerable<GenreEntity> genreEntities = await _unitOfWork.GenresRepository.GetAllAsync();
+            IQueryable<GenreEntity> genreQuery = _unitOfWork.GenresRepository.GetAll();
 
-            return genreEntities
+            return genreQuery
                 .Select(genre => genre.ToModel())
                 .ToArray();
         }
@@ -43,16 +43,11 @@ namespace CinemaProject.BLL.Services
 
         public async Task RemoveAsync(Guid id)
         {
-            IEnumerable<FilmGenreEntity> filmGenreEntities = await _unitOfWork.FilmGenresRepository.GetAllAsync();
+            IQueryable<FilmGenreEntity> filmGenreQuery = _unitOfWork.FilmGenresRepository.GetAll();
 
-            FilmGenreEntity[] filmGenres = filmGenreEntities
+            filmGenreQuery
                 .Where(genre => genre.GenreId == id)
-                .ToArray();
-
-            foreach (var filmGenre in filmGenres)
-            {
-                await _unitOfWork.FilmGenresRepository.RemoveAsync(filmGenre.FilmId, filmGenre.GenreId);
-            }
+                .Delete();
 
             await _unitOfWork.ActorsRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();

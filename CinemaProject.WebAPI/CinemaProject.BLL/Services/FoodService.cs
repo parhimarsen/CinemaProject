@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace CinemaProject.BLL.Services
 {
@@ -27,17 +28,15 @@ namespace CinemaProject.BLL.Services
 
             IList<Food> foodsOfTicket = new List<Food>();
 
-            IEnumerable<TicketFoodEntity> foodsEntity = await _unitOfWork.TicketFoodsRepository.GetAllAsync();
+            IQueryable<TicketFoodEntity> ticketFoodQuery = _unitOfWork.TicketFoodsRepository.GetAll();
 
-            TicketFoodEntity[] foods = foodsEntity
-                .Where(food => food.TicketId == ticketId)
-                .ToArray();
+            IEnumerable<FoodEntity> foods = ticketFoodQuery
+                .Where(x => x.TicketId == ticketId)
+                .Select(x => x.Food);
 
             foreach (var food in foods)
             {
-                FoodEntity foodEntity = await _unitOfWork.FoodsRepository.GetAsync(food.TicketId);
-
-                foodsOfTicket.Add(foodEntity.ToModel());
+                foodsOfTicket.Add(food.ToModel());
             }
 
             return foodsOfTicket.ToArray();
@@ -58,11 +57,12 @@ namespace CinemaProject.BLL.Services
             return foodEntity.ToModel();
         }
 
-        public async Task InsertToTicketAsync(Guid ticketId, Guid foodId)
+        public async Task<TicketFoodEntity> InsertToTicketAsync(Guid ticketId, Guid foodId)
         {
-            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticketId) && !await _unitOfWork.FoodsRepository.ExistsAsync(foodId))
+            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticketId) 
+                || !await _unitOfWork.FoodsRepository.ExistsAsync(foodId))
             {
-                return;
+                return null;
             }
 
             TicketFoodEntity ticketFoodEntity = new TicketFoodEntity
@@ -73,20 +73,17 @@ namespace CinemaProject.BLL.Services
 
             await _unitOfWork.TicketFoodsRepository.InsertAsync(ticketFoodEntity);
             await _unitOfWork.SaveAsync();
+
+            return ticketFoodEntity;
         }
 
         public async Task RemoveAsync(Guid ticketId)
         {
-            IEnumerable<TicketFoodEntity> ticketFoodsEntity = await _unitOfWork.TicketFoodsRepository.GetAllAsync();
+            IQueryable<TicketFoodEntity> ticketFoodQuery = _unitOfWork.TicketFoodsRepository.GetAll();
 
-            TicketFoodEntity[] ticketFoodsEntityOfTicket = ticketFoodsEntity
+            ticketFoodQuery
                 .Where(ticket => ticket.TicketId == ticketId)
-                .ToArray();
-
-            foreach (var ticketFoodEntityOfTicket in ticketFoodsEntityOfTicket)
-            {
-                await _unitOfWork.TicketFoodsRepository.RemoveAsync(ticketFoodEntityOfTicket.TicketId, ticketFoodEntityOfTicket.FoodId);
-            }
+                .Delete();
 
             await _unitOfWork.FoodsRepository.RemoveAsync(ticketId);
             await _unitOfWork.SaveAsync();

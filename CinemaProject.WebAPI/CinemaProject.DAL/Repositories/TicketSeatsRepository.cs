@@ -1,8 +1,7 @@
 ﻿using CinemaProject.DAL.Contexts;
 using CinemaProject.DAL.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CinemaProject.DAL.Repositories
@@ -15,9 +14,9 @@ namespace CinemaProject.DAL.Repositories
         {
             _context = context;
         }
-        public async Task<IEnumerable<TicketSeatEntity>> GetAllAsync()
+        public IQueryable<TicketSeatEntity> GetAll()
         {
-            return await _context.Set<TicketSeatEntity>().ToListAsync();
+            return _context.Set<TicketSeatEntity>();
         }
 
         public async Task<TicketSeatEntity> GetAsync(Guid ticketId, Guid seatId)

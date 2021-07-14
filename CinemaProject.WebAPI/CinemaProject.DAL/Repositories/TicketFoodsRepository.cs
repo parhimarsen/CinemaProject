@@ -1,8 +1,7 @@
 ﻿using CinemaProject.DAL.Contexts;
 using CinemaProject.DAL.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CinemaProject.DAL.Repositories
@@ -16,9 +15,9 @@ namespace CinemaProject.DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<TicketFoodEntity>> GetAllAsync()
+        public IQueryable<TicketFoodEntity> GetAll()
         {
-            return await _context.Set<TicketFoodEntity>().ToListAsync();
+            return _context.Set<TicketFoodEntity>();
         }
 
         public async Task<TicketFoodEntity> GetAsync(Guid ticketId, Guid foodId)

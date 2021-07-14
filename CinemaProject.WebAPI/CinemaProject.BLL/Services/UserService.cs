@@ -30,7 +30,7 @@ namespace CinemaProject.BLL.Services
 
         public User[] GetAll()
         {
-            IEnumerable<UserEntity> usersEntity = _unitOfWork.UsersRepository.GetWithInclude(user => user.Tickets);
+            IQueryable<UserEntity> usersEntity = _unitOfWork.UsersRepository.GetWithInclude(user => user.Tickets);
 
             return usersEntity
                 .Select(user => user.ToModel())
@@ -83,9 +83,10 @@ namespace CinemaProject.BLL.Services
 
         public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ipAddress)
         {
-            IEnumerable<UserEntity> usersEntity = await _unitOfWork.UsersRepository.GetAllAsync();
+            IEnumerable<UserEntity> usersEntity = _unitOfWork.UsersRepository.GetAll();
 
-            UserEntity authenticateUserEntity = usersEntity.SingleOrDefault(u => u.Login == model.Login && BC.Verify(model.Password, u.Password));
+            UserEntity authenticateUserEntity = usersEntity
+                .SingleOrDefault(u => u.Login == model.Login && BC.Verify(model.Password, u.Password));
 
             if (authenticateUserEntity == null)
             {
@@ -108,11 +109,11 @@ namespace CinemaProject.BLL.Services
             return new AuthenticateResponse(token, refreshToken.Token);
         }
 
-        public async Task<AuthenticateResponse> Register(RegisterRequest model, string ipAddress)
+        public async Task<AuthenticateResponse> Register(RegistrationRequest model, string ipAddress)
         {
-            IEnumerable<UserEntity> users = await _unitOfWork.UsersRepository.GetAllAsync();
+            IQueryable<UserEntity> userQuery = _unitOfWork.UsersRepository.GetAll();
 
-            if (users.Any(user => user.Email == model.Email))
+            if (userQuery.Any(user => user.Email == model.Email))
             {
                 return null;
             }
@@ -143,9 +144,9 @@ namespace CinemaProject.BLL.Services
 
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
         {
-            IEnumerable<UserEntity> users = await _unitOfWork.UsersRepository.GetAllAsync();
+            IQueryable<UserEntity> userQuery = _unitOfWork.UsersRepository.GetAll();
 
-            UserEntity authenticatedUser = users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            UserEntity authenticatedUser = userQuery.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (authenticatedUser == null)
             {
@@ -175,9 +176,9 @@ namespace CinemaProject.BLL.Services
 
         public async Task<bool> RevokeToken(string token, string ipAddress)
         {
-            IEnumerable<UserEntity> users = await _unitOfWork.UsersRepository.GetAllAsync();
+            IQueryable<UserEntity> userQuery = _unitOfWork.UsersRepository.GetAll();
 
-            UserEntity authenticatedUser = users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            UserEntity authenticatedUser = userQuery.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (authenticatedUser == null)
             {
@@ -208,9 +209,8 @@ namespace CinemaProject.BLL.Services
                 Subject = new ClaimsIdentity(
                     new[]
                     {
-                        new Claim("id", user.Id.ToString()),
                         new Claim("login", user.Login),
-                        new Claim("password", user.Password)
+                        new Claim("admin", user.IsAdmin.ToString())
                     }
                 ),
                 Expires = DateTime.UtcNow.AddMinutes(1),

@@ -2,7 +2,7 @@
 
 namespace CinemaProject.BLL.Models
 {
-    public class RegisterRequest
+    public class RegistrationRequest
     {
         [Required]
         public string Email { get; set; }

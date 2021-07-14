@@ -3,7 +3,6 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,11 +17,11 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Session[]> GetAllAsync()
+        public Session[] GetAllAsync()
         {
-            IEnumerable<SessionEntity> sessionEntities = await _unitOfWork.SessionsRepository.GetAllAsync();
+            IQueryable<SessionEntity> sessionQuery = _unitOfWork.SessionsRepository.GetAll();
 
-            return sessionEntities
+            return sessionQuery
                 .Select(session => session.ToModel())
                 .ToArray();
         }
@@ -60,6 +59,48 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.SaveAsync();
 
             return newSessionEntity.ToModel();
+        }
+
+        public async Task RemoveAsync(Guid id)
+        {
+            if (!await _unitOfWork.SessionsRepository.ExistsAsync(id))
+            {
+                return;
+            }
+
+            SessionEntity sessionEntity = _unitOfWork.SessionsRepository
+                .GetWithInclude(session => session.Tickets)
+                .FirstOrDefault(ticket => ticket.Id == id);
+
+            FilmEntity filmEntity = await _unitOfWork.FilmsRepository.GetAsync(sessionEntity.FilmId);
+            filmEntity.Sessions.Remove(sessionEntity);
+            await _unitOfWork.SaveAsync();
+
+            HallEntity hallEntity = await _unitOfWork.HallsRepository.GetAsync(sessionEntity.HallId);
+            hallEntity.Sessions.Remove(sessionEntity);
+            await _unitOfWork.SaveAsync();
+
+            await _unitOfWork.SessionsRepository.RemoveAsync(id);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateAsync(Session session)
+        {
+            if (!await _unitOfWork.SessionsRepository.ExistsAsync(session.Id))
+            {
+                return;
+            }
+
+            SessionEntity sessionEntity = await _unitOfWork.SessionsRepository.GetAsync(session.Id);
+
+            sessionEntity.ShowStart = session.ShowStart;
+            sessionEntity.ShowEnd = session.ShowEnd;
+            sessionEntity.HallId = session.HallId;
+            sessionEntity.FilmId = session.FilmId;
+            sessionEntity.Cost = session.Cost;
+
+            await _unitOfWork.SessionsRepository.UpdateAsync(sessionEntity.Id);
+            await _unitOfWork.SaveAsync();
         }
     }
 }
