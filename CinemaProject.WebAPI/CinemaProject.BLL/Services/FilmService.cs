@@ -3,7 +3,6 @@ using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,68 +12,31 @@ namespace CinemaProject.BLL.Services
     {
         private readonly UnitOfWork _unitOfWork;
 
-        public FilmService(UnitOfWork unitOfWork)
+        public FilmService(UnitOfWork unitOfWork, ActorService actorService)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Film[]> GetAllAsync()
+        public IQueryable<Film> GetAll()
         {
-            IQueryable<FilmEntity> filmQuery = _unitOfWork.FilmsRepository.GetAll();
-
-            List<Film> films = new List<Film>();
-            Film film;
-
-            foreach (FilmEntity filmEntity in filmQuery)
-            {
-                film = filmEntity.ToModel();
-
-                foreach (CastEntity cast in filmEntity.Actors)
-                {
-                    ActorEntity actorEntity = await _unitOfWork.ActorsRepository.GetAsync(cast.ActorId);
-
-                    film.Actors.Add(actorEntity.ToModel());
-                }
-
-                foreach (FilmGenreEntity filmGenreEntity in filmEntity.Genres)
-                {
-                    GenreEntity genreEntity = await _unitOfWork.GenresRepository.GetAsync(filmGenreEntity.GenreId);
-
-                    film.Genres.Add(genreEntity.ToModel());
-                }
-
-                films.Add(film);
-            }
-
-            return films.ToArray();
+            return _unitOfWork.FilmsRepository
+                .GetWithInclude(film => film.Actors, film => film.Genres)
+                .Select(film => film.ToModel());
         }
 
-        public async Task<Film> GetAsync(Guid id)
+        public Film Get(Guid id)
         {
-            FilmEntity filmEntity = await _unitOfWork.FilmsRepository.GetAsync(id);
+            Film film = _unitOfWork.FilmsRepository.GetWithInclude(film => film.Actors, film => film.Genres)
+                .Where(film => film.Id == id)
+                .Select(film => film.ToModel())
+                .FirstOrDefault();
 
-            if (filmEntity == null)
+            if (film == null)
             {
                 return null;
             }
 
-            Film film = filmEntity.ToModel();
-
-            foreach (CastEntity cast in filmEntity.Actors)
-            {
-                ActorEntity actorEntity = await _unitOfWork.ActorsRepository.GetAsync(cast.ActorId);
-
-                film.Actors.Add(actorEntity.ToModel());
-            }
-
-            foreach (FilmGenreEntity filmGenreEntity in filmEntity.Genres)
-            {
-                GenreEntity genreEntity = await _unitOfWork.GenresRepository.GetAsync(filmGenreEntity.GenreId);
-
-                film.Genres.Add(genreEntity.ToModel());
-            }
-
-            return filmEntity.ToModel();
+            return film;
         }
 
         public async Task<Film> InsertAsync(Film film)
@@ -152,7 +114,7 @@ namespace CinemaProject.BLL.Services
                 await _unitOfWork.SaveAsync();
             }
 
-            foreach(Actor actor in film.Actors)
+            foreach (Actor actor in film.Actors)
             {
                 CastEntity newCastEntity = new CastEntity
                 {

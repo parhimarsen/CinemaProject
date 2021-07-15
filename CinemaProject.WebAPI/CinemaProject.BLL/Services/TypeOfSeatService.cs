@@ -66,5 +66,21 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.TypesOfSeatRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task UpdateAsync(TypeOfSeat typeOfSeat)
+        {
+            if (!await _unitOfWork.TypesOfSeatRepository.ExistsAsync(typeOfSeat.Id))
+            {
+                return;
+            }
+
+            TypeOfSeatEntity typeOfSeatEntity = await _unitOfWork.TypesOfSeatRepository.GetAsync(typeOfSeat.Id);
+
+            typeOfSeatEntity.Name = typeOfSeat.Name;
+            typeOfSeatEntity.ExtraPaymentPercent = typeOfSeat.ExtraPaymentPercent;
+
+            await _unitOfWork.TypesOfSeatRepository.UpdateAsync(typeOfSeatEntity.Id);
+            await _unitOfWork.SaveAsync();
+        }
     }
 }

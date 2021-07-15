@@ -17,34 +17,36 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Cinema[] GetAll()
+        public IQueryable<Cinema> GetAll()
         {
-            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
-
-            return cinemaQuery
-                .Select(cinema => cinema.ToModel())
-                .ToArray();
+            return _unitOfWork.CinemasRepository.GetAll()
+                .Select(cinema => cinema.ToModel());
         }
 
-        public Cinema[] GetOfCity(Guid cityId)
+        public IQueryable<Cinema> GetOfCity(Guid cityId)
         {
-            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
-
-            return cinemaQuery
+            return _unitOfWork.CinemasRepository.GetAll()
                 .Select(cinema => cinema.ToModel())
-                .Where(cinema => cinema.CityId == cityId)
-                .ToArray();
+                .Where(cinema => cinema.CityId == cityId);
         }
 
         public Cinema GetAsync(Guid id)
         {
             IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
 
-            return cinemaQuery
+            Cinema cinema = cinemaQuery
                 .Select(cinema => cinema.ToModel())
                 .Where(cinema => cinema.Id == id)
                 .FirstOrDefault();
+
+            if(cinema == null)
+            {
+                return null;
+            }
+
+            return cinema;
         }
+
         public async Task<Cinema> InsertAsync(Cinema cinema)
         {
             CinemaEntity cinemaEntity = new CinemaEntity

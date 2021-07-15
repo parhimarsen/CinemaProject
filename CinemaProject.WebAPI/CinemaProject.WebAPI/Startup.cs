@@ -40,6 +40,7 @@ namespace CinemaProject.WebAPI
             services.AddScoped<UserService>();
             services.AddScoped<TicketService>();
             services.AddScoped<FoodService>();
+            services.AddMemoryCache();
 
             services.AddControllers();
             services.AddCors();

@@ -18,13 +18,10 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Actor[] GetAll()
+        public IQueryable<Actor> GetAll()
         {
-            IQueryable<ActorEntity> actorEntities = _unitOfWork.ActorsRepository.GetAll();
-
-            return actorEntities
-                .Select(actor => actor.ToModel())
-                .ToArray();
+            return _unitOfWork.ActorsRepository.GetAll()
+                .Select(actor => actor.ToModel());
         }
 
         public async Task<Actor> InsertAsync(Actor actor)
@@ -50,6 +47,21 @@ namespace CinemaProject.BLL.Services
                 .Delete();
 
             await _unitOfWork.ActorsRepository.RemoveAsync(id);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateAsync(Actor actor)
+        {
+            if (!await _unitOfWork.ActorsRepository.ExistsAsync(actor.Id))
+            {
+                return;
+            }
+
+            ActorEntity actorEntity = await _unitOfWork.ActorsRepository.GetAsync(actor.Id);
+
+            actor.Name = actor.Name;
+
+            await _unitOfWork.ActorsRepository.UpdateAsync(actorEntity.Id);
             await _unitOfWork.SaveAsync();
         }
     }

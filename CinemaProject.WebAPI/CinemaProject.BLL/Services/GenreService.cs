@@ -18,13 +18,10 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Genre[] GetAllAsync()
+        public IQueryable<Genre> GetAllAsync()
         {
-            IQueryable<GenreEntity> genreQuery = _unitOfWork.GenresRepository.GetAll();
-
-            return genreQuery
-                .Select(genre => genre.ToModel())
-                .ToArray();
+            return _unitOfWork.GenresRepository.GetAll()
+                .Select(genre => genre.ToModel());
         }
 
         public async Task<Genre> InsertAsync(Genre genre)
@@ -49,7 +46,7 @@ namespace CinemaProject.BLL.Services
                 .Where(genre => genre.GenreId == id)
                 .Delete();
 
-            await _unitOfWork.ActorsRepository.RemoveAsync(id);
+            await _unitOfWork.GenresRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
         }
     }

@@ -17,13 +17,10 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Session[] GetAllAsync()
+        public IQueryable<Session> GetAll()
         {
-            IQueryable<SessionEntity> sessionQuery = _unitOfWork.SessionsRepository.GetAll();
-
-            return sessionQuery
-                .Select(session => session.ToModel())
-                .ToArray();
+            return _unitOfWork.SessionsRepository.GetAll()
+               .Select(actor => actor.ToModel());
         }
 
         public async Task<Session> GetAsync(Guid sessionId)
