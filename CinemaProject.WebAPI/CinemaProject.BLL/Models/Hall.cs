@@ -6,8 +6,7 @@ namespace CinemaProject.BLL.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-
-        public Cinema Cinema { get; set; }
+        public Guid CinemaId { get; set; }
 
         public Seat[] Seats { get; set; }
     }

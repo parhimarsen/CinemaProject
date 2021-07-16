@@ -10,6 +10,7 @@ namespace CinemaProject.DAL.Entities
         public Guid Id { get; set; }
         public Guid SessionId { get; set; }
         public Guid UserId { get; set; }
+        public Guid SeatId { get; set; }
         public bool Status { get; set; }
 
         public UserEntity User { get; set; }

@@ -10,7 +10,6 @@ namespace CinemaProject.DAL.Entities
         public Guid Id { get; set; }
         public string Name { get; set; }
         public decimal Cost { get; set; }
-        public Guid TicketId { get; set; }
 
         public IList<TicketFoodEntity> Tickets { get; set; }
     }

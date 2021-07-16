@@ -8,7 +8,7 @@ namespace CinemaProject.BLL.Models
         public int NumberOfSeat { get; set; }
         public int Row { get; set; }
         public int Column { get; set; }
-
-        public TypeOfSeat TypeOfSeat { get; set; }
+        public Guid HallId { get; set; }
+        public Guid TypeOfSeatId { get; set; }
     }
 }
