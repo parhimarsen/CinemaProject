@@ -20,29 +20,44 @@ namespace CinemaProject.BLL.Services
         public IQueryable<Cinema> GetAll()
         {
             return _unitOfWork.CinemasRepository.GetAll()
-                .Select(cinema => cinema.ToModel());
+                .Select(cinema => new Cinema
+                {
+                    Id = cinema.Id,
+                    Name = cinema.Name,
+                    CityId = cinema.CityId
+                });
         }
 
-        public IQueryable<Cinema> GetOfCity(Guid cityId)
+        public async Task<IQueryable<Cinema>> GetOfCity(Guid cityId)
         {
-            return _unitOfWork.CinemasRepository.GetAll()
-                .Select(cinema => cinema.ToModel())
-                .Where(cinema => cinema.CityId == cityId);
-        }
-
-        public Cinema GetAsync(Guid id)
-        {
-            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
-
-            Cinema cinema = cinemaQuery
-                .Select(cinema => cinema.ToModel())
-                .Where(cinema => cinema.Id == id)
-                .FirstOrDefault();
-
-            if(cinema == null)
+            if (!await _unitOfWork.CitiesRepository.ExistsAsync(cityId))
             {
                 return null;
             }
+
+            return _unitOfWork.CinemasRepository.GetAll()
+                .Select(cinema => new Cinema
+                {
+                    Id = cinema.Id,
+                    Name = cinema.Name,
+                    CityId = cinema.CityId
+                })
+                .Where(cinema => cinema.CityId == cityId);
+        }
+
+        public async Task<Cinema> GetAsync(Guid id)
+        {
+            if (!await _unitOfWork.CinemasRepository.ExistsAsync(id))
+            {
+                return null;
+            }
+
+            IQueryable<CinemaEntity> cinemaQuery = _unitOfWork.CinemasRepository.GetAll();
+
+            Cinema cinema = cinemaQuery
+                .Where(cinema => cinema.Id == id)
+                .Select(cinema => cinema.ToModel())
+                .FirstOrDefault();
 
             return cinema;
         }
@@ -81,8 +96,8 @@ namespace CinemaProject.BLL.Services
 
             CinemaEntity cinemaEntity = await _unitOfWork.CinemasRepository.GetAsync(cinema.Id);
 
-            cinemaEntity.Name = cinema.Name;
-            cinemaEntity.CityId = cinema.CityId;
+            cinemaEntity.Name = cinema.Name ?? cinemaEntity.Name;
+            cinemaEntity.CityId = cinema.CityId ?? cinemaEntity.CityId;
 
             await _unitOfWork.FilmsRepository.UpdateAsync(cinemaEntity.Id);
             await _unitOfWork.SaveAsync();
