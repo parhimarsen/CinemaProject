@@ -9,7 +9,7 @@ namespace CinemaProject.DAL.Interfaces
     public interface IGenericRepository<T> where T : class
     {
         IQueryable<T> GetAll();
-        Task<T> GetAsync(Guid id);
+        Task<T> GetAsync(Guid? id);
         IQueryable<T> GetWithInclude(params Expression<Func<T, object>>[] includeProperties);
         Task<T> InsertAsync(T item);
         Task RemoveAsync(Guid id);

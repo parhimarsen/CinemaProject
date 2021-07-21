@@ -22,7 +22,7 @@ namespace CinemaProject.DAL.Repositories
             return _context.Set<T>();
         }
 
-        public async Task<T> GetAsync(Guid id)
+        public async Task<T> GetAsync(Guid? id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
@@ -54,7 +54,8 @@ namespace CinemaProject.DAL.Repositories
 
             if (item != null)
             {
-                _context.Entry(item).State = EntityState.Detached;
+                _context.Attach(item);
+                _context.Entry(item).State = EntityState.Modified;
             }
         }
 

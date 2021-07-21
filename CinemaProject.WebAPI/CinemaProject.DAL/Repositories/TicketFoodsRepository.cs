@@ -39,11 +39,11 @@ namespace CinemaProject.DAL.Repositories
             _context.Set<TicketFoodEntity>().Remove(ticketFoodEntity);
         }
 
-        public async Task<bool> ExistsAsync(TicketFoodEntity ticketFoodEntity)
+        public async Task<bool> ExistsAsync(Guid ticketId, Guid foodId)
         {
-            TicketFoodEntity ticketFood = await GetAsync(ticketFoodEntity.TicketId, ticketFoodEntity.FoodId);
+            TicketFoodEntity ticketFoodEntity = await GetAsync(ticketId, foodId);
 
-            if (ticketFood == null)
+            if (ticketFoodEntity == null)
             {
                 return false;
             }
