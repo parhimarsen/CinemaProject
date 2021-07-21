@@ -41,11 +41,11 @@ namespace CinemaProject.DAL.Repositories
             _context.Set<CastEntity>().Remove(castEntity);
         }
 
-        public async Task<bool> ExistsAsync(CastEntity castEntity)
+        public async Task<bool> ExistsAsync(Guid filmId, Guid actorId)
         {
-            CastEntity updatingCastEntity= await GetAsync(castEntity.FilmId, castEntity.ActorId);
+            CastEntity castEntity = await GetAsync(filmId, actorId);
 
-            if (updatingCastEntity == null)
+            if (castEntity == null)
             {
                 return false;
             }
