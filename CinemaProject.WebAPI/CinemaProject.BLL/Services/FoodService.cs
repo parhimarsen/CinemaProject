@@ -19,9 +19,21 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
+        public IQueryable<Food> GetAll()
+        {
+            return _unitOfWork.FoodsRepository
+                .GetAll()
+                .Select(food => new Food
+                {
+                    Id = food.Id,
+                    Name = food.Name,
+                    Cost = food.Cost
+                });
+        }
+
         public async Task<Food[]> GetAllOfTicketAsync(Guid ticketId)
         {
-            if (!await _unitOfWork.UsersRepository.ExistsAsync(ticketId))
+            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticketId))
             {
                 return null;
             }
@@ -57,12 +69,12 @@ namespace CinemaProject.BLL.Services
             return foodEntity.ToModel();
         }
 
-        public async Task<TicketFoodEntity> InsertToTicketAsync(Guid ticketId, Guid foodId)
+        public async Task<bool> InsertToTicketAsync(Guid ticketId, Guid foodId)
         {
             if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticketId) 
                 || !await _unitOfWork.FoodsRepository.ExistsAsync(foodId))
             {
-                return null;
+                return false;
             }
 
             TicketFoodEntity ticketFoodEntity = new TicketFoodEntity
@@ -74,7 +86,7 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.TicketFoodsRepository.InsertAsync(ticketFoodEntity);
             await _unitOfWork.SaveAsync();
 
-            return ticketFoodEntity;
+            return true;
         }
 
         public async Task RemoveAsync(Guid ticketId)
