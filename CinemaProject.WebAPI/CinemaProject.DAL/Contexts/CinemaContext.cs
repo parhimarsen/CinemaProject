@@ -1,10 +1,13 @@
 ﻿using CinemaProject.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace CinemaProject.DAL.Contexts
 {
     public class CinemaContext : DbContext
     {
+        public IConfiguration Configuration { get; }
+
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
         public DbSet<TicketEntity> Tickets { get; set; }
@@ -23,10 +26,10 @@ namespace CinemaProject.DAL.Contexts
         public DbSet<TypeOfSeatEntity> TypeOfSeats { get; set; }
         public DbSet<TicketSeatEntity> Reservation { get; set; }
 
-        public CinemaContext(DbContextOptions<CinemaContext> options)
+        public CinemaContext(DbContextOptions<CinemaContext> options, IConfiguration configuration)
             : base(options)
         {
-
+            Configuration = configuration;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -71,7 +74,7 @@ namespace CinemaProject.DAL.Contexts
                 .HasOne(e => e.Hall)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.HallId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<FilmGenreEntity>().HasKey(e => new { e.FilmId, e.GenreId });
 
@@ -82,8 +85,7 @@ namespace CinemaProject.DAL.Contexts
 
             modelBuilder.Entity<FilmGenreEntity>()
                 .HasOne(e => e.Genre)
-                .WithMany(e => e.Films)
-                .HasForeignKey(e => e.GenreId);
+                .WithMany(e => e.Films);
 
             modelBuilder.Entity<CastEntity>().HasKey(e => new { e.FilmId, e.ActorId });
 
@@ -107,7 +109,7 @@ namespace CinemaProject.DAL.Contexts
                 .HasOne(e => e.City)
                 .WithMany(e => e.Cinemas)
                 .HasForeignKey(e => e.CityId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<SeatEntity>()
                 .HasOne(e => e.Hall)
@@ -119,7 +121,7 @@ namespace CinemaProject.DAL.Contexts
                 .HasOne(e => e.TypeOfSeat)
                 .WithMany(e => e.Seats)
                 .HasForeignKey(e => e.TypeOfSeatId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<TicketSeatEntity>().HasKey(e => new { e.TicketId, e.SeatId });
 
@@ -132,6 +134,10 @@ namespace CinemaProject.DAL.Contexts
                 .HasOne(e => e.Seat)
                 .WithMany(e => e.SeatReservations)
                 .HasForeignKey(e => e.SeatId);
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("CinemaConnection"));
         }
     }
 }

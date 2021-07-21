@@ -15,10 +15,5 @@ namespace CinemaProject.DAL.Entities
 
         public IList<RefreshTokenEntity> RefreshTokens { get; set; }
         public IList<TicketEntity> Tickets { get; set; }
-
-        public UserEntity()
-        {
-            RefreshTokens = new List<RefreshTokenEntity>();
-        }
     }
 }

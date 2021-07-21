@@ -1,7 +1,10 @@
 using CinemaProject.BLL.Helpers;
+using CinemaProject.BLL.Models;
 using CinemaProject.BLL.Services;
 using CinemaProject.DAL.Contexts;
 using CinemaProject.DAL.Repositories;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
 using System;
 using System.Text;
 
@@ -30,7 +34,7 @@ namespace CinemaProject.WebAPI
 
             var optionsBuilder = new DbContextOptionsBuilder<CinemaContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("CinemaConnection"));
-            using (CinemaContext context = new CinemaContext(optionsBuilder.Options))
+            using (CinemaContext context = new CinemaContext(optionsBuilder.Options, Configuration))
             {
                 context.Database.EnsureCreated();
             }
@@ -40,10 +44,19 @@ namespace CinemaProject.WebAPI
             services.AddScoped<UserService>();
             services.AddScoped<TicketService>();
             services.AddScoped<FoodService>();
+            services.AddScoped<ActorService>();
+            services.AddScoped<CinemaService>();
+            services.AddScoped<CityService>();
+            services.AddScoped<FilmService>();
+            services.AddScoped<GenreService>();
+            services.AddScoped<HallService>();
+            services.AddScoped<SeatService>();
+            services.AddScoped<SessionService>();
+            services.AddScoped<TypeOfSeatService>();
             services.AddMemoryCache();
 
-            services.AddControllers();
-            services.AddCors();
+            services.AddControllers(options => options.EnableEndpointRouting = false);
+            services.AddOData();
 
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -98,7 +111,33 @@ namespace CinemaProject.WebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints
+                    .Select()
+                    .Filter()
+                    .OrderBy()
+                    .MaxTop(100)
+                    .Count();
+                endpoints.EnableDependencyInjection();
+                endpoints.MapODataRoute("odata", "odata", GetEdmModel());
             });
+        }
+        private static IEdmModel GetEdmModel()
+        {
+            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+            builder.EntitySet<User>("Users");
+            builder.EntitySet<Ticket>("Tickets");
+            builder.EntitySet<Food>("Foods");
+            builder.EntitySet<Actor>("Actors");
+            builder.EntitySet<Cinema>("Cinemas");
+            builder.EntitySet<City>("Cities");
+            builder.EntitySet<Film>("Films");
+            builder.EntitySet<Genre>("Genres");
+            builder.EntitySet<Hall>("Halls");
+            builder.EntitySet<Seat>("Seats");
+            builder.EntitySet<Session>("Sessions");
+            builder.EntitySet<TypeOfSeat>("TypesOfSeat");
+            return builder.GetEdmModel();
         }
     }
 }

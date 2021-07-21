@@ -23,7 +23,7 @@ namespace CinemaProject.DAL.Repositories
             return _context.Set<UserEntity>();
         }
 
-        public async Task<UserEntity> GetAsync(Guid id)
+        public async Task<UserEntity> GetAsync(Guid? id)
         {
             return await _context.Set<UserEntity>().FindAsync(id);
         }
@@ -61,7 +61,8 @@ namespace CinemaProject.DAL.Repositories
 
             if (userEntity != null)
             {
-                _context.Entry(userEntity).State = EntityState.Detached;
+                _context.Attach(userEntity);
+                _context.Entry(userEntity).State = EntityState.Modified;
             }
         }
 
