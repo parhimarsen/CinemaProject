@@ -17,20 +17,20 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Hall[]> GetAllOfCinemaAsync(Guid cinemaId)
+        public async Task<IQueryable<Hall>> GetAllOfCinemaAsync(Guid cinemaId)
         {
             if (!await _unitOfWork.CinemasRepository.ExistsAsync(cinemaId))
             {
                 return null;
             }
 
-            CinemaEntity cinemaEntity = _unitOfWork.CinemasRepository
-                .GetWithInclude(cinema => cinema.Halls)
-                .FirstOrDefault(cinema => cinema.Id == cinemaId);
-
-            return cinemaEntity.Halls
-                .Select(hall => hall.ToModel())
-                .ToArray();
+            return _unitOfWork.HallsRepository
+                .GetAll()
+                .Select(hall => new Hall {
+                    Id = hall.Id,
+                    Name = hall.Name,
+                    CinemaId = hall.CinemaId,
+                });
         }
 
         public async Task<Hall> GetAsync(Guid id)
@@ -47,12 +47,11 @@ namespace CinemaProject.BLL.Services
 
         public async Task<Hall> InsertAsync(Hall hall)
         {
-            if (!await _unitOfWork.CinemasRepository.ExistsAsync(hall.CinemaId))
+            if (!await _unitOfWork.CinemasRepository.ExistsAsync(hall.CinemaId)
+                || !await _unitOfWork.CinemasRepository.ExistsAsync(hall.CinemaId))
             {
                 return null;
             }
-
-            CinemaEntity cinemaEntity = await _unitOfWork.CinemasRepository.GetAsync(hall.CinemaId);
 
             HallEntity hallEntity = new HallEntity
             {
@@ -64,26 +63,23 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.HallsRepository.InsertAsync(hallEntity);
             await _unitOfWork.SaveAsync();
 
-            cinemaEntity.Halls.Add(hallEntity);
-            await _unitOfWork.CinemasRepository.UpdateAsync(hallEntity.CinemaId);
-            await _unitOfWork.SaveAsync();
-
             return hallEntity.ToModel();
         }
 
         public async Task UpdateAsync(Hall hall)
         {
-            if (!await _unitOfWork.HallsRepository.ExistsAsync(hall.Id))
+            if (!await _unitOfWork.HallsRepository.ExistsAsync(hall.Id)
+                || !await _unitOfWork.CinemasRepository.ExistsAsync(hall.CinemaId))
             {
                 return;
             }
 
             HallEntity hallEntity = await _unitOfWork.HallsRepository.GetAsync(hall.Id);
 
-            hallEntity.Name = hall.Name;
+            hallEntity.Name = hall.Name ?? hallEntity.Name;
             hallEntity.CinemaId = hall.CinemaId;
 
-            await _unitOfWork.HallsRepository.InsertAsync(hallEntity);
+            await _unitOfWork.HallsRepository.UpdateAsync(hallEntity.Id);
             await _unitOfWork.SaveAsync();
         }
 
