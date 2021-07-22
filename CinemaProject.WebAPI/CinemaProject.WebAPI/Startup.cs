@@ -45,6 +45,8 @@ namespace CinemaProject.WebAPI
             services.AddControllers();
             services.AddCors();
 
+            services.AddCors();
+
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -80,6 +82,9 @@ namespace CinemaProject.WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 

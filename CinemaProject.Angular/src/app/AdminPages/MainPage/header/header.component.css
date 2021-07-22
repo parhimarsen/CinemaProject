@@ -1,0 +1,62 @@
+header{
+    background-color: #e5f5fc;
+}
+
+header form input{
+    outline: none;
+    border: 1px solid #a3bbc5;
+    border-radius: 3px;
+}
+
+.navbar-collapse{
+    flex-grow: 0 !important;
+}
+
+.user-info{
+    padding-right: .5rem;
+    padding-left: .5rem;
+}
+
+.container-fluid{
+    flex-direction: row-reverse;
+}
+
+@media (max-width: 576px) {
+    .user{
+        justify-content: flex-end;
+    }
+    .user-info a .user-icon{
+        display: inline-block;
+        height: 24px;
+        width: 24px;
+        background: url(../../../../images/profile.svg) no-repeat center center;
+    }
+    .user-info a .user-name{
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .user{
+        justify-content: flex-end;
+    }
+    .user-info a .user-icon{
+        display: inline-block;
+        height: 24px;
+        width: 24px;
+        background: url(../../../../images/profile.svg) no-repeat center center;
+    }
+
+    .user-info a .user-name{
+        display: none;
+    }
+}
+
+.user-info{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-icon{
+    border: 0;
+}

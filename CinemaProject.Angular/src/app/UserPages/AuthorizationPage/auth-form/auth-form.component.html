@@ -1,0 +1,139 @@
+<div class="root">
+  <div class="model container">
+    <div routerLink="/user/main" class="backButton">
+      <div class="backButtonIcon">
+        <svg width="24" height="24">
+          <path
+            d="M9.3 7.5a.4.4 0 010-.7c.3-.2.6-.1.8 0l4.6 4.9v.6L10 17.1c-.2.2-.5.3-.7 0a.4.4 0 010-.6l4.2-4.5-4.3-4.5z"
+          ></path>
+        </svg>
+      </div>
+      Назад
+    </div>
+    <div class="contentHeader bd-example">
+      <nav>
+        <div class="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+          <button
+            class="nav-link tabsItem active"
+            id="nav-login-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-login"
+            type="button"
+            role="tab"
+            aria-controls="nav-login"
+            aria-selected="true"
+          >
+            Вход
+          </button>
+          <button
+            class="nav-link tabsItem"
+            id="nav-register-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#nav-register"
+            type="button"
+            role="tab"
+            aria-controls="nav-register"
+            aria-selected="false"
+          >
+            Регистрация
+          </button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div
+          class="tab-pane fade active show"
+          id="nav-login"
+          role="tabpanel"
+          aria-labelledby="nav-login-tab"
+        >
+          <div class="contentWrapper">
+            <form class="needs-validation was-validated" novalidate>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                placeholder="E-mail"
+                value=""
+                required=""
+              />
+              <div class="invalid-feedback">Введите E-mail.</div>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Пароль"
+                value=""
+                required=""
+              />
+              <div class="invalid-feedback">Введите пароль.</div>
+              <div class="formOptions">
+                <a>Забыли пароль?</a>
+              </div>
+              <input class="button" type="submit" value="Войти" />
+            </form>
+            <div class="socialBefore">
+              <div class="line"></div>
+              <span class="socialBeforeLabel">или войти через соцсети</span>
+              <div class="line"></div>
+            </div>
+            <div class="socialList">
+              <a class="socialItem"></a>
+              <a class="socialItem faceBook"></a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="tab-pane fade"
+          id="nav-register"
+          role="tabpanel"
+          aria-labelledby="nav-register-tab"
+        >
+          <div class="contentWrapper">
+            <form class="needs-validation was-validated" novalidate>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                placeholder="E-mail"
+                value=""
+                required=""
+              />
+              <div class="invalid-feedback">Введите E-mail.</div>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Пароль"
+                value=""
+                required=""
+              />
+              <div class="invalid-feedback">Введите пароль.</div>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                placeholder="Подтверждение пароля"
+                value=""
+                required=""
+              />
+              <div class="invalid-feedback">Подтвердите пароль.</div>
+              <div class="formOptions">
+                <a>Забыли пароль?</a>
+              </div>
+              <input class="button" type="submit" value="Войти" />
+            </form>
+            <div class="socialBefore">
+              <div class="line"></div>
+              <span class="socialBeforeLabel">или войти через соцсети</span>
+              <div class="line"></div>
+            </div>
+            <div class="socialList">
+              <a class="socialItem"></a>
+              <a class="socialItem faceBook"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
