@@ -162,3 +162,28 @@ hr {
 .ng2-smart-action-add-create{
     margin-right: 0.25rem;
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-form-field-infix {
+    width: 100% !important;
+}
+
+.mat-form-field-flex {
+    width: 120px !important;
+}
+
+.mat-form-field-underline {
+    position: unset !important;
+    transform: unset !important;
+}
+
+.mat-form-field-wrapper{
+    padding-bottom: unset !important;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.mat-accent{
+    background-color: #0d6efd !important;
+}
