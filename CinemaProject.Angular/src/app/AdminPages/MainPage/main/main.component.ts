@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Injector } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-admin-main',
@@ -6,7 +7,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main.component.css'],
 })
 export class MainComponent implements OnInit {
-  constructor() {}
+  service: any;
+
+  constructor(route: ActivatedRoute, injector: Injector) {
+    const serviceToken = route.snapshot.data['requiredService'];
+    this.service = injector.get(serviceToken);
+  }
 
   ngOnInit(): void {}
 }

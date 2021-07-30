@@ -9,7 +9,8 @@
 <ng2-smart-table
   [settings]="settings"
   [source]="source"
-  (createConfirm)="addCinema($event)"
-  (deleteConfirm)="deleteCinema($event)"
+  (createConfirm)="add($event)"
+  (deleteConfirm)="delete($event)"
+  (editConfirm)="edit($event)"
   class="mt-5"
 ></ng2-smart-table>
