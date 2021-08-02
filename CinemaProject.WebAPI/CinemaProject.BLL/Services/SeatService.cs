@@ -17,20 +17,25 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Seat[]> GetAllOfHallAsync(Guid hallId)
+        public async Task<IQueryable<Seat>> GetAllOfHallAsync(Guid hallId)
         {
             if (!await _unitOfWork.HallsRepository.ExistsAsync(hallId))
             {
                 return null;
             }
 
-            HallEntity hallEntity = _unitOfWork.HallsRepository
-                .GetWithInclude(hall => hall.Seats)
-                .FirstOrDefault(hall => hall.Id == hallId);
-
-            return hallEntity.Seats
-                .Select(seat => seat.ToModel())
-                .ToArray();
+            return _unitOfWork.SeatsRepository
+                .GetAll()
+                .Where(seat => seat.HallId == hallId)
+                .Select(seat => new Seat
+                {
+                    Id = seat.Id,
+                    NumberOfSeat = seat.NumberOfSeat,
+                    Row = seat.Row,
+                    Column = seat.Column,
+                    HallId = seat.HallId,
+                    TypeOfSeatId = seat.TypeOfSeatId
+                });
         }
 
         public async Task<Seat> GetAsync(Guid seatId)
@@ -52,8 +57,6 @@ namespace CinemaProject.BLL.Services
                 return null;
             }
 
-            HallEntity hallEntity = await _unitOfWork.HallsRepository.GetAsync(seat.HallId);
-
             SeatEntity seatEntity = new SeatEntity
             {
                 Id = Guid.NewGuid(),
@@ -65,10 +68,6 @@ namespace CinemaProject.BLL.Services
             };
 
             await _unitOfWork.SeatsRepository.InsertAsync(seatEntity);
-            await _unitOfWork.SaveAsync();
-
-            hallEntity.Seats.Add(seatEntity);
-            await _unitOfWork.HallsRepository.UpdateAsync(hallEntity.Id);
             await _unitOfWork.SaveAsync();
 
             return seatEntity.ToModel();
@@ -109,10 +108,7 @@ namespace CinemaProject.BLL.Services
                 return;
             }
 
-            SeatEntity seatEntity = await _unitOfWork.SeatsRepository.GetAsync(id);
-
-            HallEntity hallEntity = await _unitOfWork.HallsRepository.GetAsync(seatEntity.HallId);
-            hallEntity.Seats.Remove(seatEntity);
+            await _unitOfWork.SeatsRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
         }
     }

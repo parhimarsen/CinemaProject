@@ -1,6 +1,7 @@
 ﻿using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CinemaProject.BLL.Mappers
 {
@@ -8,13 +9,6 @@ namespace CinemaProject.BLL.Mappers
     {
         public static User ToModel(this UserEntity @this)
         {
-            List<Ticket> Tickets = new List<Ticket>();
-
-            foreach (TicketEntity ticketEntity in @this.Tickets)
-            {
-                Tickets.Add(ticketEntity.ToModel());
-            }
-
             return new User
             {
                 Id = @this.Id,
@@ -22,8 +16,19 @@ namespace CinemaProject.BLL.Mappers
                 Login = @this.Login,
                 Password = @this.Password,
                 IsAdmin = @this.IsAdmin,
-                Tickets = Tickets.ToArray()
             };
+        }
+
+        public static Ticket[] ToModel(this IEnumerable<TicketEntity> ticketsEntity)
+        {
+            List<Ticket> tickets = new List<Ticket>();
+
+            foreach (TicketEntity ticketEntity in ticketsEntity)
+            {
+                tickets.Add(ticketEntity.ToModel());
+            }
+
+            return tickets.ToArray();
         }
 
         public static Ticket ToModel(this TicketEntity @this)
@@ -38,7 +43,7 @@ namespace CinemaProject.BLL.Mappers
             };
         }
 
-        public static Food ToModel (this FoodEntity @this)
+        public static Food ToModel(this FoodEntity @this)
         {
             return new Food
             {

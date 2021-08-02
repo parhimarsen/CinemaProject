@@ -2,7 +2,9 @@
 using CinemaProject.BLL.Models;
 using CinemaProject.DAL.Entities;
 using CinemaProject.DAL.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,19 +13,30 @@ namespace CinemaProject.BLL.Services
     public class TypeOfSeatService
     {
         private readonly UnitOfWork _unitOfWork;
+        private IMemoryCache _cache;
+        private const string typesOfSeatCacheKey = "typesOfSeatCacheKey";
+        private MemoryCacheEntryOptions _cacheOptions;
 
-        public TypeOfSeatService(UnitOfWork unitOfWork)
+        public TypeOfSeatService(UnitOfWork unitOfWork, IMemoryCache memoryCache)
         {
             _unitOfWork = unitOfWork;
+            _cache = memoryCache;
+            _cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromHours(2));
         }
 
-        public TypeOfSeat[] GetAllAsync()
+        public List<TypeOfSeat> GetAllAsync()
         {
-            IQueryable<TypeOfSeatEntity> typeOfSeatQuery = _unitOfWork.TypesOfSeatRepository.GetAll();
-
-            return typeOfSeatQuery
-                .Select(typeOfSeat => typeOfSeat.ToModel())
-                .ToArray();
+            return _cache.GetOrCreate(
+                typesOfSeatCacheKey,
+                entry =>
+                {
+                    entry.SetOptions(_cacheOptions);
+                    return _unitOfWork.TypesOfSeatRepository.GetAll()
+                        .Select(typeOfSeat => typeOfSeat.ToModel())
+                        .ToList();
+                }
+            );
         }
 
         public async Task<TypeOfSeat> GetOfSeatAsync(Guid seatId)
@@ -53,6 +66,8 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.TypesOfSeatRepository.InsertAsync(typeOfSeatEntity);
             await _unitOfWork.SaveAsync();
 
+            _cache.Remove(typesOfSeatCacheKey);
+
             return typeOfSeatEntity.ToModel();
         }
 
@@ -65,6 +80,8 @@ namespace CinemaProject.BLL.Services
 
             await _unitOfWork.TypesOfSeatRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
+
+            _cache.Remove(typesOfSeatCacheKey);
         }
 
         public async Task UpdateAsync(TypeOfSeat typeOfSeat)
@@ -81,6 +98,8 @@ namespace CinemaProject.BLL.Services
 
             await _unitOfWork.TypesOfSeatRepository.UpdateAsync(typeOfSeatEntity.Id);
             await _unitOfWork.SaveAsync();
+
+            _cache.Remove(typesOfSeatCacheKey);
         }
     }
 }

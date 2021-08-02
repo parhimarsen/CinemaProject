@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CinemaProject.BLL.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CinemaProject.BLL.Models
 {
@@ -9,6 +11,7 @@ namespace CinemaProject.BLL.Models
         public string Name { get; set; }
         public string Country { get; set; }
         public DateTime ReleaseDate { get; set; }
+        [JsonConverter(typeof(TimeSpanJsonConverter))]
         public TimeSpan Duration { get; set; }
         public string Director { get; set; }
 

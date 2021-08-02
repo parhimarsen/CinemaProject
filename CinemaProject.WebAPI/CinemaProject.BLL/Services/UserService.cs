@@ -28,13 +28,19 @@ namespace CinemaProject.BLL.Services
             _appSettings = appSettings.Value;
         }
 
-        public User[] GetAll()
+        public IQueryable<User> GetAll()
         {
-            IQueryable<UserEntity> usersEntity = _unitOfWork.UsersRepository.GetWithInclude(user => user.Tickets);
-
-            return usersEntity
-                .Select(user => user.ToModel())
-                .ToArray();
+            return _unitOfWork.UsersRepository
+                .GetWithInclude(user => user.Tickets)
+                .Select(user => new User
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Login = user.Login,
+                    Password = user.Password,
+                    IsAdmin = user.IsAdmin,
+                    Tickets = user.Tickets.ToModel()
+                });
         }
 
         public User Get(Guid id)
@@ -72,12 +78,12 @@ namespace CinemaProject.BLL.Services
             UserEntity userEntity = await _unitOfWork.UsersRepository.GetAsync(user.Id);
 
             userEntity.Id = user.Id;
-            userEntity.Email = user.Email;
-            userEntity.Login = user.Login;
-            userEntity.Password = user.Password;
+            userEntity.Email = user.Email ?? userEntity.Email;
+            userEntity.Login = user.Login ?? userEntity.Login;
+            userEntity.Password = user.Password ?? userEntity.Password;
             userEntity.IsAdmin = user.IsAdmin;
 
-            await _unitOfWork.UsersRepository.UpdateAsync(user.Id);
+            await _unitOfWork.UsersRepository.UpdateAsync(userEntity.Id);
             await _unitOfWork.SaveAsync();
         }
 
@@ -103,10 +109,9 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.SaveAsync();
 
             user.RefreshTokens.Add(refreshToken);
-            await _unitOfWork.UsersRepository.UpdateAsync(authenticateUserEntity.Id);
             await _unitOfWork.SaveAsync();
 
-            return new AuthenticateResponse(token, refreshToken.Token);
+            return new AuthenticateResponse(token, refreshToken.Token, user.ToModel());
         }
 
         public async Task<AuthenticateResponse> Register(RegistrationRequest model, string ipAddress)
@@ -124,29 +129,27 @@ namespace CinemaProject.BLL.Services
                 Email = model.Email,
                 Login = model.Login,
                 Password = BC.HashPassword(model.Password),
-                IsAdmin = false
+                IsAdmin = false,
+                RefreshTokens = new List<RefreshTokenEntity>()
             };
 
             string token = generateJwtToken(newUser);
             RefreshTokenEntity refreshToken = generateRefreshToken(ipAddress);
 
             refreshToken.UserId = newUser.Id;
-            await _unitOfWork.UsersRepository.InsertRefreshTokenAsync(refreshToken);
-            await _unitOfWork.SaveAsync();
-
             newUser.RefreshTokens.Add(refreshToken);
 
             await _unitOfWork.UsersRepository.InsertAsync(newUser);
             await _unitOfWork.SaveAsync();
 
-            return new AuthenticateResponse(token, refreshToken.Token);
+            return new AuthenticateResponse(token, refreshToken.Token, newUser.ToModel());
         }
 
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
         {
-            IQueryable<UserEntity> userQuery = _unitOfWork.UsersRepository.GetAll();
-
-            UserEntity authenticatedUser = userQuery.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            UserEntity authenticatedUser = _unitOfWork.UsersRepository
+                .GetWithInclude(user => user.RefreshTokens)
+                .SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (authenticatedUser == null)
             {
@@ -166,26 +169,18 @@ namespace CinemaProject.BLL.Services
             refreshToken.ReplacedByToken = newRefreshToken.Token;
 
             authenticatedUser.RefreshTokens.Add(newRefreshToken);
-            await _unitOfWork.UsersRepository.UpdateAsync(authenticatedUser.Id);
             await _unitOfWork.SaveAsync();
 
             var jwtToken = generateJwtToken(authenticatedUser);
 
-            return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
+            return new AuthenticateResponse(jwtToken, newRefreshToken.Token, authenticatedUser.ToModel());
         }
 
         public async Task<bool> RevokeToken(string token, string ipAddress)
         {
-            IQueryable<UserEntity> userQuery = _unitOfWork.UsersRepository.GetAll();
-
-            UserEntity authenticatedUser = userQuery.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
-
-            if (authenticatedUser == null)
-            {
-                return false;
-            }
-
-            RefreshTokenEntity refreshToken = authenticatedUser.RefreshTokens.Single(t => t.Token == token);
+            RefreshTokenEntity refreshToken = _unitOfWork.RefreshTokensRepository
+                .GetAll()
+                .FirstOrDefault(t => t.Token == token);
 
             if (!refreshToken.IsActive)
             {
@@ -194,7 +189,7 @@ namespace CinemaProject.BLL.Services
 
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
-            await _unitOfWork.UsersRepository.UpdateAsync(authenticatedUser.Id);
+
             await _unitOfWork.SaveAsync();
 
             return true;

@@ -17,20 +17,24 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Ticket[]> GetAllOfUserAsync(Guid userId)
+        public async Task<IQueryable<Ticket>> GetAllOfUserAsync(Guid userId)
         {
             if (!await _unitOfWork.UsersRepository.ExistsAsync(userId))
             {
                 return null;
             }
 
-            UserEntity userEntity = _unitOfWork.UsersRepository
-                .GetWithInclude(user => user.Tickets)
-                .FirstOrDefault(user => user.Id == userId);
-
-            return userEntity.Tickets
-                .Select(ticket => ticket.ToModel())
-                .ToArray();
+            return _unitOfWork.TicketsRepository
+                .GetAll()
+                .Where(ticket => ticket.UserId == userId)
+                .Select(ticket => new Ticket
+                {
+                    Id = ticket.Id,
+                    Status = ticket.Status,
+                    UserId = ticket.UserId,
+                    SessionId = ticket.SessionId,
+                    SeatId = ticket.SeatId
+                });
         }
 
         public async Task<Ticket> GetAsync(Guid id)
@@ -47,13 +51,12 @@ namespace CinemaProject.BLL.Services
 
         public async Task<Ticket> InsertAsync(Ticket ticket)
         {
-            if (!await _unitOfWork.UsersRepository.ExistsAsync(ticket.UserId) && !await _unitOfWork.SessionsRepository.ExistsAsync(ticket.SessionId))
+            if (!await _unitOfWork.UsersRepository.ExistsAsync(ticket.UserId)
+                || !await _unitOfWork.SessionsRepository.ExistsAsync(ticket.SessionId)
+                || !await _unitOfWork.SeatsRepository.ExistsAsync(ticket.SeatId))
             {
                 return null;
             }
-
-            UserEntity userEntity = await _unitOfWork.UsersRepository.GetAsync(ticket.UserId);
-            SessionEntity sessionEntity = await _unitOfWork.SessionsRepository.GetAsync(ticket.SessionId);
 
             TicketEntity newTicket = new TicketEntity
             {
@@ -67,25 +70,31 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.TicketsRepository.InsertAsync(newTicket);
             await _unitOfWork.SaveAsync();
 
-            userEntity.Tickets.Add(newTicket);
-            await _unitOfWork.UsersRepository.UpdateAsync(userEntity.Id);
-            await _unitOfWork.SaveAsync();
-
-            sessionEntity.Tickets.Add(newTicket);
-            await _unitOfWork.SessionsRepository.UpdateAsync(userEntity.Id);
-            await _unitOfWork.SaveAsync();
-
             return newTicket.ToModel();
         }
 
-        public async Task ProofOfPayment(Guid id)
+        public async Task<ConfirmPaymentResponse> ConfirmPayment(Guid id)
         {
             if (!await _unitOfWork.TicketsRepository.ExistsAsync(id))
             {
-                return;
+
+                return new ConfirmPaymentResponse
+                {
+                    Response = "Ticket is not exist",
+                    IsConfirm = false
+                };
             }
 
             TicketEntity ticketEntity = await _unitOfWork.TicketsRepository.GetAsync(id);
+
+            if (ticketEntity.Status)
+            {
+                return new ConfirmPaymentResponse
+                {
+                    Response = "Allredy payed",
+                    IsConfirm = false
+                };
+            }
 
             ticketEntity.Status = true;
 
@@ -100,15 +109,17 @@ namespace CinemaProject.BLL.Services
             {
                 SeatId = ticketEntity.SeatId,
                 TicketId = id,
-                CostWithPercent = sessionEntity.Cost * typeOfSeatEntity.ExtraPaymentPercent
+                CostWithPercent = sessionEntity.Cost * (1M + Convert.ToDecimal(typeOfSeatEntity.ExtraPaymentPercent) / 100M)
             };
 
             await _unitOfWork.TicketSeatsRepository.InsertAsync(reservation);
             await _unitOfWork.SaveAsync();
 
-            seatEntity.SeatReservations.Add(reservation);
-            await _unitOfWork.SeatsRepository.UpdateAsync(seatEntity.Id);
-            await _unitOfWork.SaveAsync();
+            return new ConfirmPaymentResponse
+            {
+                Response = "Payment Accepted",
+                IsConfirm = true
+            };
         }
 
         public async Task RemoveAsync(Guid id)
@@ -118,25 +129,14 @@ namespace CinemaProject.BLL.Services
                 return;
             }
 
-            TicketEntity ticketEntity = _unitOfWork.TicketsRepository
-                .GetWithInclude(ticket => ticket.Food)
-                .FirstOrDefault(ticket => ticket.Id == id);
-
-            UserEntity userEntity = await _unitOfWork.UsersRepository.GetAsync(ticketEntity.UserId);
-            userEntity.Tickets.Remove(ticketEntity);
-            await _unitOfWork.SaveAsync();
-
-            SessionEntity sesionEntity = await _unitOfWork.SessionsRepository.GetAsync(ticketEntity.SessionId);
-            sesionEntity.Tickets.Remove(ticketEntity);
-            await _unitOfWork.SaveAsync();
-
-            await _unitOfWork.TicketSeatsRepository.RemoveAsync(id, ticketEntity.SeatId);
+            await _unitOfWork.TicketsRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
         }
 
         public async Task UpdateAsync(Ticket ticket)
         {
-            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticket.Id))
+            if (!await _unitOfWork.TicketsRepository.ExistsAsync(ticket.Id)
+                || !await _unitOfWork.SessionsRepository.ExistsAsync(ticket.SessionId))
             {
                 return;
             }

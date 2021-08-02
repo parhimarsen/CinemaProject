@@ -25,7 +25,7 @@ namespace CinemaProject.BLL.Services
                 .SetAbsoluteExpiration(TimeSpan.FromHours(2));
         }
 
-        public List<City> GetAllAsync()
+        public List<City> GetAll()
         {
             return _cache.GetOrCreate(
                 citiesCacheKey,
@@ -84,7 +84,6 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.CitiesRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
 
-            CityEntity cityEntity = await _unitOfWork.CitiesRepository.GetAsync(id);
             _cache.Remove(citiesCacheKey);
         }
 

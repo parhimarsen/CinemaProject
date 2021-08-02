@@ -8,10 +8,11 @@
 
         public User User { get; set; }
 
-        public AuthenticateResponse(string jwtToken, string refreshToken)
+        public AuthenticateResponse(string jwtToken, string refreshToken, User user)
         {
             JwtToken = jwtToken;
             RefreshToken = refreshToken;
+            User = user;
         }
     }
 }

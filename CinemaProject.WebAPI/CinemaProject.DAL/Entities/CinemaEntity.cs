@@ -8,11 +8,12 @@ namespace CinemaProject.DAL.Entities
     public class CinemaEntity
     {
         public Guid Id { get; set; }
-        public Guid CityId { get; set; }
+        public Guid? CityId { get; set; }
         public string Name { get; set; }
 
-        public CityEntity City { get; set; }
-
-        public IList<HallEntity> Halls { get; set; }
+#nullable enable
+        public CityEntity? City { get; set; }
+#nullable enable
+        public IList<HallEntity>? Halls { get; set; }
     }
 }

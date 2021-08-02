@@ -20,7 +20,15 @@ namespace CinemaProject.BLL.Services
         public IQueryable<Session> GetAll()
         {
             return _unitOfWork.SessionsRepository.GetAll()
-               .Select(actor => actor.ToModel());
+               .Select(session => new Session
+               {
+                   Id = session.Id,
+                   ShowStart = session.ShowStart,
+                   ShowEnd = session.ShowEnd,
+                   Cost = session.Cost,
+                   HallId = session.HallId,
+                   FilmId = session.FilmId
+               });
         }
 
         public async Task<Session> GetAsync(Guid sessionId)
@@ -37,16 +45,19 @@ namespace CinemaProject.BLL.Services
 
         public async Task<Session> InsertAsync(Session session)
         {
-            if (!await _unitOfWork.FilmsRepository.ExistsAsync(session.FilmId) && !await _unitOfWork.HallsRepository.ExistsAsync(session.HallId))
+            if (!await _unitOfWork.FilmsRepository.ExistsAsync(session.FilmId)
+                || !await _unitOfWork.HallsRepository.ExistsAsync(session.HallId))
             {
                 return null;
             }
+
+            FilmEntity filmEntity = await _unitOfWork.FilmsRepository.GetAsync(session.FilmId);
 
             SessionEntity newSessionEntity = new SessionEntity
             {
                 Id = Guid.NewGuid(),
                 ShowStart = session.ShowStart,
-                ShowEnd = session.ShowEnd,
+                ShowEnd = session.ShowStart.Add(filmEntity.Duration),
                 Cost = session.Cost,
                 FilmId = session.FilmId,
                 HallId = session.HallId
@@ -64,18 +75,6 @@ namespace CinemaProject.BLL.Services
             {
                 return;
             }
-
-            SessionEntity sessionEntity = _unitOfWork.SessionsRepository
-                .GetWithInclude(session => session.Tickets)
-                .FirstOrDefault(ticket => ticket.Id == id);
-
-            FilmEntity filmEntity = await _unitOfWork.FilmsRepository.GetAsync(sessionEntity.FilmId);
-            filmEntity.Sessions.Remove(sessionEntity);
-            await _unitOfWork.SaveAsync();
-
-            HallEntity hallEntity = await _unitOfWork.HallsRepository.GetAsync(sessionEntity.HallId);
-            hallEntity.Sessions.Remove(sessionEntity);
-            await _unitOfWork.SaveAsync();
 
             await _unitOfWork.SessionsRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();

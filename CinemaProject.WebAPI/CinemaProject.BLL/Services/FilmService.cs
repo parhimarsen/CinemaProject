@@ -12,7 +12,7 @@ namespace CinemaProject.BLL.Services
     {
         private readonly UnitOfWork _unitOfWork;
 
-        public FilmService(UnitOfWork unitOfWork, ActorService actorService)
+        public FilmService(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -21,7 +21,15 @@ namespace CinemaProject.BLL.Services
         {
             return _unitOfWork.FilmsRepository
                 .GetWithInclude(film => film.Actors, film => film.Genres)
-                .Select(film => film.ToModel());
+                .Select(film => new Film
+                {
+                    Id = film.Id,
+                    Name = film.Name,
+                    Director = film.Director,
+                    ReleaseDate = film.ReleaseDate,
+                    Country = film.Country,
+                    Duration = film.Duration
+                });
         }
 
         public Film Get(Guid id)
@@ -54,36 +62,35 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.FilmsRepository.InsertAsync(filmEntity);
             await _unitOfWork.SaveAsync();
 
-            foreach (Actor actor in film.Actors)
+            if (film.Actors != null)
             {
-                CastEntity castsEntity = new CastEntity
+                foreach (Actor actor in film.Actors)
                 {
-                    FilmId = filmEntity.Id,
-                    ActorId = actor.Id
-                };
+                    CastEntity castsEntity = new CastEntity
+                    {
+                        FilmId = filmEntity.Id,
+                        ActorId = actor.Id
+                    };
 
-                await _unitOfWork.CastsRepository.InsertAsync(castsEntity);
-                await _unitOfWork.SaveAsync();
-
-                filmEntity.Actors.Add(castsEntity);
-                await _unitOfWork.FilmsRepository.UpdateAsync(filmEntity.Id);
-                await _unitOfWork.SaveAsync();
+                    await _unitOfWork.CastsRepository.InsertAsync(castsEntity);
+                    await _unitOfWork.SaveAsync();
+                }
             }
 
-            foreach (Genre genre in film.Genres)
+
+            if (film.Genres != null)
             {
-                FilmGenreEntity filmGenreEntity = new FilmGenreEntity
+                foreach (Genre genre in film.Genres)
                 {
-                    FilmId = filmEntity.Id,
-                    GenreId = genre.Id
-                };
+                    FilmGenreEntity filmGenreEntity = new FilmGenreEntity
+                    {
+                        FilmId = filmEntity.Id,
+                        GenreId = genre.Id
+                    };
 
-                await _unitOfWork.FilmGenresRepository.InsertAsync(filmGenreEntity);
-                await _unitOfWork.SaveAsync();
-
-                filmEntity.Genres.Add(filmGenreEntity);
-                await _unitOfWork.FilmsRepository.UpdateAsync(filmEntity.Id);
-                await _unitOfWork.SaveAsync();
+                    await _unitOfWork.FilmGenresRepository.InsertAsync(filmGenreEntity);
+                    await _unitOfWork.SaveAsync();
+                }
             }
 
             return filmEntity.ToModel();

@@ -9,14 +9,16 @@ namespace CinemaProject.DAL.Entities
     {
         public Guid Id { get; set; }
         public Guid HallId { get; set; }
-        public Guid TypeOfSeatId { get; set; }
+        public Guid? TypeOfSeatId { get; set; }
         public int NumberOfSeat { get; set; }
         public int Row { get; set; }
         public int Column { get; set; }
 
-        public TypeOfSeatEntity TypeOfSeat { get; set; }
-        public HallEntity Hall { get; set; }
+#nullable enable
+        public TypeOfSeatEntity? TypeOfSeat { get; set; }
+        public IList<TicketSeatEntity>? SeatReservations { get; set; }
 
-        public IList<TicketSeatEntity> SeatReservations { get; set; }
+#nullable disable
+        public HallEntity Hall { get; set; }
     }
 }
