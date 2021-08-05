@@ -21,21 +21,18 @@ export class CitiesService {
 
   constructor(private http: HttpClient) {}
 
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
+  private handleError<City>(operation = 'operation', result?: City) {
+    return (error: any): Observable<City> => {
       console.error(error);
       console.log(`${operation} failed: ${error.message}`);
-      return of(result as T);
+      return of(result as City);
     };
   }
 
-  getAll() {
-    this.http
+  getAll(): Observable<City[]> {
+    return this.http
       .get<City[]>(this.url)
-      .pipe(catchError(this.handleError<City[]>('getCities', [])))
-      .subscribe((cities) => {
-        this.data.next(cities);
-      });
+      .pipe(catchError(this.handleError<City[]>('getCities', [])));
   }
 
   add(city: City): Observable<City> {

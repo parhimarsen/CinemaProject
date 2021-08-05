@@ -17,7 +17,8 @@ import { Film, FilmView } from '../Models/film';
 export class FilmsService {
   url = 'https://localhost:44356/api/Films';
 
-  data = new BehaviorSubject<Film[]>([]);
+  isComplited = new BehaviorSubject<boolean>(false);
+
   films: Film[];
   filmsView: FilmView[];
   source: LocalDataSource;
@@ -41,13 +42,10 @@ export class FilmsService {
     };
   }
 
-  private getAll() {
-    this.http
+  getAll(): Observable<Film[]> {
+    return this.http
       .get<Film[]>(this.url)
-      .pipe(catchError(this.handleError<Film[]>('getFilms', [])))
-      .subscribe((films) => {
-        this.data.next(films);
-      });
+      .pipe(catchError(this.handleError<Film[]>('getFilms', [])));
   }
 
   private postRequest(film: Film): Observable<Film> {
@@ -93,10 +91,11 @@ export class FilmsService {
   }
 
   refreshData() {
-    this.data.subscribe((films) => {
+    this.getAll().subscribe((films) => {
       this.films = films;
       this.filmsView = this.convertFilmToView(this.films);
       this.source = new LocalDataSource(this.filmsView);
+      this.isComplited.next(true);
     });
     this.settings = {
       add: {
@@ -157,7 +156,6 @@ export class FilmsService {
         },
       },
     };
-    this.getAll();
   }
 
   onSearch(query: string) {
@@ -198,10 +196,19 @@ export class FilmsService {
 
   add(event: any): void {
     let newFilm = event.newData;
+    let isValid = true;
 
     for (let key in newFilm) {
-      if (newFilm[key] !== null) newFilm[key] = newFilm[key].trim();
+      if (key === 'id') continue;
+      if (newFilm[key] === '') {
+        isValid = false;
+        break;
+      }
+
+      newFilm[key] = newFilm[key].trim();
     }
+
+    if (!isValid) return;
 
     //Film without Id
     newFilm = {

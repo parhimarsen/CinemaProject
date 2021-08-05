@@ -11,6 +11,7 @@ class HallView {
     public id: number,
     public name: string,
     public cinemaId: string,
+    public cinemaName: string,
     public guidId: string
   ) {}
 }

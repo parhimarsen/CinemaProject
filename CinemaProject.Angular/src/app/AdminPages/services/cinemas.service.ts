@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { zip } from 'rxjs';
+import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CitiesService } from './cities.service';
 import { SelectComponent } from '../MainPage/custom/select/select.component';
+import { InputComponent } from '../MainPage/custom/input/input.component';
+import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 
 import { Cinema, CinemaView } from '../Models/cinema';
 import { City } from '../Models/city';
 import { HallView } from '../Models/hall';
+import { TypeOfSeat } from '../Models/typeOfSeat';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +25,7 @@ export class CinemasService {
   source: LocalDataSource;
   settings: any;
 
-  data = new BehaviorSubject<Cinema[]>([]);
+  isComplited = new BehaviorSubject<boolean>(false);
 
   cinemas: Cinema[];
   cities: City[];
@@ -48,13 +50,10 @@ export class CinemasService {
     };
   }
 
-  private getAll() {
-    this.http
+  getAll(): Observable<Cinema[]> {
+    return this.http
       .get<Cinema[]>(this.url)
-      .pipe(catchError(this.handleError<Cinema[]>('getCinemas', [])))
-      .subscribe((cinemas) => {
-        this.data.next(cinemas);
-      });
+      .pipe(catchError(this.handleError<Cinema[]>('getCinemas', [])));
   }
 
   private postRequest(cinema: Cinema): Observable<Cinema> {
@@ -91,7 +90,13 @@ export class CinemasService {
           cinema
             .halls!.sort((a, b) => parseInt(a.name) - parseInt(b.name))
             .map((hall, hallIndex) => {
-              return new HallView(hallIndex + 1, hall.name, cinema.id, hall.id);
+              return new HallView(
+                hallIndex + 1,
+                hall.name,
+                cinema.id,
+                cinema.name,
+                hall.id
+              );
             }),
           cinema.id,
           cityName
@@ -102,9 +107,13 @@ export class CinemasService {
 
   refreshData() {
     //Need to initialize cities earlier then cinemas
-    zip(this.data, this.citiesService.data).subscribe(([cinemas, cities]) => {
-      this.cities = cities;
-      this.cinemas = cinemas;
+    forkJoin({
+      cinemas: this.getAll(),
+      cities: this.citiesService.getAll(),
+    }).subscribe((response) => {
+      this.cities = response.cities;
+      this.cinemas = response.cinemas;
+      console.log(this.cinemas);
       this.cinemasView = this.convertCinemasToView(this.cinemas);
       /* 
         Need to Get cities to set drop-down list:
@@ -132,17 +141,17 @@ export class CinemasService {
           name: {
             title: 'Name',
             filter: false,
+            editor: {
+              type: 'custom',
+              component: InputComponent,
+            },
           },
           cityName: {
             title: 'City',
             filter: false,
             editor: {
-              type: 'list',
-              config: {
-                list: this.cities.map((city) => {
-                  return { value: city.name, title: city.name };
-                }),
-              },
+              type: 'custom',
+              component: SelectEditComponent,
             },
           },
           halls: {
@@ -160,13 +169,8 @@ export class CinemasService {
         },
       };
       this.source = new LocalDataSource(this.cinemasView);
+      this.isComplited.next(true);
     });
-
-    this.citiesService.data.subscribe((cities: City[]) => {
-      this.cities = cities;
-    });
-    this.citiesService.getAll();
-    this.getAll();
   }
 
   onSearch(query: string) {
@@ -195,10 +199,18 @@ export class CinemasService {
 
   add(event: any): void {
     let cinema = event.newData;
+    let isValid = true;
 
     for (let key in cinema) {
-      if (cinema[key] !== null) cinema[key] = cinema[key].trim();
+      if (key === 'id' || key === 'halls') continue;
+      if (cinema[key] === '') {
+        isValid = false;
+        break;
+      }
+      cinema[key] = cinema[key].trim();
     }
+
+    if (!isValid) return;
 
     let cityName: string = cinema.cityName!;
     let cityId = this.cities.find((city) => city.name === cityName)?.id;
@@ -206,22 +218,58 @@ export class CinemasService {
     if (cityId !== undefined) {
       let newCinema = { name: cinema.name, cityId: cityId };
       if (!newCinema) return;
-      this.postRequest(newCinema as Cinema).subscribe(() => {
-        this.refreshData();
+      this.postRequest(newCinema as Cinema).subscribe((cinema) => {
+        let newTypeOfSeat = {
+          cinemaId: cinema.id,
+          name: 'Common',
+          extraPaymentPercent: 0,
+        };
+        this.http
+          .post<TypeOfSeat>(
+            'https://localhost:44356/api/TypesOfSeat',
+            newTypeOfSeat,
+            this.httpOptions
+          )
+          .subscribe(() => {
+            this.refreshData();
+          });
       });
     }
   }
 
   delete(event: any): void {
-    let cinema = event.data;
-
-    this.deleteRequest(cinema.guidId).subscribe(() => {
-      this.refreshData();
-    });
+    let deletedCinema: any = this.cinemas.find(
+      (cinema) => cinema.id === event.data.guidId
+    )!;
+    console.log(deletedCinema);
+    this.http
+      .post<TypeOfSeat>(
+        `${this.url}/${deletedCinema.id}/TypesOfSeatRange`,
+        deletedCinema.typesOfSeat,
+        this.httpOptions
+      )
+      .subscribe(() => {
+        this.deleteRequest(deletedCinema.id).subscribe(() => {
+          this.refreshData();
+        });
+      });
   }
 
   edit(event: any): void {
     let newCinema = event.newData;
+
+    let isValid = true;
+
+    for (let key in newCinema) {
+      if (key === 'id' || key === 'halls') continue;
+      if (newCinema[key] === '') {
+        isValid = false;
+        break;
+      }
+      newCinema[key] = newCinema[key].trim();
+    }
+
+    if (!isValid) return;
 
     let cityId = this.cities.find((city) => {
       return city.name === newCinema.cityName;
