@@ -187,3 +187,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-accent{
     background-color: #0d6efd !important;
 }
+
+.mat-form-field-wrapper{
+    margin-bottom: 0!important;
+}
+
+.ngx-mat-timepicker-tbody .mat-form-field-wrapper {
+    margin-right: 0px;
+}
+
+.ngx-mat-timepicker-tbody .mat-form-field-flex {
+    width: 15px !important;
+}

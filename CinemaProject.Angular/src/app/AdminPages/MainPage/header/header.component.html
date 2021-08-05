@@ -36,7 +36,6 @@
             <ul
               class="dropdown-menu text-small"
               aria-labelledby="dropdownUser1"
-              style=""
             >
               <li><a class="dropdown-item" href="#">New project...</a></li>
               <li><a class="dropdown-item" href="#">Settings</a></li>
@@ -54,23 +53,25 @@
           </button>
         </div>
       </div>
-      <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+      <div class="navbar-collapse collapse" id="navbarCollapse">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
-          <li class="nav-item">
+          <li class="nav-item" *ngFor="let table of tables">
             <a
+              *ngIf="table.isActive === true"
               class="nav-link active"
               aria-current="page"
-              href="http://localhost:4200/admin/cinemas"
-              >Cinemas</a
+              href="http://localhost:4200/admin/{{ table.name.toLowerCase() }}"
+              (click)="selectTable(table)"
+              >{{ editedNames[tables.indexOf(table)] }}</a
             >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="http://localhost:4200/admin/films"
-              >Films</a
+            <a
+              *ngIf="table.isActive === false"
+              class="nav-link"
+              aria-current="page"
+              href="http://localhost:4200/admin/{{ table.name.toLowerCase() }}"
+              (click)="selectTable(table)"
+              >{{ editedNames[tables.indexOf(table)] }}</a
             >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Sessions</a>
           </li>
         </ul>
       </div>

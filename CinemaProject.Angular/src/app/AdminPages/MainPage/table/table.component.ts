@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
+import { HeaderService } from '../../services/header.service';
 
 @Component({
   selector: 'app-table',
@@ -16,13 +17,15 @@ export class TableComponent implements OnInit {
   //Table data source
   source = new LocalDataSource();
 
-  constructor() {}
+  constructor(private headerService: HeaderService) {}
 
   ngOnInit(): void {
+    let url = this.service.url.split('/');
+    this.headerService.selectTable({ name: url[url.length - 1] });
     //Update data source of service
     this.service.refreshData();
     //Get data source and settings from service
-    this.service.data.subscribe(() => {
+    this.service.isComplited.subscribe(() => {
       this.source = this.service.source;
       this.settings = Object.assign({}, this.service.settings);
     });

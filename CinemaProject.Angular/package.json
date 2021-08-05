@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "@akveo/ng2-completer": "^9.0.1",
+    "@angular-material-components/datetime-picker": "^6.0.3",
     "@angular-material-extensions/input-counter": "^0.1.1",
     "@angular/animations": "~12.0.1",
     "@angular/cdk": "^12.1.3",
