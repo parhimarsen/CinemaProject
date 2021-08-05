@@ -1,0 +1,40 @@
+<mat-form-field appearance="fill">
+  <mat-label>Choose a date</mat-label>
+  <div [formGroup]="formGroup">
+    <input
+      formControlName="value"
+      [(ngModel)]="dateTime"
+      matInput
+      [ngxMatDatetimePicker]="picker"
+      [name]="cell.getId()"
+      [disabled]="!cell.isEditable()"
+      (click)="onClick.emit($event)"
+      (ngModelChange)="updateValue()"
+      (keydown.enter)="onEdited.emit($event)"
+      (keydown.esc)="onStopEditing.emit()"
+    />
+  </div>
+  <mat-datepicker-toggle
+    class="date-time-picker"
+    matSuffix
+    [for]="$any(picker)"
+  ></mat-datepicker-toggle>
+  <ngx-mat-datetime-picker
+    #picker
+    [showSpinners]="true"
+    [showSeconds]="false"
+    [stepHour]="1"
+    [stepMinute]="1"
+    [stepSecond]="1"
+    [touchUi]="false"
+    [enableMeridian]="false"
+    [disableMinute]="false"
+    [hideTime]="false"
+  >
+  </ngx-mat-datetime-picker>
+  <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
+</mat-form-field>
+
+<mat-error *ngIf="formGroup.controls['value'].hasError('required')">
+  <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
+</mat-error>
