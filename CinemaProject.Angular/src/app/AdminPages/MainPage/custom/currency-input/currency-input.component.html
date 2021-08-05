@@ -1,0 +1,22 @@
+<mat-form-field class="example-form-field" appearance="fill">
+  <div [formGroup]="formGroup">
+    <input
+      [(ngModel)]="value"
+      formControlName="value"
+      (blur)="transformValue($event)"
+      matInput
+      type="text"
+      [name]="cell.getId()"
+      [disabled]="!cell.isEditable()"
+      [placeholder]="cell.getTitle()"
+      (click)="onClick.emit($event)"
+      (keyup)="updateValue()"
+      (keydown.enter)="onEdited.emit($event)"
+      (keydown.esc)="onStopEditing.emit()"
+    />
+  </div>
+  <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
+</mat-form-field>
+<mat-error *ngIf="formGroup.controls['value'].hasError('required')">
+  <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
+</mat-error>
