@@ -1,0 +1,18 @@
+<mat-form-field appearance="fill">
+  <mat-label>{{ cell.getTitle() }}</mat-label>
+  <div [formGroup]="formGroup">
+    <mat-select
+      formControlName="value"
+      [(ngModel)]="selectedValue"
+      (selectionChange)="updateItem($event)"
+    >
+      <mat-option *ngFor="let v of value" [value]="v.name">{{
+        v.name
+      }}</mat-option>
+    </mat-select>
+  </div>
+  <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
+</mat-form-field>
+<mat-error *ngIf="formGroup.controls['value'].hasError('required')">
+  <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
+</mat-error>
