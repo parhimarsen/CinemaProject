@@ -89,7 +89,7 @@ export class SessionsService {
       });
     });
     return sessions
-      .map((session, sessionIndex) => {
+      .map((session) => {
         let filmName = this.films.find((film) => {
           return film.id === session.filmId;
         })?.name;
@@ -100,7 +100,7 @@ export class SessionsService {
           return cinema.id === hallOfSession.cinemaId;
         })!;
         return new SessionView(
-          sessionIndex + 1,
+          session.id,
           new Intl.NumberFormat('fr-BR', {
             style: 'currency',
             currency: 'BYN',
@@ -109,11 +109,18 @@ export class SessionsService {
           this.formatDate(session.showEnd),
           cinemaOfSession?.name,
           hallOfSession.name,
-          filmName!,
-          session.id
+          filmName!
         );
       })
-      .sort((a, b) => a.id - b.id);
+      .sort((a, b) => {
+        if (a.showStart < b.showStart) {
+          return 1;
+        }
+        if (a.showStart > b.showStart) {
+          return -1;
+        }
+        return 0;
+      });
   }
 
   private formatDate(date: Date): string {
@@ -146,12 +153,6 @@ export class SessionsService {
           confirmSave: true,
         },
         columns: {
-          id: {
-            title: 'ID',
-            filter: false,
-            addable: false,
-            editable: false,
-          },
           filmName: {
             title: 'Film',
             filter: false,
@@ -205,12 +206,40 @@ export class SessionsService {
     });
   }
 
+  onSearch(query: string) {
+    if (query === '') {
+      this.source.setFilter([]);
+    } else {
+      this.source.setFilter(
+        [
+          {
+            field: 'cost',
+            search: query,
+          },
+          {
+            field: 'hallName',
+            search: query,
+          },
+          {
+            field: 'cinemaName',
+            search: query,
+          },
+          {
+            field: 'filmName',
+            search: query,
+          },
+        ],
+        false
+      );
+    }
+  }
+
   add(event: any): void {
     let newSession = event.newData;
     let isValid = true;
 
     for (let key in newSession) {
-      if (key === 'id' || key === 'showEnd') continue;
+      if (key === 'showEnd') continue;
       if (newSession[key] === '') {
         isValid = false;
         break;
@@ -241,7 +270,7 @@ export class SessionsService {
   delete(event: any): void {
     let session = event.data;
 
-    this.deleteRequest(session.guidId).subscribe(() => {
+    this.deleteRequest(session.id).subscribe(() => {
       this.refreshData();
     });
   }
@@ -251,7 +280,7 @@ export class SessionsService {
     let isValid = true;
 
     for (let key in newSession) {
-      if (key === 'id' || key === 'showEnd') continue;
+      if (key === 'showEnd') continue;
       if (newSession[key] === '') {
         isValid = false;
         break;
@@ -271,7 +300,7 @@ export class SessionsService {
       (hall) => hall.name === newSession.hallName
     );
     let editableTypeOfSeat = new Session(
-      newSession.guidId,
+      newSession.id,
       parseFloat(newSession.cost.replace(',', '.')),
       newSession.showStart,
       newSession.showStart,

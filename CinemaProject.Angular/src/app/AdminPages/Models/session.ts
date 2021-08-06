@@ -11,14 +11,13 @@ class Session {
 
 class SessionView {
   constructor(
-    public id: number,
+    public id: string,
     public cost: string,
     public showStart: string,
     public showEnd: string,
     public cinemaName: string,
     public hallName: string,
-    public filmName: string,
-    private guidId: string
+    public filmName: string
   ) {}
 }
 

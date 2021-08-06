@@ -77,6 +77,17 @@ export class HallsService {
       .pipe(catchError(this.handleError<Hall>('addHall')));
   }
 
+  postSeatsRangeRequest(
+    hallId: string,
+    seatsRange: Seat[]
+  ): Observable<Seat[]> {
+    return this.http.post<Seat[]>(
+      `${this.url}/${hallId}/Seats`,
+      seatsRange,
+      this.httpOptions
+    );
+  }
+
   private deleteRequest(id: string): Observable<Hall> {
     const url = `${this.url}/${id}`;
 
@@ -85,26 +96,39 @@ export class HallsService {
       .pipe(catchError(this.handleError<Hall>('deleteHall')));
   }
 
+  deleteSeatsRangeRequest(
+    hallId: string,
+    seatsRange: Seat[]
+  ): Observable<Seat[]> {
+    return this.http.post<Seat[]>(
+      `${this.url}/${hallId}/SeatsRange`,
+      seatsRange,
+      this.httpOptions
+    );
+  }
+
   private putRequest(hall: Hall): Observable<any> {
     return this.http
       .put(this.url, hall, this.httpOptions)
       .pipe(catchError(this.handleError<any>('updateHall')));
   }
 
+  putSeatsRangeRequest(hallId: string, seatsRange: Seat[]): Observable<any> {
+    return this.http.put(
+      `${this.url}/${hallId}/Seats`,
+      seatsRange,
+      this.httpOptions
+    );
+  }
+
   //Halls are sorted by Cinema's names
   private convertHallsToView(halls: Hall[], cinemas: Cinema[]): HallView[] {
     return halls
-      .map((hall, hallIndex) => {
+      .map((hall) => {
         let cinemaName = cinemas.find(
           (cinema) => cinema.id === hall.cinemaId
         )?.name;
-        return new HallView(
-          hallIndex + 1,
-          hall.name,
-          hall.id,
-          cinemaName!,
-          hall.id
-        );
+        return new HallView(hall.id, hall.name, hall.id, cinemaName!);
       })
       .sort((a, b) => {
         if (a.cinemaName > b.cinemaName) {
@@ -143,12 +167,6 @@ export class HallsService {
           confirmSave: true,
         },
         columns: {
-          id: {
-            title: 'ID',
-            filter: false,
-            addable: false,
-            editable: false,
-          },
           name: {
             title: 'Name',
             filter: false,
@@ -179,10 +197,6 @@ export class HallsService {
       this.source.setFilter(
         [
           {
-            field: 'id',
-            search: query,
-          },
-          {
             field: 'name',
             search: query,
           },
@@ -203,7 +217,6 @@ export class HallsService {
     let isValid = true;
 
     for (let key in hall) {
-      if (key === 'id') continue;
       if (hall[key] === '') {
         isValid = false;
         break;
@@ -231,7 +244,7 @@ export class HallsService {
   delete(event: any): void {
     let hall = event.data;
 
-    this.deleteRequest(hall.guidId).subscribe(() => {
+    this.deleteRequest(hall.id).subscribe(() => {
       this.refreshData();
     });
   }
@@ -242,7 +255,6 @@ export class HallsService {
     let isValid = true;
 
     for (let key in newHall) {
-      if (key === 'id') continue;
       if (newHall[key] === '') {
         isValid = false;
         break;
@@ -257,7 +269,7 @@ export class HallsService {
     })?.id;
 
     if (cinemaId !== undefined) {
-      newHall = new Hall(newHall.guidId, newHall.name, cinemaId);
+      newHall = new Hall(newHall.id, newHall.name, cinemaId);
       this.putRequest(newHall).subscribe(() => {
         this.refreshData();
       });

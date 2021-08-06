@@ -57,7 +57,7 @@ export class TypesOfSeatService {
     };
   }
 
-  private getAll(): Observable<TypeOfSeat[]> {
+  getAll(): Observable<TypeOfSeat[]> {
     return this.http
       .get<TypeOfSeat[]>(this.url)
       .pipe(catchError(this.handleError<TypeOfSeat[]>('getTypesOfSeat', [])));
@@ -87,17 +87,16 @@ export class TypesOfSeatService {
     typesOfSeat: TypeOfSeat[]
   ): TypeOfSeatView[] {
     return typesOfSeat
-      .map((typeOfSeat, typeOfSeatIndex) => {
+      .map((typeOfSeat) => {
         let cinemaName = this.cinemas.find(
           (cinema) => cinema.id === typeOfSeat.cinemaId
         )?.name;
         return new TypeOfSeatView(
-          typeOfSeatIndex + 1,
+          typeOfSeat.id,
           cinemaName!,
           typeOfSeat.name,
           typeOfSeat.extraPaymentPercent + ' %',
-          '',
-          typeOfSeat.id
+          ''
         );
       })
       .sort((a, b) => {
@@ -107,10 +106,10 @@ export class TypesOfSeatService {
         if (a.cinemaName < b.cinemaName) {
           return -1;
         }
-        if (a.id > b.id) {
+        if (a.name > b.name) {
           return 1;
         }
-        if (a.id < b.id) {
+        if (a.name < b.name) {
           return -1;
         }
         return 0;
@@ -137,12 +136,6 @@ export class TypesOfSeatService {
           confirmSave: true,
         },
         columns: {
-          id: {
-            title: 'ID',
-            filter: false,
-            addable: false,
-            editable: false,
-          },
           cinemaName: {
             title: 'Cinema',
             filter: false,
@@ -218,7 +211,7 @@ export class TypesOfSeatService {
             seats.forEach((seat) => {
               if (seat.typeOfSeatId === null) {
                 seat.typeOfSeatId = commonTypeOfSeat!.id;
-                this.seatsService.update(seat).subscribe();
+                this.seatsService.putSeatRequest(seat).subscribe();
               }
             });
           });
@@ -228,7 +221,7 @@ export class TypesOfSeatService {
     }
 
     if (typeOfSeat.name !== 'Common') {
-      this.deleteRequest(typeOfSeat.guidId).subscribe(() => {
+      this.deleteRequest(typeOfSeat.id).subscribe(() => {
         this.refreshData();
       });
     }
@@ -254,7 +247,7 @@ export class TypesOfSeatService {
       (cinema) => cinema.name === typeOfSeat.cinemaName
     );
     let newTypeOfSeat = {
-      id: typeOfSeat.guidId,
+      id: typeOfSeat.id,
       cinemaId: cinema!.id,
       name: typeOfSeat.name,
       extraPaymentPercent: typeOfSeat.extraPaymentPercent.slice(0, -2),

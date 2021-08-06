@@ -11,10 +11,9 @@ class Cinema {
 
 class CinemaView {
   constructor(
-    public id: number,
+    private id: string,
     public name: string,
     public halls: HallView[],
-    private guidId: string,
     public cityName?: string
   ) {}
 }

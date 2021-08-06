@@ -8,11 +8,10 @@ class Hall {
 
 class HallView {
   constructor(
-    public id: number,
+    public id: string,
     public name: string,
     public cinemaId: string,
-    public cinemaName: string,
-    public guidId: string
+    public cinemaName: string
   ) {}
 }
 

@@ -7,3 +7,8 @@ span{
     flex-grow: 1;
     flex-basis: 0;
 }
+
+.custom-duration-picker{
+    background-color: rgba(0, 0, 0, 0.04);
+    width: 100px;
+}

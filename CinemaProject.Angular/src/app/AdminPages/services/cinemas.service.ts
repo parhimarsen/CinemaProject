@@ -70,6 +70,19 @@ export class CinemasService {
       .pipe(catchError(this.handleError<Cinema>('deleteCinema')));
   }
 
+  private deleteTypesOfSeatRangeRequest(
+    id: string,
+    typesOfSeat: TypeOfSeat[]
+  ): Observable<any> {
+    return this.http
+      .post<TypeOfSeat>(
+        `${this.url}/${id}/TypesOfSeatRange`,
+        typesOfSeat,
+        this.httpOptions
+      )
+      .pipe(catchError(this.handleError<Cinema>('deleteTypesOfSeat')));
+  }
+
   private putRequest(cinema: Cinema): Observable<any> {
     return this.http
       .put(this.url, cinema, this.httpOptions)
@@ -80,29 +93,36 @@ export class CinemasService {
   //Display priority depends on Id and not on Guid
   private convertCinemasToView(cinemas: Cinema[]): CinemaView[] {
     return cinemas
-      .map((cinema, cinemaIndex) => {
+      .map((cinema) => {
         let cityName = this.cities.find((city) => {
           return city.id === cinema.cityId;
         })?.name;
         return new CinemaView(
-          cinemaIndex + 1,
+          cinema.id,
           cinema.name,
           cinema
             .halls!.sort((a, b) => parseInt(a.name) - parseInt(b.name))
-            .map((hall, hallIndex) => {
-              return new HallView(
-                hallIndex + 1,
-                hall.name,
-                cinema.id,
-                cinema.name,
-                hall.id
-              );
+            .map((hall) => {
+              return new HallView(hall.id, hall.name, cinema.id, cinema.name);
             }),
-          cinema.id,
           cityName
         );
       })
-      .sort((a, b) => a.id - b.id);
+      .sort((a, b) => {
+        if (a.cityName! > b.cityName!) {
+          return 1;
+        }
+        if (a.cityName! < b.cityName!) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        return 0;
+      });
   }
 
   refreshData() {
@@ -132,12 +152,6 @@ export class CinemasService {
           confirmSave: true,
         },
         columns: {
-          id: {
-            title: 'ID',
-            filter: false,
-            addable: false,
-            editable: false,
-          },
           name: {
             title: 'Name',
             filter: false,
@@ -180,10 +194,6 @@ export class CinemasService {
       this.source.setFilter(
         [
           {
-            field: 'id',
-            search: query,
-          },
-          {
             field: 'name',
             search: query,
           },
@@ -202,7 +212,7 @@ export class CinemasService {
     let isValid = true;
 
     for (let key in cinema) {
-      if (key === 'id' || key === 'halls') continue;
+      if (key === 'halls') continue;
       if (cinema[key] === '') {
         isValid = false;
         break;
@@ -239,20 +249,18 @@ export class CinemasService {
 
   delete(event: any): void {
     let deletedCinema: any = this.cinemas.find(
-      (cinema) => cinema.id === event.data.guidId
+      (cinema) => cinema.id === event.data.id
     )!;
     console.log(deletedCinema);
-    this.http
-      .post<TypeOfSeat>(
-        `${this.url}/${deletedCinema.id}/TypesOfSeatRange`,
-        deletedCinema.typesOfSeat,
-        this.httpOptions
-      )
-      .subscribe(() => {
-        this.deleteRequest(deletedCinema.id).subscribe(() => {
-          this.refreshData();
-        });
+    this.deleteTypesOfSeatRangeRequest(
+      deletedCinema.id,
+      deletedCinema.typesOfSeat
+    ).subscribe(() => {
+      this;
+      this.deleteRequest(deletedCinema.id).subscribe(() => {
+        this.refreshData();
       });
+    });
   }
 
   edit(event: any): void {
@@ -261,7 +269,7 @@ export class CinemasService {
     let isValid = true;
 
     for (let key in newCinema) {
-      if (key === 'id' || key === 'halls') continue;
+      if (key === 'halls') continue;
       if (newCinema[key] === '') {
         isValid = false;
         break;
@@ -276,7 +284,7 @@ export class CinemasService {
     })?.id;
 
     if (cityId !== undefined) {
-      newCinema = new Cinema(newCinema.guidId, newCinema.name, cityId, null);
+      newCinema = new Cinema(newCinema.id, newCinema.name, cityId, null);
       this.putRequest(newCinema).subscribe(() => {
         this.refreshData();
       });

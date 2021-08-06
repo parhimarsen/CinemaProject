@@ -76,18 +76,25 @@ export class FilmsService {
 
   private convertFilmToView(films: Film[]): FilmView[] {
     return films
-      .map((film, index) => {
+      .map((film) => {
         return new FilmView(
-          index + 1,
+          film.id,
           film.name,
           film.country,
           this.formatDate(film.releaseDate),
           film.duration,
-          film.director,
-          film.id
+          film.director
         );
       })
-      .sort((a, b) => a.id - b.id);
+      .sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        return 0;
+      });
   }
 
   refreshData() {
@@ -108,12 +115,6 @@ export class FilmsService {
         confirmSave: true,
       },
       columns: {
-        id: {
-          title: 'ID',
-          filter: false,
-          addable: false,
-          editable: false,
-        },
         name: {
           title: 'Name',
           filter: false,
@@ -165,10 +166,6 @@ export class FilmsService {
       this.source.setFilter(
         [
           {
-            field: 'id',
-            search: query,
-          },
-          {
             field: 'name',
             search: query,
           },
@@ -199,7 +196,6 @@ export class FilmsService {
     let isValid = true;
 
     for (let key in newFilm) {
-      if (key === 'id') continue;
       if (newFilm[key] === '') {
         isValid = false;
         break;
@@ -227,23 +223,35 @@ export class FilmsService {
   delete(event: any): void {
     let film = event.data;
 
-    this.deleteRequest(film.guidId).subscribe(() => {
+    this.deleteRequest(film.id).subscribe(() => {
       this.refreshData();
     });
   }
 
   edit(event: any): void {
     let newFilm = event.newData;
+    let isValid = true;
+
+    for (let key in newFilm) {
+      if (newFilm[key] === '') {
+        isValid = false;
+        break;
+      }
+
+      newFilm[key] = newFilm[key].trim();
+    }
+
+    if (!isValid) return;
 
     newFilm = new Film(
-      newFilm.guidId,
+      newFilm.id,
       newFilm.name,
       newFilm.country,
       newFilm.releaseDate,
       newFilm.duration,
       newFilm.director
     );
-    this.putRequest(newFilm).subscribe(() => {
+    this.putRequest(newFilm as Film).subscribe(() => {
       this.refreshData();
     });
   }

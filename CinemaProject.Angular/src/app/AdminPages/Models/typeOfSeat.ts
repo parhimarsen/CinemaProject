@@ -10,12 +10,11 @@ class TypeOfSeat {
 
 class TypeOfSeatView {
   constructor(
-    public id: number,
+    public id: string,
     public cinemaName: string,
     public name: string,
     public extraPaymentPercent: string,
-    public color: string,
-    private guidId: string
+    public color: string
   ) {}
 }
 

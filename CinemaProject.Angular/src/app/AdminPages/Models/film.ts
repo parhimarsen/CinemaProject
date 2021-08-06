@@ -11,12 +11,11 @@ export class Film {
 
 export class FilmView {
   constructor(
-    public id: number,
+    public id: string,
     public name: string,
     public country: string,
     public releaseDate: string,
     public duration: string,
-    public director: string,
-    private guidId: string
+    public director: string
   ) {}
 }

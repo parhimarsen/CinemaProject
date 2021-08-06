@@ -35,13 +35,13 @@ export class SeatsService {
       .pipe(catchError(this.handleError<Seat[]>('getSeats', [])));
   }
 
-  add(seat: Seat): Observable<Seat> {
+  postSeatRequest(seat: Seat): Observable<Seat> {
     return this.http
       .post<Seat>(this.url, seat, this.httpOptions)
       .pipe(catchError(this.handleError<Seat>('addSeat')));
   }
 
-  delete(id: string): Observable<Seat> {
+  deleteSeatRequest(id: string): Observable<Seat> {
     const url = `${this.url}/${id}`;
 
     return this.http
@@ -49,7 +49,7 @@ export class SeatsService {
       .pipe(catchError(this.handleError<Seat>('deleteSeat')));
   }
 
-  update(seat: Seat): Observable<any> {
+  putSeatRequest(seat: Seat): Observable<any> {
     return this.http
       .put(this.url, seat, this.httpOptions)
       .pipe(catchError(this.handleError<any>('updateSeat')));

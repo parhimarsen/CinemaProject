@@ -70,18 +70,25 @@ export class ServicesService {
 
   private convertServicesToView(services: Service[]): ServiceView[] {
     return services
-      .map((service, serviceIndex) => {
+      .map((service) => {
         return new ServiceView(
-          serviceIndex + 1,
+          service.id,
           service.name,
           new Intl.NumberFormat('fr-BR', {
             style: 'currency',
             currency: 'BYN',
-          }).format(parseFloat(service.cost.toFixed(2))),
-          service.id
+          }).format(parseFloat(service.cost.toFixed(2)))
         );
       })
-      .sort((a, b) => a.id - b.id);
+      .sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        return 0;
+      });
   }
 
   refreshData() {
@@ -101,12 +108,6 @@ export class ServicesService {
           confirmSave: true,
         },
         columns: {
-          id: {
-            title: 'ID',
-            filter: false,
-            addable: false,
-            editable: false,
-          },
           name: {
             title: 'Name',
             filter: false,
@@ -137,10 +138,6 @@ export class ServicesService {
       this.source.setFilter(
         [
           {
-            field: 'id',
-            search: query,
-          },
-          {
             field: 'name',
             search: query,
           },
@@ -159,7 +156,6 @@ export class ServicesService {
     let isValid = true;
 
     for (let key in service) {
-      if (key === 'id') continue;
       if (service[key] === '') {
         isValid = false;
         break;
@@ -185,7 +181,7 @@ export class ServicesService {
   delete(event: any): void {
     let service = event.data;
 
-    this.deleteRequest(service.guidId).subscribe(() => {
+    this.deleteRequest(service.id).subscribe(() => {
       this.refreshData();
     });
   }
@@ -195,7 +191,6 @@ export class ServicesService {
     let isValid = true;
 
     for (let key in service) {
-      if (key === 'id') continue;
       if (service[key] === '') {
         isValid = false;
         break;
@@ -206,7 +201,7 @@ export class ServicesService {
     if (!isValid) return;
 
     service = new Service(
-      service.guidId,
+      service.id,
       service.name,
       service.cost.replace(/\s/g, '').replace('BYN', '').replace(',', '.')
     );

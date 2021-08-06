@@ -3,12 +3,7 @@ class Service {
 }
 
 class ServiceView {
-  constructor(
-    public id: number,
-    public name: string,
-    public cost: string,
-    private guidId: string
-  ) {}
+  constructor(public id: string, public name: string, public cost: string) {}
 }
 
 export { Service, ServiceView };
