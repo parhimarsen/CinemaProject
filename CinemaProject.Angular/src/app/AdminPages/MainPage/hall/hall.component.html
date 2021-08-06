@@ -1,0 +1,127 @@
+<div class="custom-container">
+  <app-admin-header></app-admin-header>
+  <div class="d-flex container mt-5 h-75">
+    <div
+      class="
+        custom-seats-schema-container
+        d-flex
+        flex-column
+        align-items-center
+      "
+      id="schema"
+    >
+      <div
+        class="d-flex justify-content-start w-100"
+        *ngFor="let seatsOfRow of seatsByRows"
+      >
+        <span class="d-flex align-items-center ms-2">
+          {{ seatsByRows.length - seatsByRows.indexOf(seatsOfRow) }}</span
+        >
+        <div class="custom-seats-row d-flex justify-content-center w-100">
+          <app-seat
+            *ngFor="let seat of seatsOfRow"
+            (onSelectSeat)="changeSelectedSeat($event)"
+            [seat]="seat"
+          ></app-seat>
+        </div>
+      </div>
+    </div>
+    <div class="custom-seats-schema-functions-container d-flex flex-column">
+      <div
+        class="
+          custom-rows-functions
+          d-flex
+          flex-column
+          align-items-center
+          justify-content-center
+        "
+      >
+        <div class="mb-3">
+          <h2>Types Of Seats:</h2>
+          <div
+            class="d-flex flex-column align-items-center"
+            *ngFor="let typeOfSeat of typesOfSeat"
+          >
+            <div class="d-flex align-items-center">
+              <div
+                class="typeOfSeat"
+                [ngStyle]="{ 'background-color': typeOfSeat.color }"
+              ></div>
+              <span>- {{ typeOfSeat.name }}</span>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary mb-3 me-2"
+          (click)="addNewRow()"
+        >
+          Add New Row
+        </button>
+        <div class="d-flex align-items-center">
+          <mat-form-field appearance="fill">
+            <mat-label>Select row</mat-label>
+            <mat-select (selectionChange)="changeRow($event)">
+              <mat-option
+                *ngFor="let seatsOfRow of seatsByRows"
+                [value]="seatsByRows.indexOf(seatsOfRow) + 1"
+                >{{ seatsByRows.indexOf(seatsOfRow) + 1 }}</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+          <button
+            *ngIf="row"
+            type="button"
+            class="btn btn-primary me-2"
+            (click)="deleteRow()"
+          >
+            Delete
+          </button>
+        </div>
+        <div
+          *ngIf="
+            row &&
+            maxValue >
+              this.seatsByRows[this.seatsByRows.length - this.row].length
+          "
+          class="d-flex flex-column align-items-center"
+        >
+          <mat-input-counter
+            [min]="1"
+            [max]="
+              maxValue -
+              this.seatsByRows[this.seatsByRows.length - this.row].length
+            "
+            [step]="1"
+            [label]="label"
+            (change)="updateSeatsCount($event)"
+          >
+          </mat-input-counter>
+          <button
+            *ngIf="seatsCountPerRow"
+            type="button"
+            class="btn btn-primary mt-3"
+            (click)="addSeatesRange()"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      <div
+        class="
+          custom-seats-functions
+          d-flex
+          align-items-center
+          justify-content-center
+        "
+      >
+        <app-type-of-seat
+          [selectedSeat]="selectedSeat"
+          [typesOfSeat]="typesOfSeat"
+          (onDeleteSeat)="deleteSelectedSeat($event)"
+          (onUpdateSeat)="updateSelectedSeat($event)"
+        ></app-type-of-seat>
+      </div>
+    </div>
+  </div>
+</div>

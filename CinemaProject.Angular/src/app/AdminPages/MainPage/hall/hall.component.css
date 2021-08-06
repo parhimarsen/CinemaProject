@@ -1,3 +1,32 @@
+.custom-container{
+    background-color: #f7f7f7;
+    height: 100%;
+}
+
+.custom-seats-schema-container{
+    background-color: bisque;
+    width: 65%;
+}
+
+.custom-seats-row{
+    height: 34px;
+}
+
+.custom-seats-schema-functions-container{
+    width: 35%;
+}
+
+.custom-rows-functions{
+    border: 1px black solid;
+    height: 60%;
+}
+
+.custom-seats-functions{
+    border: 1px black solid;
+    border-top: 0; 
+    height: 40%;
+}
+
 .typeOfSeat{
     cursor:pointer;
     border-radius: 50%;

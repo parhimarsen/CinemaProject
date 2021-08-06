@@ -1,0 +1,20 @@
+<div *ngIf="selectedSeat" class="d-flex flex-column align-items-center">
+  <mat-form-field appearance="fill">
+    <mat-label>TypeOfSeat</mat-label>
+    <mat-select
+      [(value)]="typeOfSelectedSeat"
+      (selectionChange)="changeTypeOfSeat($event)"
+    >
+      <mat-option *ngFor="let typeOfSeat of typesOfSeat" [value]="typeOfSeat">{{
+        typeOfSeat.name
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button
+    type="button"
+    class="btn btn-primary mt-3"
+    (click)="deleteSeat($event)"
+  >
+    Delete
+  </button>
+</div>
