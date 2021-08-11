@@ -10,7 +10,7 @@ export class HeaderService {
     { name: 'Films', isActive: false },
     { name: 'Sessions', isActive: false },
     { name: 'Services', isActive: false },
-    { name: 'TypesOfSeat', isActive: false },
+    { name: 'Cities', isActive: false },
   ];
   userName = 'parhimarsen@mail.ru';
 

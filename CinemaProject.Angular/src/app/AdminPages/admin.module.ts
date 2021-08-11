@@ -14,6 +14,8 @@ import {
   NgxMatTimepickerModule,
 } from '@angular-material-components/datetime-picker';
 import { NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
+import { MatIconModule } from '@angular/material/icon';
+import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
 
 import { MainComponent as AdminMainComponent } from './MainPage/main/main.component';
 import { HeaderComponent as AdminHeaderComponent } from './MainPage/header/header.component';
@@ -32,17 +34,17 @@ import { SelectEditComponent } from './MainPage/custom/select-edit/select-edit.c
 import { ServicesService } from './services/services.service';
 import { CurrencyInputComponent } from './MainPage/custom/currency-input/currency-input.component';
 import { SessionsService } from './services/sessions.service';
-import { TypesOfSeatService } from './services/types-of-seat.service';
 import { DateTimePickerComponent } from './MainPage/custom/date-time-picker/date-time-picker.component';
+import { CitiesService } from './services/cities.service';
+import { EditableSelectComponent } from './MainPage/custom/editable-select/editable-select.component';
+import { ModalComponent } from './MainPage/custom/modal/modal.component';
 
 const CINEMAS_SERVICE_TOKEN = new InjectionToken<string>('CinemasService');
 const HALLS_SERVICE_TOKEN = new InjectionToken<string>('HallsService');
 const FILMS_SERVICE_TOKEN = new InjectionToken<string>('FilmsService');
 const SERVICES_SERVICE_TOKEN = new InjectionToken<string>('ServicesService');
 const SESSIONS_SERVICE_TOKEN = new InjectionToken<string>('SessionsService');
-const TYPES_OF_SEAT_SERVICE_TOKEN = new InjectionToken<string>(
-  'TypesOfSeatService'
-);
+const CITIES_SERVICE_TOKEN = new InjectionToken<string>('CitiesService');
 
 const routes: Routes = [
   { path: 'admin', redirectTo: 'admin/cinemas', pathMatch: 'full' },
@@ -72,9 +74,9 @@ const routes: Routes = [
     data: { requiredService: SESSIONS_SERVICE_TOKEN },
   },
   {
-    path: 'admin/typesofseat',
+    path: 'admin/cities',
     component: AdminMainComponent,
-    data: { requiredService: TYPES_OF_SEAT_SERVICE_TOKEN },
+    data: { requiredService: CITIES_SERVICE_TOKEN },
   },
   {
     path: 'admin/cinemas/:cinemaId/halls/:hallId',
@@ -97,6 +99,8 @@ const routes: Routes = [
     SelectEditComponent,
     CurrencyInputComponent,
     DateTimePickerComponent,
+    EditableSelectComponent,
+    ModalComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -113,6 +117,8 @@ const routes: Routes = [
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
+    MatIconModule,
+    ModalModule,
   ],
   providers: [
     {
@@ -137,10 +143,11 @@ const routes: Routes = [
       useClass: SessionsService,
     },
     {
-      provide: TYPES_OF_SEAT_SERVICE_TOKEN,
-      useClass: TypesOfSeatService,
+      provide: CITIES_SERVICE_TOKEN,
+      useClass: CitiesService,
     },
     CurrencyPipe,
+    BsModalService,
   ],
   exports: [RouterModule],
   entryComponents: [DatePickerComponent],
