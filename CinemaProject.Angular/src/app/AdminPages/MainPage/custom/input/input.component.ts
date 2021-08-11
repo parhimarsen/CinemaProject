@@ -8,6 +8,7 @@ import {
 import { DefaultEditor } from 'ng2-smart-table';
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { InputValidator } from '../validators/input-validator';
 
 @Component({
   selector: 'app-label',
@@ -25,10 +26,11 @@ export class InputComponent extends DefaultEditor implements AfterViewInit {
   constructor(private cdr: ChangeDetectorRef) {
     super();
     this.formGroup = new FormGroup({
-      value: new FormControl(
-        { value: '', disabled: false },
-        Validators.required
-      ),
+      value: new FormControl({ value: '', disabled: false }, [
+        Validators.required,
+        InputValidator.spacesValidator,
+        InputValidator.numbersValidator,
+      ]),
     });
     this.formGroup.markAllAsTouched();
   }
@@ -40,8 +42,35 @@ export class InputComponent extends DefaultEditor implements AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  updateValue() {
+  updateValue(event: any): void {
+    if (this.formGroup.controls['value'].hasError('spacesValidator')) {
+      InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = false;
+    } else {
+      InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = true;
+    }
+
+    if (this.formGroup.controls['value'].hasError('numbersValidator')) {
+      InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = false;
+    } else {
+      InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = true;
+    }
+
+    if (this.value && event.code !== 'Space') {
+      this.value = this.value.replace(/\s+/g, ' ');
+    }
+
     this.cell.newValue = this.value;
+  }
+
+  validate(event: any): void {
+    var theEvent = event || window.event;
+    var key = theEvent.keyCode || theEvent.which;
+    key = String.fromCharCode(key);
+    var regex = /[a-zA-Z]|[0-9]|[\s]/;
+    if (!regex.test(key)) {
+      theEvent.returnValue = false;
+      if (theEvent.preventDefault) theEvent.preventDefault();
+    }
   }
 
   getValue(): string {

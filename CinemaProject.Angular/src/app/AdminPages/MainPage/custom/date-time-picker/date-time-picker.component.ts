@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DefaultEditor } from 'ng2-smart-table';
+import * as moment from 'moment';
+import { DateTimeValidator } from '../validators/date-time-validator';
 
 @Component({
   selector: 'app-date-time-picker',
@@ -26,10 +28,10 @@ export class DateTimePickerComponent
   constructor(private cdr: ChangeDetectorRef) {
     super();
     this.formGroup = new FormGroup({
-      value: new FormControl(
-        { value: '', disabled: false },
-        Validators.required
-      ),
+      value: new FormControl({ value: '', disabled: false }, [
+        Validators.required,
+        DateTimeValidator.pastDatesValidator,
+      ]),
     });
     this.formGroup.markAllAsTouched();
   }
@@ -42,8 +44,8 @@ export class DateTimePickerComponent
 
       this.dateTime = new Date(
         parseInt(date[2]),
-        parseInt(date[0]) - 1,
-        parseInt(date[1]),
+        parseInt(date[1]) - 1,
+        parseInt(date[0]),
         parseInt(time[0]),
         parseInt(time[1]),
         0
@@ -54,9 +56,8 @@ export class DateTimePickerComponent
 
   updateValue() {
     if (this.dateTime != undefined) {
-      this.cell.newValue = new Date(
-        this.dateTime.getTime() - this.dateTime.getTimezoneOffset() * 60000
-      ).toISOString();
+      this.cell.newValue =
+        moment(this.dateTime).format().toString().slice(0, 17) + '00.000Z';
     }
   }
 

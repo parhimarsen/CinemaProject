@@ -67,20 +67,24 @@ export class DurationPickerComponent
       this.seconds = this.getValidValue(this.seconds, 59);
     }
 
-    this.durationString = `${this.hours}:${this.minutes}:${this.seconds}`;
-    this.durationStringChange.emit(this.durationString);
+    if (
+      this.durationString !== `${this.hours}:${this.minutes}:${this.seconds}`
+    ) {
+      this.durationString = `${this.hours}:${this.minutes}:${this.seconds}`;
+      this.durationStringChange.emit(this.durationString);
+    }
   }
 
   getValidValue(value: any, max: any) {
     let n;
-    if (/^\d+$/.test(value)) {
+    if (/[0-9]/gi.test(value)) {
       n = parseInt(value);
       n = Math.max(0, n);
       n = Math.min(max, n);
       if (n < 10) return new String('0' + n);
       else return new String(n);
     } else {
-      return new String('0');
+      return;
     }
   }
 

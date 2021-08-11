@@ -9,6 +9,7 @@ import { InputComponent } from '../MainPage/custom/input/input.component';
 import { CurrencyInputComponent } from '../MainPage/custom/currency-input/currency-input.component';
 
 import { Service, ServiceView } from '../Models/service';
+import { InputValidator } from '../MainPage/custom/validators/input-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -155,6 +156,13 @@ export class ServicesService {
     let service = event.newData;
     let isValid = true;
 
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
+
     for (let key in service) {
       if (service[key] === '') {
         isValid = false;
@@ -189,6 +197,13 @@ export class ServicesService {
   edit(event: any): void {
     let service = event.newData;
     let isValid = true;
+
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
 
     for (let key in service) {
       if (service[key] === '') {

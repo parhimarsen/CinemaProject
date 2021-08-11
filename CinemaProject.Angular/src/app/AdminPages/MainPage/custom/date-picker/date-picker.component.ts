@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DefaultEditor } from 'ng2-smart-table';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-date-picker',
@@ -18,6 +19,7 @@ export class DatePickerComponent
   extends DefaultEditor
   implements AfterViewInit
 {
+  @ViewChild('inputValue') inputValue!: ElementRef;
   @ViewChild('htmlValue') htmlValue!: ElementRef;
   @Input() releaseDate!: Date;
   @Input() formGroup: FormGroup;
@@ -44,7 +46,27 @@ export class DatePickerComponent
 
   updateValue() {
     if (this.releaseDate != undefined) {
-      this.cell.newValue = this.releaseDate.toISOString();
+      this.cell.newValue =
+        moment(this.releaseDate).format().toString().split('+')[0] + '.000Z';
+    }
+  }
+
+  validate(event: any) {
+    if (
+      this.inputValue.nativeElement.value &&
+      this.inputValue.nativeElement.value.length > 10
+    ) {
+      this.inputValue.nativeElement.value =
+        this.inputValue.nativeElement.value.slice(0, 10);
+    }
+
+    let theEvent = event || window.event;
+    let key = theEvent.keyCode || theEvent.which;
+    key = String.fromCharCode(key);
+    let regex = /[0-9]|\//;
+    if (!regex.test(key)) {
+      theEvent.returnValue = false;
+      if (theEvent.preventDefault) theEvent.preventDefault();
     }
   }
 

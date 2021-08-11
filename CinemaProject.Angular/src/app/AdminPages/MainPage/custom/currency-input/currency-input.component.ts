@@ -1,4 +1,3 @@
-import { CurrencyPipe } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -22,10 +21,7 @@ export class CurrencyInputComponent
   value!: string;
   formGroup: FormGroup;
 
-  constructor(
-    private currencyPipe: CurrencyPipe,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private cdr: ChangeDetectorRef) {
     super();
     this.formGroup = new FormGroup({
       value: new FormControl(
@@ -43,7 +39,18 @@ export class CurrencyInputComponent
     this.cdr.detectChanges();
   }
 
-  transformValue(element: any) {
+  validate(event: any): void {
+    let theEvent = event || window.event;
+    let key = theEvent.keyCode || theEvent.which;
+    key = String.fromCharCode(key);
+    let regex = /[0-9]|[.]/;
+    if (!regex.test(key)) {
+      theEvent.returnValue = false;
+      if (theEvent.preventDefault) theEvent.preventDefault();
+    }
+  }
+
+  transformValue(element: any): void {
     if (this.value.replace(/\s/g, '').match(/[-]{0,1}[\d]*[,.]{0,1}[\d]+/g)) {
       this.value = new Intl.NumberFormat('fr-BR', {
         style: 'currency',
@@ -67,7 +74,7 @@ export class CurrencyInputComponent
     }
   }
 
-  updateValue() {
+  updateValue(): void {
     this.cell.newValue = this.value;
   }
 

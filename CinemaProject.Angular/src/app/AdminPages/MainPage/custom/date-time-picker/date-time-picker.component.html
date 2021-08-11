@@ -38,3 +38,7 @@
 <mat-error *ngIf="formGroup.controls['value'].hasError('required')">
   <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
 </mat-error>
+
+<mat-error *ngIf="formGroup.controls['value'].hasError('pastDatesValidator')">
+  <span>Session should be in <strong>future</strong></span>
+</mat-error>

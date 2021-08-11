@@ -227,6 +227,13 @@ export class CinemasService {
     let cinema = event.newData;
     let isValid = true;
 
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
+
     for (let key in cinema) {
       if (key === 'halls' || key === 'typesOfSeat') continue;
       if (cinema[key] === '') {
@@ -282,6 +289,13 @@ export class CinemasService {
   edit(event: any): void {
     let newCinema = event.newData;
     let isValid = true;
+
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
 
     for (let key in newCinema) {
       if (key === 'halls' || key === 'typesOfSeat') continue;

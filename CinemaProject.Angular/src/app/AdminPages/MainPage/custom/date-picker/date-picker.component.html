@@ -2,12 +2,14 @@
   <mat-label>Choose a date</mat-label>
   <div [formGroup]="formGroup">
     <input
+      #inputValue
       formControlName="value"
       [(ngModel)]="releaseDate"
       matInput
       [matDatepicker]="picker"
       [name]="cell.getId()"
       [disabled]="!cell.isEditable()"
+      (keyup)="validate($event)"
       (click)="onClick.emit($event)"
       (ngModelChange)="updateValue()"
       (keydown.enter)="onEdited.emit($event)"

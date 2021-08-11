@@ -12,6 +12,7 @@ import { Cinema } from '../Models/cinema';
 import { InputComponent } from '../MainPage/custom/input/input.component';
 import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 import { Seat } from '../Models/seat';
+import { InputValidator } from '../MainPage/custom/validators/input-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -216,6 +217,13 @@ export class HallsService {
     //Cant Validate in different way => the solution of ng2-smart-table validation is too complicated
     let isValid = true;
 
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
+
     for (let key in hall) {
       if (hall[key] === '') {
         isValid = false;
@@ -253,6 +261,13 @@ export class HallsService {
   edit(event: any): void {
     let newHall = event.newData;
     let isValid = true;
+
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
 
     for (let key in newHall) {
       if (newHall[key] === '') {

@@ -9,7 +9,8 @@
       [disabled]="!cell.isEditable()"
       [placeholder]="cell.getTitle()"
       (click)="onClick.emit($event)"
-      (keyup)="updateValue()"
+      (keypress)="validate($event)"
+      (keyup)="updateValue($event)"
       (keydown.enter)="onEdited.emit($event)"
       (keydown.esc)="onStopEditing.emit()"
     />
@@ -18,4 +19,10 @@
 </mat-form-field>
 <mat-error *ngIf="formGroup.controls['value'].hasError('required')">
   <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
+</mat-error>
+<mat-error *ngIf="formGroup.controls['value'].hasError('spacesValidator')">
+  <span>Field from spaces</span>
+</mat-error>
+<mat-error *ngIf="formGroup.controls['value'].hasError('numbersValidator')">
+  <span>Field from numbers</span>
 </mat-error>

@@ -11,6 +11,7 @@
       [placeholder]="cell.getTitle()"
       (click)="onClick.emit($event)"
       (keyup)="updateValue()"
+      (keypress)="validate($event)"
       (keydown.enter)="onEdited.emit($event)"
       (keydown.esc)="onStopEditing.emit()"
     />

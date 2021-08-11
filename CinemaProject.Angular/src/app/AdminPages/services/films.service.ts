@@ -10,6 +10,7 @@ import { InputComponent } from '../MainPage/custom/input/input.component';
 import { DurationPickerComponent } from '../MainPage/custom/duration-picker/duration-picker.component';
 
 import { Film, FilmView } from '../Models/film';
+import { InputValidator } from '../MainPage/custom/validators/input-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -195,6 +196,13 @@ export class FilmsService {
     let newFilm = event.newData;
     let isValid = true;
 
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
+
     for (let key in newFilm) {
       if (newFilm[key] === '') {
         isValid = false;
@@ -231,6 +239,13 @@ export class FilmsService {
   edit(event: any): void {
     let newFilm = event.newData;
     let isValid = true;
+
+    for (let field in InputValidator.isNumbersValid) {
+      if (!InputValidator.isNumbersValid[field]) return;
+    }
+    for (let field in InputValidator.isSpacesValid) {
+      if (!InputValidator.isSpacesValid[field]) return;
+    }
 
     for (let key in newFilm) {
       if (newFilm[key] === '') {
