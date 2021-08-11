@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Input } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
@@ -13,7 +13,9 @@ import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.
 import { Cinema, CinemaView } from '../Models/cinema';
 import { City } from '../Models/city';
 import { HallView } from '../Models/hall';
-import { TypeOfSeat } from '../Models/typeOfSeat';
+import { TypeOfSeat, TypeOfSeatView } from '../Models/typeOfSeat';
+import { EditableSelectComponent } from '../MainPage/custom/editable-select/editable-select.component';
+import { InputValidator } from '../MainPage/custom/validators/input-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -105,6 +107,7 @@ export class CinemasService {
             .map((hall) => {
               return new HallView(hall.id, hall.name, cinema.id, cinema.name);
             }),
+          cinema.typesOfSeat!,
           cityName
         );
       })
@@ -180,6 +183,19 @@ export class CinemasService {
               type: 'list',
             },
           },
+          typesOfSeat: {
+            title: 'Types Of Seat',
+            filter: false,
+            addable: false,
+            editable: false,
+            type: 'custom',
+            valuePrepareFunction: (typesOfSeat: TypeOfSeatView[]) =>
+              typesOfSeat,
+            renderComponent: EditableSelectComponent,
+            editor: {
+              type: 'list',
+            },
+          },
         },
       };
       this.source = new LocalDataSource(this.cinemasView);
@@ -212,7 +228,7 @@ export class CinemasService {
     let isValid = true;
 
     for (let key in cinema) {
-      if (key === 'halls') continue;
+      if (key === 'halls' || key === 'typesOfSeat') continue;
       if (cinema[key] === '') {
         isValid = false;
         break;
@@ -265,11 +281,10 @@ export class CinemasService {
 
   edit(event: any): void {
     let newCinema = event.newData;
-
     let isValid = true;
 
     for (let key in newCinema) {
-      if (key === 'halls') continue;
+      if (key === 'halls' || key === 'typesOfSeat') continue;
       if (newCinema[key] === '') {
         isValid = false;
         break;
@@ -284,7 +299,7 @@ export class CinemasService {
     })?.id;
 
     if (cityId !== undefined) {
-      newCinema = new Cinema(newCinema.id, newCinema.name, cityId, null);
+      newCinema = new Cinema(newCinema.id, newCinema.name, cityId, null, null);
       this.putRequest(newCinema).subscribe(() => {
         this.refreshData();
       });

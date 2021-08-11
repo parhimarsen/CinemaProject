@@ -1,0 +1,87 @@
+<div class="modal-header">
+  <h3 class="modal-title pull-left">{{ modalHeaderText }}</h3>
+  <button
+    type="button"
+    class="close pull-right"
+    aria-label="Close"
+    (click)="modalRef.hide()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form class="d-flex flex-column align-items-center" [formGroup]="formGroup">
+  <div class="d-flex justify-content-around w-100 mt-3">
+    <div class="d-flex flex-column">
+      <span class="mb-2">Name:</span>
+      <div>
+        <mat-form-field class="example-form-field" appearance="fill">
+          <input
+            [(ngModel)]="name"
+            formControlName="name"
+            matInput
+            [placeholder]="placeholderName"
+            type="text"
+            (click)="onClick.emit($event)"
+          />
+        </mat-form-field>
+        <mat-error *ngIf="formGroup.controls['name'].hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </div>
+    </div>
+    <div class="d-flex flex-column">
+      <span class="mb-2">Extra Payment Percent (%):</span>
+      <div>
+        <mat-form-field class="example-form-field" appearance="fill">
+          <input
+            [(ngModel)]="extraPaymentPercent"
+            formControlName="extraPaymentPercent"
+            matInput
+            [placeholder]="placeholderExtraPaymentPercent"
+            type="number"
+            (keypress)="maxLength()"
+            min="-100"
+            max="100000"
+            size="8"
+            (click)="onClick.emit($event)"
+          />
+        </mat-form-field>
+        <mat-error>
+          <span
+            *ngIf="
+              formGroup.controls['extraPaymentPercent'].hasError('required')
+            "
+            >ExtraPaymentPercent is <strong>required</strong></span
+          >
+          <span
+            *ngIf="formGroup.controls['extraPaymentPercent'].hasError('max')"
+          >
+            Maximum <strong>required</strong> is <strong>1000%</strong></span
+          >
+          <span
+            *ngIf="formGroup.controls['extraPaymentPercent'].hasError('min')"
+          >
+            Minimum <strong>required</strong> percent is
+            <strong>-100%</strong></span
+          >
+        </mat-error>
+      </div>
+    </div>
+  </div>
+  <button
+    *ngIf="typeOfEvent === 'Add'"
+    class="btn btn-primary m-3 w-25"
+    [disabled]="!formGroup.valid"
+    (click)="add()"
+  >
+    Add new
+  </button>
+  <button
+    *ngIf="typeOfEvent === 'Edit'"
+    class="btn btn-primary m-3 w-25"
+    [disabled]="!formGroup.valid"
+    (click)="edit()"
+  >
+    Save
+  </button>
+</form>

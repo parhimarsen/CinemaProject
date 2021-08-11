@@ -1,0 +1,20 @@
+<mat-form-field class="custom-form-field" appearance="fill">
+  <mat-label>State</mat-label>
+  <mat-select>
+    <mat-option (click)="openAddModal()"
+      ><span>+</span>
+      &nbsp;
+      <p>Add new type of seat</p></mat-option
+    >
+    <div class="custom-select" *ngFor="let v of value">
+      <mat-option
+        (click)="changeTypeOfSeat(v)"
+        class="custom-option"
+        [value]="v"
+      >
+        {{ v.name }} / {{ v.extraPaymentPercent }}%
+      </mat-option>
+      <i class="material-icons" type="button" (click)="delete(v)"> delete </i>
+    </div>
+  </mat-select>
+</mat-form-field>

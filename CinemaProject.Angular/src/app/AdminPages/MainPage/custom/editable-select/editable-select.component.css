@@ -1,0 +1,20 @@
+.custom-select{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-option{
+    width: 90%;
+}
+
+span{
+    font-size: 30px; 
+    vertical-align: bottom;
+}
+
+p{
+    display: inline-block;
+    margin: 0;
+    vertical-align: bottom;
+}
