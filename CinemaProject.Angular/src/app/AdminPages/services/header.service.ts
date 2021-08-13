@@ -5,12 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class HeaderService {
   tables = [
-    { name: 'Cinemas', isActive: true },
-    { name: 'Halls', isActive: false },
-    { name: 'Films', isActive: false },
-    { name: 'Sessions', isActive: false },
-    { name: 'Services', isActive: false },
-    { name: 'Cities', isActive: false },
+    { name: 'Cinemas', serviceName: 'Cinemas', isActive: true },
+    { name: 'Halls', serviceName: 'Halls', isActive: false },
+    { name: 'Films', serviceName: 'Films', isActive: false },
+    { name: 'Sessions', serviceName: 'Sessions', isActive: false },
+    { name: 'Services', serviceName: 'Amenities', isActive: false },
+    { name: 'Cities', serviceName: 'Cities', isActive: false },
   ];
   userName = 'parhimarsen@mail.ru';
 
@@ -20,8 +20,9 @@ export class HeaderService {
     this.tables.forEach((table) => {
       table.isActive = false;
     });
-    this.tables.find((table) => table.name === selectedTable.name)!.isActive =
-      true;
+    this.tables.find(
+      (table) => table.serviceName === selectedTable.serviceName
+    )!.isActive = true;
     localStorage.setItem('tables', JSON.stringify(this.tables));
   }
 }

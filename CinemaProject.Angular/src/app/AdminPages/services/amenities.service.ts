@@ -8,77 +8,78 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { InputComponent } from '../MainPage/custom/input/input.component';
 import { CurrencyInputComponent } from '../MainPage/custom/currency-input/currency-input.component';
 
-import { Service, ServiceView } from '../Models/service';
+import { Amenity, AmenityView } from '../Models/amenity';
 import { InputValidator } from '../MainPage/custom/validators/input-validator';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ServicesService {
-  url = 'https://localhost:44356/api/Services';
+export class AmenitiesService {
+  url = 'https://localhost:44356/api/Amenities';
 
   source: LocalDataSource;
   settings: any;
 
   isComplited = new BehaviorSubject<boolean>(false);
 
-  services: Service[];
-  servicesView: ServiceView[];
+  amenities: Amenity[];
+  amenitiesView: AmenityView[];
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
 
   constructor(private http: HttpClient) {
-    this.services = [];
-    this.servicesView = [];
+    this.amenities = [];
+    this.amenitiesView = [];
     this.source = new LocalDataSource();
   }
 
-  private handleError<Service>(operation = 'operation', result?: Service) {
-    return (error: any): Observable<Service> => {
+  private handleError<Amenity>(operation = 'operation', result?: Amenity) {
+    return (error: any): Observable<Amenity> => {
       console.error(error);
       console.log(`${operation} failed: ${error.message}`);
-      return of(result as Service);
+      return of(result as Amenity);
     };
   }
 
-  private getAll(): Observable<Service[]> {
+  getAll(): Observable<Amenity[]> {
     return this.http
-      .get<Service[]>(this.url)
-      .pipe(catchError(this.handleError<Service[]>('getServices', [])));
+      .get<Amenity[]>(this.url)
+      .pipe(catchError(this.handleError<Amenity[]>('getAmenities', [])));
   }
 
-  private postRequest(service: Service): Observable<Service> {
+  private postRequest(amenity: Amenity): Observable<Amenity> {
     return this.http
-      .post<Service>(this.url, service, this.httpOptions)
-      .pipe(catchError(this.handleError<Service>('addService')));
+      .post<Amenity>(this.url, amenity, this.httpOptions)
+      .pipe(catchError(this.handleError<Amenity>('addAmenity')));
   }
 
-  private deleteRequest(id: string): Observable<Service> {
+  private deleteRequest(id: string): Observable<Amenity> {
     const url = `${this.url}/${id}`;
 
     return this.http
-      .delete<Service>(url, this.httpOptions)
-      .pipe(catchError(this.handleError<Service>('deleteService')));
+      .delete<Amenity>(url, this.httpOptions)
+      .pipe(catchError(this.handleError<Amenity>('deleteAmenity')));
   }
 
-  private putRequest(service: Service): Observable<any> {
+  private putRequest(amenity: Amenity): Observable<any> {
     return this.http
-      .put(this.url, service, this.httpOptions)
-      .pipe(catchError(this.handleError<any>('updateService')));
+      .put(this.url, amenity, this.httpOptions)
+      .pipe(catchError(this.handleError<any>('updateAmenity')));
   }
 
-  private convertServicesToView(services: Service[]): ServiceView[] {
-    return services
-      .map((service) => {
-        return new ServiceView(
-          service.id,
-          service.name,
+  private convertAmenitiesToView(amenities: Amenity[]): AmenityView[] {
+    return amenities
+      .map((amenity) => {
+        return new AmenityView(
+          amenity.id,
+          amenity.name,
           new Intl.NumberFormat('fr-BR', {
             style: 'currency',
             currency: 'BYN',
-          }).format(parseFloat(service.cost.toFixed(2)))
+          }).format(parseFloat(amenity.cost.toFixed(2))),
+          amenity.extraPaymentPercent
         );
       })
       .sort((a, b) => {
@@ -93,10 +94,9 @@ export class ServicesService {
   }
 
   refreshData() {
-    this.getAll().subscribe((services) => {
-      console.log(services);
-      this.services = services;
-      this.servicesView = this.convertServicesToView(this.services);
+    this.getAll().subscribe((amenities) => {
+      this.amenities = amenities;
+      this.amenitiesView = this.convertAmenitiesToView(this.amenities);
 
       this.settings = {
         add: {
@@ -127,7 +127,7 @@ export class ServicesService {
           },
         },
       };
-      this.source = new LocalDataSource(this.servicesView);
+      this.source = new LocalDataSource(this.amenitiesView);
       this.isComplited.next(true);
     });
   }
@@ -153,7 +153,7 @@ export class ServicesService {
   }
 
   add(event: any): void {
-    let service = event.newData;
+    let amenity = event.newData;
     let isValid = true;
 
     for (let field in InputValidator.isNumbersValid) {
@@ -163,39 +163,39 @@ export class ServicesService {
       if (!InputValidator.isSpacesValid[field]) return;
     }
 
-    for (let key in service) {
-      if (service[key] === '') {
+    for (let key in amenity) {
+      if (amenity[key] === '') {
         isValid = false;
         break;
       }
-      service[key] = service[key].trim();
+      amenity[key] = amenity[key].trim();
     }
 
     if (!isValid) return;
 
-    let newService = {
-      name: service.name,
-      cost: service.cost
+    let newAmenity = {
+      name: amenity.name,
+      cost: amenity.cost
         .replace(/\s/g, '')
         .replace('BYN', '')
         .replace(',', '.'),
     };
-    if (!newService) return;
-    this.postRequest(newService as Service).subscribe(() => {
+    if (!newAmenity) return;
+    this.postRequest(newAmenity as Amenity).subscribe(() => {
       this.refreshData();
     });
   }
 
   delete(event: any): void {
-    let service = event.data;
+    let amenity = event.data;
 
-    this.deleteRequest(service.id).subscribe(() => {
+    this.deleteRequest(amenity.id).subscribe(() => {
       this.refreshData();
     });
   }
 
   edit(event: any): void {
-    let service = event.newData;
+    let amenity = event.newData;
     let isValid = true;
 
     for (let field in InputValidator.isNumbersValid) {
@@ -205,22 +205,23 @@ export class ServicesService {
       if (!InputValidator.isSpacesValid[field]) return;
     }
 
-    for (let key in service) {
-      if (service[key] === '') {
+    for (let key in amenity) {
+      if (amenity[key] === '') {
         isValid = false;
         break;
       }
-      service[key] = service[key].trim();
+      amenity[key] = amenity[key].trim();
     }
 
     if (!isValid) return;
 
-    service = new Service(
-      service.id,
-      service.name,
-      service.cost.replace(/\s/g, '').replace('BYN', '').replace(',', '.')
+    amenity = new Amenity(
+      amenity.id,
+      amenity.name,
+      amenity.cost.replace(/\s/g, '').replace('BYN', '').replace(',', '.'),
+      0
     );
-    this.putRequest(service).subscribe(() => {
+    this.putRequest(amenity).subscribe(() => {
       this.refreshData();
     });
   }

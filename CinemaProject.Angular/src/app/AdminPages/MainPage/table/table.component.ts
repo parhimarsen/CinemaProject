@@ -20,8 +20,12 @@ export class TableComponent implements OnInit {
   constructor(private headerService: HeaderService) {}
 
   ngOnInit(): void {
-    let url = this.service.url.split('/');
-    this.headerService.selectTable({ name: url[url.length - 1] });
+    this.headerService.selectTable({
+      serviceName: this.service.constructor.name.substring(
+        0,
+        this.service.constructor.name.length - 7
+      ),
+    });
     //Update data source of service
     this.service.refreshData();
     //Get data source and settings from service

@@ -16,6 +16,7 @@ import {
 import { NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 import { MatIconModule } from '@angular/material/icon';
 import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { MainComponent as AdminMainComponent } from './MainPage/main/main.component';
 import { HeaderComponent as AdminHeaderComponent } from './MainPage/header/header.component';
@@ -31,7 +32,7 @@ import { HallComponent } from './MainPage/hall/hall.component';
 import { SeatComponent } from './MainPage/seat/seat.component';
 import { TypeOfSeatComponent } from './MainPage/type-of-seat/type-of-seat.component';
 import { SelectEditComponent } from './MainPage/custom/select-edit/select-edit.component';
-import { ServicesService } from './services/services.service';
+import { AmenitiesService } from './services/amenities.service';
 import { CurrencyInputComponent } from './MainPage/custom/currency-input/currency-input.component';
 import { SessionsService } from './services/sessions.service';
 import { DateTimePickerComponent } from './MainPage/custom/date-time-picker/date-time-picker.component';
@@ -42,7 +43,7 @@ import { ModalComponent } from './MainPage/custom/modal/modal.component';
 const CINEMAS_SERVICE_TOKEN = new InjectionToken<string>('CinemasService');
 const HALLS_SERVICE_TOKEN = new InjectionToken<string>('HallsService');
 const FILMS_SERVICE_TOKEN = new InjectionToken<string>('FilmsService');
-const SERVICES_SERVICE_TOKEN = new InjectionToken<string>('ServicesService');
+const SERVICES_SERVICE_TOKEN = new InjectionToken<string>('AmenitiesService');
 const SESSIONS_SERVICE_TOKEN = new InjectionToken<string>('SessionsService');
 const CITIES_SERVICE_TOKEN = new InjectionToken<string>('CitiesService');
 
@@ -119,6 +120,7 @@ const routes: Routes = [
     NgxMatNativeDateModule,
     MatIconModule,
     ModalModule,
+    MatCheckboxModule,
   ],
   providers: [
     {
@@ -136,7 +138,7 @@ const routes: Routes = [
     },
     {
       provide: SERVICES_SERVICE_TOKEN,
-      useClass: ServicesService,
+      useClass: AmenitiesService,
     },
     {
       provide: SESSIONS_SERVICE_TOKEN,
