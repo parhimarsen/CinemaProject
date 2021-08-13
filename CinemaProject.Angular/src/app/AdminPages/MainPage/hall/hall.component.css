@@ -35,3 +35,7 @@
     text-align: center;
     margin: 5px;
 }
+
+::ng-deep .mat-button-base{
+    background-color: #0d6efd !important;
+} 

@@ -184,10 +184,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     margin-bottom: 10px;
 }
 
-.mat-accent{
-    background-color: #0d6efd !important;
-}
-
 .mat-form-field-wrapper{
     margin-bottom: 0!important;
 }

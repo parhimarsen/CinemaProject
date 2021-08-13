@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 
 import { HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import { DefaultEditor } from 'ng2-smart-table';
 import { ModalComponent } from '../modal/modal.component';
@@ -15,6 +16,9 @@ import { CinemasService } from 'src/app/AdminPages/services/cinemas.service';
 import { HallsService } from 'src/app/AdminPages/services/halls.service';
 import { SeatsService } from 'src/app/AdminPages/services/seats.service';
 import { TypesOfSeatService } from 'src/app/AdminPages/services/types-of-seat.service';
+import { TypeOfSeat } from 'src/app/AdminPages/Models/typeOfSeat';
+import { AmenitiesService } from 'src/app/AdminPages/services/amenities.service';
+import { AmenityView } from 'src/app/AdminPages/Models/amenity';
 
 @Component({
   selector: 'app-editable-select',
@@ -26,8 +30,8 @@ export class EditableSelectComponent
   implements AfterViewInit
 {
   @Input() value!: any[];
-  selectedValue: any;
   modalRef!: BsModalRef;
+  url: string[];
   modalHeaderText = '';
   typeOfEvent = '';
 
@@ -41,27 +45,26 @@ export class EditableSelectComponent
     private typesOfSeatService: TypesOfSeatService,
     private cinemasService: CinemasService,
     private hallsService: HallsService,
-    private seatsService: SeatsService
+    private seatsService: SeatsService,
+    private amenitiesService: AmenitiesService,
+    private router: Router
   ) {
     super();
+    this.url = this.router.url.split('/');
   }
 
   ngAfterViewInit(): void {
-    this.value.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      }
-      if (a.name < b.name) {
-        return -1;
-      }
-      return 0;
-    });
     this.cdr.detectChanges();
   }
 
-  changeTypeOfSeat(typeOfSeat: any): void {
+  parseFloat(str: string): number {
+    str = str.replace(',', '.');
+    return Number.parseFloat(str);
+  }
+
+  changeTypeOfSeat(typeOfSeat: TypeOfSeat): void {
     this.modalHeaderText = 'Edit type of seat';
-    this.typeOfEvent = 'Edit';
+    this.typeOfEvent = 'Edit TypeOfSeat';
 
     const initialState = {
       value: this.value,
@@ -73,9 +76,9 @@ export class EditableSelectComponent
     this.modalRef = this.modalService.show(ModalComponent, { initialState });
   }
 
-  openAddModal(): void {
+  addTypeOfSeat(): void {
     this.modalHeaderText = 'Add new type of seat';
-    this.typeOfEvent = 'Add';
+    this.typeOfEvent = 'Add TypeOfSeat';
 
     const initialState = {
       value: this.value,
@@ -86,7 +89,31 @@ export class EditableSelectComponent
     this.modalRef = this.modalService.show(ModalComponent, { initialState });
   }
 
-  delete(typeOfSeat: any): void {
+  editAmenities(): void {
+    this.modalHeaderText = 'Edit affortable services of session';
+    this.typeOfEvent = 'Edit Amenities';
+
+    this.amenitiesService.getAll().subscribe((amenities) => {
+      const initialState = {
+        value: amenities.map((amenity) => {
+          return new AmenityView(
+            amenity.id,
+            amenity.name,
+            amenity.cost.toFixed(2),
+            amenity.extraPaymentPercent,
+            this.value[0].id
+          );
+        }),
+        selectedAmenities: this.value[0].affortableAmenities,
+        modalHeaderText: this.modalHeaderText,
+        typeOfEvent: this.typeOfEvent,
+      };
+
+      this.modalRef = this.modalService.show(ModalComponent, { initialState });
+    });
+  }
+
+  deleteTypeOfSeat(typeOfSeat: TypeOfSeat): void {
     if (typeOfSeat.name !== 'Common') {
       this.typesOfSeatService.deleteRequest(typeOfSeat.id).subscribe(() => {
         this.value.splice(this.value.indexOf(typeOfSeat), 1);

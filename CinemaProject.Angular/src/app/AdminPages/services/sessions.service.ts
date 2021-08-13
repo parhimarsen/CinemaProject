@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
-import { BehaviorSubject, forkJoin, Observable, of, zip } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -14,6 +14,9 @@ import { FilmsService } from './films.service';
 import { Session, SessionView } from '../Models/session';
 import { Film } from '../Models/film';
 import { Cinema } from '../Models/cinema';
+import { Amenity, AmenityView } from '../Models/amenity';
+import { EditableSelectComponent } from '../MainPage/custom/editable-select/editable-select.component';
+import { DateTimeValidator } from '../MainPage/custom/validators/date-time-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -58,7 +61,13 @@ export class SessionsService {
   private getAll(): Observable<Session[]> {
     return this.http
       .get<Session[]>(this.url)
-      .pipe(catchError(this.handleError<Session[]>('getServices', [])));
+      .pipe(catchError(this.handleError<Session[]>('getSessions', [])));
+  }
+
+  private getAmenities(id: string): Observable<Amenity[]> {
+    return this.http
+      .get<Amenity[]>(`${this.url}/${id}/Amenities`)
+      .pipe(catchError(this.handleError<Amenity[]>('getAmenities', [])));
   }
 
   private postRequest(session: any): Observable<Session> {
@@ -67,12 +76,26 @@ export class SessionsService {
       .pipe(catchError(this.handleError<Session>('addSession')));
   }
 
+  postAmenity(id: String, amentity: Amenity): Observable<any> {
+    return this.http
+      .post(`${this.url}/${id}/Amenities`, amentity, this.httpOptions)
+      .pipe(catchError(this.handleError<any>('addAmenity')));
+  }
+
   private deleteRequest(id: string): Observable<Session> {
     const url = `${this.url}/${id}`;
 
     return this.http
       .delete<Session>(url, this.httpOptions)
       .pipe(catchError(this.handleError<Session>('deleteSession')));
+  }
+
+  deleteAmenity(id: string, amenityId: string): Observable<any> {
+    const url = `${this.url}/${id}/Amenities/${amenityId}`;
+
+    return this.http
+      .delete<any>(url, this.httpOptions)
+      .pipe(catchError(this.handleError<Session>('deleteAmenity')));
   }
 
   private putRequest(session: Session): Observable<any> {
@@ -96,9 +119,12 @@ export class SessionsService {
         let hallOfSession = halls.find((hall) => {
           return hall.id === session.hallId;
         });
-        let cinemaOfSession = this.cinemas.find((cinema) => {
-          return cinema.id === hallOfSession.cinemaId;
-        })!;
+        let cinemaOfSession = undefined;
+        if (hallOfSession) {
+          cinemaOfSession = this.cinemas.find((cinema) => {
+            return cinema.id === hallOfSession.cinemaId;
+          })!;
+        }
         return new SessionView(
           session.id,
           new Intl.NumberFormat('fr-BR', {
@@ -107,9 +133,13 @@ export class SessionsService {
           }).format(parseFloat(session.cost.toFixed(2))),
           this.formatDate(session.showStart),
           this.formatDate(session.showEnd),
-          cinemaOfSession?.name,
-          hallOfSession.name,
-          filmName!
+          cinemaOfSession ? cinemaOfSession?.name : session.cinemaName,
+          hallOfSession ? hallOfSession.name : session.hallName,
+          filmName ? filmName! : session.filmName,
+          cinemaOfSession && filmName
+            ? this.generateStatus(session)
+            : 'Not Exist',
+          []
         );
       })
       .sort((a, b) => {
@@ -121,6 +151,15 @@ export class SessionsService {
         }
         return 0;
       });
+  }
+
+  private generateStatus(session: Session): string {
+    let now = new Date();
+    return now > new Date(session.showEnd)
+      ? 'Ended'
+      : now > new Date(session.showStart)
+      ? '!Online!'
+      : 'Active';
   }
 
   private formatDate(date: Date): string {
@@ -140,7 +179,26 @@ export class SessionsService {
       this.sessions = response.sessions;
       this.cinemas = response.cinemas;
       this.films = response.films;
+
       this.sessionsView = this.convertSessionsToView(this.sessions);
+      this.sessionsView.forEach((sessionView) => {
+        this.getAmenities(sessionView.id).subscribe((amenitiesOfSession) => {
+          sessionView.affortableAmenities = amenitiesOfSession.map(
+            (amenityOfSession) => {
+              return new AmenityView(
+                amenityOfSession.id,
+                amenityOfSession.name,
+                new Intl.NumberFormat('fr-BR', {
+                  style: 'currency',
+                  currency: 'BYN',
+                }).format(parseFloat(amenityOfSession.cost.toFixed(2))),
+                amenityOfSession.extraPaymentPercent,
+                sessionView.id
+              );
+            }
+          );
+        });
+      });
 
       this.settings = {
         add: {
@@ -188,6 +246,7 @@ export class SessionsService {
           showStart: {
             title: 'Show Start',
             filter: false,
+            editable: false,
             editor: {
               type: 'custom',
               component: DateTimePickerComponent,
@@ -195,6 +254,31 @@ export class SessionsService {
           },
           showEnd: {
             title: 'Show End',
+            filter: false,
+            addable: false,
+            editable: false,
+            editor: {
+              type: 'custom',
+              component: DateTimePickerComponent,
+            },
+          },
+          affortableAmenities: {
+            title: 'Services',
+            filter: false,
+            addable: false,
+            editable: false,
+            type: 'custom',
+            valuePrepareFunction: (
+              affortableAmenities: AmenityView[],
+              session: SessionView
+            ) => [session],
+            renderComponent: EditableSelectComponent,
+            editor: {
+              type: 'list',
+            },
+          },
+          status: {
+            title: 'Status',
             filter: false,
             addable: false,
             editable: false,
@@ -228,6 +312,14 @@ export class SessionsService {
             field: 'filmName',
             search: query,
           },
+          {
+            field: 'showStart',
+            search: query,
+          },
+          {
+            field: 'status',
+            search: query,
+          },
         ],
         false
       );
@@ -238,8 +330,17 @@ export class SessionsService {
     let newSession = event.newData;
     let isValid = true;
 
+    for (let field in DateTimeValidator.isDateValid) {
+      if (!DateTimeValidator.isDateValid[field]) return;
+    }
+
     for (let key in newSession) {
-      if (key === 'showEnd') continue;
+      if (
+        key === 'showEnd' ||
+        key === 'status' ||
+        key === 'affortableAmenities'
+      )
+        continue;
       if (newSession[key] === '') {
         isValid = false;
         break;
@@ -258,13 +359,16 @@ export class SessionsService {
     let addableHall = addableCinema!.halls!.find(
       (hall) => hall.name === newSession.hallName
     );
-    let addableTypeOfSeat = {
+    newSession = {
       showStart: newSession.showStart,
       hallId: addableHall?.id,
       filmId: addableFilm?.id,
       cost: parseFloat(newSession.cost.replace(',', '.')),
+      cinemaName: addableCinema?.name,
+      hallName: addableHall?.name,
+      filmName: addableFilm?.name,
     };
-    this.postRequest(addableTypeOfSeat).subscribe(() => this.refreshData());
+    this.postRequest(newSession).subscribe(() => this.refreshData());
   }
 
   delete(event: any): void {
@@ -280,7 +384,12 @@ export class SessionsService {
     let isValid = true;
 
     for (let key in newSession) {
-      if (key === 'showEnd') continue;
+      if (
+        key === 'showEnd' ||
+        key === 'status' ||
+        key === 'affortableAmenities'
+      )
+        continue;
       if (newSession[key] === '') {
         isValid = false;
         break;
@@ -299,14 +408,18 @@ export class SessionsService {
     let editableHall = editableCinema!.halls!.find(
       (hall) => hall.name === newSession.hallName
     );
-    let editableTypeOfSeat = new Session(
+    newSession = new Session(
       newSession.id,
       parseFloat(newSession.cost.replace(',', '.')),
       newSession.showStart,
       newSession.showStart,
       editableHall?.id!,
-      editableFilm?.id!
+      editableCinema?.name!,
+      editableHall?.name!,
+      editableFilm?.name!,
+      editableFilm?.id!,
+      []
     );
-    this.putRequest(editableTypeOfSeat).subscribe(() => this.refreshData());
+    this.putRequest(newSession).subscribe(() => this.refreshData());
   }
 }

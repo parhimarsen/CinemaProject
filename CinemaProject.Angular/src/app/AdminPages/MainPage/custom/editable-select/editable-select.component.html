@@ -1,7 +1,11 @@
-<mat-form-field class="custom-form-field" appearance="fill">
-  <mat-label>State</mat-label>
+<mat-form-field
+  *ngIf="url[url.length - 1] === 'cinemas'"
+  class="custom-form-field"
+  appearance="fill"
+>
+  <mat-label>Type Of Seat</mat-label>
   <mat-select>
-    <mat-option (click)="openAddModal()"
+    <mat-option (click)="addTypeOfSeat()"
       ><span>+</span>
       &nbsp;
       <p>Add new type of seat</p></mat-option
@@ -14,7 +18,32 @@
       >
         {{ v.name }} / {{ v.extraPaymentPercent }}%
       </mat-option>
-      <i class="material-icons" type="button" (click)="delete(v)"> delete </i>
+      <i class="material-icons" type="button" (click)="deleteTypeOfSeat(v)">
+        delete
+      </i>
+    </div>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field
+  *ngIf="url[url.length - 1] === 'sessions'"
+  class="custom-form-field"
+  appearance="fill"
+>
+  <mat-label>Service</mat-label>
+  <mat-select>
+    <mat-option (click)="editAmenities()"> <p>Edit service list</p></mat-option>
+    <div *ngFor="let v of value[0].affortableAmenities">
+      <mat-option [value]="v">
+        {{ v.name }} / {{ v.extraPaymentPercent }}% /
+        {{
+          (
+            parseFloat(v.cost) +
+            parseFloat(v.cost) * (v.extraPaymentPercent / 100)
+          ).toFixed(2)
+        }}
+        BYN
+      </mat-option>
     </div>
   </mat-select>
 </mat-form-field>

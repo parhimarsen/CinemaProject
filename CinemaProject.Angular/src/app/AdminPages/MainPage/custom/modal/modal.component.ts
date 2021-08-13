@@ -1,11 +1,21 @@
-import { Component, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { ThrowStmt } from '@angular/compiler';
+import {
+  Component,
+  AfterViewInit,
+  ChangeDetectorRef,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { DefaultEditor } from 'ng2-smart-table';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Amenity, AmenityView } from 'src/app/AdminPages/Models/amenity';
 
 import { CinemasService } from 'src/app/AdminPages/services/cinemas.service';
+import { SessionsService } from 'src/app/AdminPages/services/sessions.service';
 import { TypesOfSeatService } from 'src/app/AdminPages/services/types-of-seat.service';
 
 @Component({
@@ -14,13 +24,16 @@ import { TypesOfSeatService } from 'src/app/AdminPages/services/types-of-seat.se
   styleUrls: ['./modal.component.css'],
 })
 export class ModalComponent extends DefaultEditor implements AfterViewInit {
+  @ViewChildren('inputValue') inputValues!: QueryList<ElementRef>;
   value!: any[];
   editedTypeOfSeat!: any;
+  selectedAmenities!: any[];
 
   name!: string;
   placeholderName = 'Name';
   extraPaymentPercent!: string;
   placeholderExtraPaymentPercent = 'ExtraPaymentPercent';
+  checked = false;
 
   modalHeaderText!: string;
   typeOfEvent!: string;
@@ -30,7 +43,8 @@ export class ModalComponent extends DefaultEditor implements AfterViewInit {
     public modalRef: BsModalRef,
     private cdr: ChangeDetectorRef,
     private typesOfSeatService: TypesOfSeatService,
-    private cinemasService: CinemasService
+    private cinemasService: CinemasService,
+    private sessionsService: SessionsService
   ) {
     super();
 
@@ -45,26 +59,59 @@ export class ModalComponent extends DefaultEditor implements AfterViewInit {
     this.formGroup.markAllAsTouched();
   }
 
-  maxLength(): void {
-    if (
-      this.extraPaymentPercent &&
-      this.extraPaymentPercent.toString().length >= 6
-    ) {
-      this.extraPaymentPercent = this.extraPaymentPercent
-        .toString()
-        .slice(0, 6);
-    }
-  }
-
   ngAfterViewInit(): void {
-    if (this.typeOfEvent === 'Edit') {
+    if (this.typeOfEvent === 'Edit TypeOfSeat') {
       this.name = this.editedTypeOfSeat.name;
       this.extraPaymentPercent = this.editedTypeOfSeat.extraPaymentPercent;
+    }
+    if (this.typeOfEvent === 'Edit Amenities') {
+      this.selectedAmenities.forEach((selectedAmenity) => {
+        let amenity = this.value.find((v) => v.id === selectedAmenity.id);
+        console.log(selectedAmenity);
+        amenity.extraPaymentPercent = selectedAmenity.extraPaymentPercent;
+        amenity.isChecked = true;
+      });
     }
     this.cdr.detectChanges();
   }
 
-  add(): void {
+  parseFloat(str: string): number {
+    return Number.parseFloat(str);
+  }
+
+  maxLength(): void {
+    if (
+      this.extraPaymentPercent &&
+      this.extraPaymentPercent.toString().length >= 5
+    ) {
+      this.extraPaymentPercent = this.extraPaymentPercent
+        .toString()
+        .slice(0, 5);
+    }
+  }
+
+  maxLengthForAmenities(amenity: AmenityView): void {
+    let inputValue = this.inputValues.get(this.value.indexOf(amenity))!;
+    if (inputValue.nativeElement.value.length >= 6) {
+      inputValue.nativeElement.value = amenity.extraPaymentPercent
+        .toString()
+        .slice(0, 6);
+      amenity.extraPaymentPercent = parseFloat(
+        amenity.extraPaymentPercent.toString().slice(0, 6)
+      );
+    }
+  }
+
+  setZero(amenity: AmenityView): void {
+    if (
+      amenity.extraPaymentPercent == null ||
+      amenity.extraPaymentPercent === 0
+    ) {
+      amenity.extraPaymentPercent = 0;
+    }
+  }
+
+  addTypeOfSeat(): void {
     let newTypeOfSeat = this.formGroup.value;
 
     newTypeOfSeat = {
@@ -79,10 +126,11 @@ export class ModalComponent extends DefaultEditor implements AfterViewInit {
         this.name = '';
         this.extraPaymentPercent = '';
         this.value.push(typeOfSeat);
+        this.modalRef.hide();
       });
   }
 
-  edit(): void {
+  editTypeOfSeat(): void {
     let newTypeOfSeat = this.editedTypeOfSeat;
 
     this.cinemasService.getAll().subscribe((cinemas) => {
@@ -104,5 +152,35 @@ export class ModalComponent extends DefaultEditor implements AfterViewInit {
         this.cdr.detectChanges();
       });
     });
+  }
+
+  checkAmenity(amenityView: AmenityView, event: any): void {
+    if (event.checked) {
+      let amenity: Amenity = new Amenity(
+        amenityView.id,
+        amenityView.name,
+        parseFloat(amenityView.cost),
+        amenityView.extraPaymentPercent
+      );
+      this.sessionsService
+        .postAmenity(amenityView.sessionId!, amenity)
+        .subscribe(() => {
+          this.selectedAmenities.push(amenityView);
+        });
+    } else {
+      this.sessionsService
+        .deleteAmenity(amenityView.sessionId!, amenityView.id)
+        .subscribe(() => {
+          this.selectedAmenities.splice(
+            this.selectedAmenities.findIndex((v) => v.id === amenityView.id),
+            1
+          );
+
+          let amenity = this.value.find((v) => v.id === amenityView.id);
+          amenity.isChecked = false;
+          console.log(this.value);
+          this.cdr.detectChanges();
+        });
+    }
   }
 }

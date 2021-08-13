@@ -1,3 +1,5 @@
+import { Amenity, AmenityView } from './amenity';
+
 class Session {
   constructor(
     public id: string,
@@ -5,7 +7,11 @@ class Session {
     public showStart: Date,
     public showEnd: Date,
     public hallId: string,
-    public filmId: string
+    public cinemaName: string,
+    public hallName: string,
+    public filmName: string,
+    public filmId: string,
+    public affortableAmenities: Amenity[]
   ) {}
 }
 
@@ -17,7 +23,9 @@ class SessionView {
     public showEnd: string,
     public cinemaName: string,
     public hallName: string,
-    public filmName: string
+    public filmName: string,
+    public status: string,
+    public affortableAmenities: AmenityView[]
   ) {}
 }
 

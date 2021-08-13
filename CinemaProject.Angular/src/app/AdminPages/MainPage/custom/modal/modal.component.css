@@ -1,0 +1,12 @@
+.w-15{
+    width: 15%;
+}
+
+.close{
+    border: 0;
+    background-color: white;
+}
+
+.close span{
+    font-size: 24px;
+}
