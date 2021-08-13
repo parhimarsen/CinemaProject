@@ -58,6 +58,12 @@ export class CinemasService {
       .pipe(catchError(this.handleError<Cinema[]>('getCinemas', [])));
   }
 
+  getCity(id: string): Observable<City> {
+    return this.http
+      .get<City>(`${this.url}/${id}/City`)
+      .pipe(catchError(this.handleError<City>('getCityOfCinema')));
+  }
+
   private postRequest(cinema: Cinema): Observable<Cinema> {
     return this.http
       .post<Cinema>(this.url, cinema, this.httpOptions)

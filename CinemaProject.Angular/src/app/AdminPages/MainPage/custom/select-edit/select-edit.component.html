@@ -2,6 +2,7 @@
   <mat-label>{{ cell.getTitle() }}</mat-label>
   <div [formGroup]="formGroup">
     <mat-select
+      *ngIf="cell.getTitle() !== 'Cinema'"
       formControlName="value"
       [(ngModel)]="selectedValue"
       (selectionChange)="updateItem($event)"
@@ -9,6 +10,17 @@
       <mat-option *ngFor="let v of value" [value]="v.name">{{
         v.name
       }}</mat-option>
+    </mat-select>
+
+    <mat-select
+      *ngIf="cell.getTitle() === 'Cinema'"
+      formControlName="value"
+      [(ngModel)]="selectedValue"
+      (selectionChange)="updateItem($event)"
+    >
+      <mat-option *ngFor="let v of value" [value]="v.name"
+        >{{ v.name }}
+      </mat-option>
     </mat-select>
   </div>
   <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>

@@ -17,6 +17,8 @@ import { Cinema } from '../Models/cinema';
 import { Amenity, AmenityView } from '../Models/amenity';
 import { EditableSelectComponent } from '../MainPage/custom/editable-select/editable-select.component';
 import { DateTimeValidator } from '../MainPage/custom/validators/date-time-validator';
+import { CitiesService } from './cities.service';
+import { City } from '../Models/city';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +35,7 @@ export class SessionsService {
   sessionsView: SessionView[];
   films: Film[];
   cinemas: Cinema[];
+  cities: City[];
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -41,12 +44,14 @@ export class SessionsService {
   constructor(
     private http: HttpClient,
     private cinemasService: CinemasService,
-    private filmsService: FilmsService
+    private filmsService: FilmsService,
+    private citiesService: CitiesService
   ) {
     this.sessions = [];
     this.sessionsView = [];
     this.films = [];
     this.cinemas = [];
+    this.cities = [];
     this.source = new LocalDataSource();
   }
 
@@ -119,12 +124,19 @@ export class SessionsService {
         let hallOfSession = halls.find((hall) => {
           return hall.id === session.hallId;
         });
-        let cinemaOfSession = undefined;
+        let cinemaOfSession: any = undefined;
         if (hallOfSession) {
           cinemaOfSession = this.cinemas.find((cinema) => {
             return cinema.id === hallOfSession.cinemaId;
           })!;
         }
+        let cityOfCinema: any = undefined;
+        if (cinemaOfSession) {
+          cityOfCinema = this.cities.find((city) => {
+            return city.id === cinemaOfSession.cityId;
+          });
+        }
+
         return new SessionView(
           session.id,
           new Intl.NumberFormat('fr-BR', {
@@ -133,7 +145,9 @@ export class SessionsService {
           }).format(parseFloat(session.cost.toFixed(2))),
           this.formatDate(session.showStart),
           this.formatDate(session.showEnd),
-          cinemaOfSession ? cinemaOfSession?.name : session.cinemaName,
+          cinemaOfSession
+            ? cinemaOfSession?.name + ' / ' + cityOfCinema?.name
+            : session.cinemaName,
           hallOfSession ? hallOfSession.name : session.hallName,
           filmName ? filmName! : session.filmName,
           cinemaOfSession && filmName
@@ -175,12 +189,15 @@ export class SessionsService {
       sessions: this.getAll(),
       films: this.filmsService.getAll(),
       cinemas: this.cinemasService.getAll(),
+      citites: this.citiesService.getAll(),
     }).subscribe((response) => {
       this.sessions = response.sessions;
       this.cinemas = response.cinemas;
       this.films = response.films;
+      this.cities = response.citites;
 
       this.sessionsView = this.convertSessionsToView(this.sessions);
+
       this.sessionsView.forEach((sessionView) => {
         this.getAmenities(sessionView.id).subscribe((amenitiesOfSession) => {
           sessionView.affortableAmenities = amenitiesOfSession.map(
@@ -345,7 +362,7 @@ export class SessionsService {
         isValid = false;
         break;
       }
-      newSession[key] = newSession[key].trim();
+      if (key !== 'cinemaName') newSession[key] = newSession[key].trim();
     }
 
     if (!isValid) return;
@@ -354,7 +371,7 @@ export class SessionsService {
       (film) => film.name === newSession.filmName
     );
     let addableCinema = this.cinemas.find(
-      (cinema) => cinema.name === newSession.cinemaName
+      (cinema) => cinema.id === newSession.cinemaName.id
     );
     let addableHall = addableCinema!.halls!.find(
       (hall) => hall.name === newSession.hallName
@@ -390,11 +407,11 @@ export class SessionsService {
         key === 'affortableAmenities'
       )
         continue;
-      if (newSession[key] === '') {
+      if (!newSession[key] || newSession[key] === '') {
         isValid = false;
         break;
       }
-      newSession[key] = newSession[key].trim();
+      if (key !== 'cinemaName') newSession[key] = newSession[key].trim();
     }
 
     if (!isValid) return;
@@ -403,7 +420,7 @@ export class SessionsService {
       (film) => film.name === newSession.filmName
     );
     let editableCinema = this.cinemas.find(
-      (cinema) => cinema.name === newSession.cinemaName
+      (cinema) => cinema.id === newSession.cinemaName.id
     );
     let editableHall = editableCinema!.halls!.find(
       (hall) => hall.name === newSession.hallName

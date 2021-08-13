@@ -13,6 +13,8 @@ import { InputComponent } from '../MainPage/custom/input/input.component';
 import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 import { Seat } from '../Models/seat';
 import { InputValidator } from '../MainPage/custom/validators/input-validator';
+import { CitiesService } from './cities.service';
+import { City } from '../Models/city';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +34,7 @@ export class HallsService {
   //Halls are adding to cinemas
   //Need information in drop-down list
   cinemas: Cinema[];
+  citites: City[];
   //Info in table is not same
   hallsView: HallView[];
 
@@ -42,10 +45,12 @@ export class HallsService {
 
   constructor(
     private http: HttpClient,
-    private cinemasService: CinemasService
+    private cinemasService: CinemasService,
+    private citiesService: CitiesService
   ) {
     this.halls = [];
     this.cinemas = [];
+    this.citites = [];
     this.hallsView = [];
     this.source = new LocalDataSource();
   }
@@ -126,10 +131,18 @@ export class HallsService {
   private convertHallsToView(halls: Hall[], cinemas: Cinema[]): HallView[] {
     return halls
       .map((hall) => {
-        let cinemaName = cinemas.find(
+        let cinemaOfHall = cinemas.find(
           (cinema) => cinema.id === hall.cinemaId
-        )?.name;
-        return new HallView(hall.id, hall.name, hall.id, cinemaName!);
+        );
+        let cityOfCinema = this.citites.find(
+          (city) => city.id === cinemaOfHall?.cityId
+        );
+        return new HallView(
+          hall.id,
+          hall.name,
+          hall.id,
+          cinemaOfHall!.name + ' / ' + cityOfCinema?.name
+        );
       })
       .sort((a, b) => {
         if (a.cinemaName > b.cinemaName) {
@@ -152,9 +165,11 @@ export class HallsService {
     forkJoin({
       halls: this.getAll(),
       cinemas: this.cinemasService.getAll(),
+      citites: this.citiesService.getAll(),
     }).subscribe((response) => {
       this.halls = response.halls;
       this.cinemas = response.cinemas;
+      this.citites = response.citites;
       this.hallsView = this.convertHallsToView(this.halls, this.cinemas);
 
       this.settings = {
@@ -229,15 +244,13 @@ export class HallsService {
         isValid = false;
         break;
       }
-      hall[key] = hall[key].trim();
+      if (key !== 'cinemaName') hall[key] = hall[key].trim();
     }
 
     if (!isValid) return;
 
-    //Get id of selected Cinema by Name. Need to Resolve this Problem
-    let cinemaName: string = hall.cinemaName!;
     let cinemaId = this.cinemas.find(
-      (cinema) => cinema.name === cinemaName
+      (cinema) => cinema.id === hall.cinemaName!.id
     )?.id;
 
     if (cinemaId !== undefined) {
@@ -274,14 +287,14 @@ export class HallsService {
         isValid = false;
         break;
       }
-      newHall[key] = newHall[key].trim();
+      if (key !== 'cinemaName') newHall[key] = newHall[key].trim();
     }
 
     if (!isValid) return;
 
-    let cinemaId = this.cinemas.find((cinema) => {
-      return cinema.name === newHall.cinemaName;
-    })?.id;
+    let cinemaId = this.cinemas.find(
+      (cinema) => cinema.id === newHall.cinemaName!.id
+    )?.id;
 
     if (cinemaId !== undefined) {
       newHall = new Hall(newHall.id, newHall.name, cinemaId);

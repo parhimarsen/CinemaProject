@@ -24,6 +24,7 @@ export class DateTimePickerComponent
   @ViewChild('htmlValue') htmlValue!: ElementRef;
   @Input() dateTime!: Date;
   @Input() formGroup: FormGroup;
+  labelText: string = 'Choose a date';
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
@@ -37,6 +38,11 @@ export class DateTimePickerComponent
   }
 
   ngAfterViewInit(): void {
+    if (this.cell.getTitle() === 'Show End') {
+      this.labelText = '';
+      this.formGroup.markAsUntouched();
+    }
+
     if (this.cell.newValue !== '') {
       let dateAndTime = this.getValue().split('\n');
       let date = dateAndTime[0].split('-');
@@ -55,6 +61,12 @@ export class DateTimePickerComponent
   }
 
   updateValue() {
+    if (this.formGroup.controls['value'].hasError('pastDatesValidator')) {
+      DateTimeValidator.isDateValid[`${this.cell.getTitle()}`] = false;
+    } else {
+      DateTimeValidator.isDateValid[`${this.cell.getTitle()}`] = true;
+    }
+
     if (this.dateTime != undefined) {
       this.cell.newValue =
         moment(this.dateTime).format().toString().slice(0, 17) + '00.000Z';
