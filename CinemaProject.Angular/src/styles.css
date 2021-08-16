@@ -1,0 +1,197 @@
+/* You can add global styles to this file, and also import other style files */
+*{
+    font: 400 Proxima;
+}
+
+html, body{
+    height: 100%;
+}
+
+nav a{
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-outline-success {
+    color: #00a1dc;
+    border-color: #00a1dc;
+}
+
+.btn-outline-success:hover {
+    color: #fff;
+    background-color: #00a1dc;
+    border-color: #00a1dc;
+}
+
+.bg-custom{
+    background-color: #00a1dc;
+}
+
+main {
+    width: 960px;
+    margin: 0 auto;
+}
+
+h3{
+    margin-top: 10px;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 5px 0;
+}
+
+.schedule {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.schedule a:hover{
+    cursor: pointer;
+}
+
+.schedule a:hover{
+    color: #00a1dc;
+}
+
+.schedule-item {
+    display: flex;
+    flex-direction: row;
+    padding: 4px 12px 4px 24px;
+}
+
+.cinema {
+    flex: 0 0 20%;
+}
+
+.events {
+    display: flex;
+    flex: 0 0 80%;
+    flex-direction: column;
+}
+
+.event {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 0px;
+}
+
+.film {
+    width: 50%;
+    padding-right: 32px;
+}
+
+.description {
+    font-size: 13px;
+    color: rgba(0, 0, 0, .5);
+}
+
+.sessions{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 50%;
+}
+
+.session {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #00a1dc;
+    color: white;
+    margin: 5px 5px;
+    width: 53px;
+    height: 20px;
+}
+
+.session:hover {
+    background-color: #00aeef;
+}
+
+.session a {
+    cursor: pointer;
+}
+
+.session a:hover{
+    color: white;
+}
+
+@media (max-width: 576px) {
+    .schedule-item{
+        flex-direction: column;
+    }
+    .cinema{
+        border-bottom: 1px solid #ccc;
+    }
+    .model{
+        
+        width: 100% !important;
+    }
+    .navbar{
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .schedule-item{
+        flex-direction: column;
+    }
+    .cinema{
+        border-bottom: 1px solid rgba(204,204,204, 0.3);;
+    }
+    .navbar{
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 758px) {
+    .model{
+        width: 100% !important;
+    }
+}
+
+.cinema a{
+    font-size: 18px;
+}
+
+.ng2-smart-action-add-create{
+    margin-right: 0.25rem;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-form-field-infix {
+    width: 100% !important;
+}
+
+.mat-form-field-flex {
+    width: 120px !important;
+}
+
+.mat-form-field-underline {
+    position: unset !important;
+    transform: unset !important;
+}
+
+.mat-form-field-wrapper{
+    padding-bottom: unset !important;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.mat-form-field-wrapper{
+    margin-bottom: 0!important;
+}
+
+.ngx-mat-timepicker-tbody .mat-form-field-wrapper {
+    margin-right: 0px;
+}
+
+.ngx-mat-timepicker-tbody .mat-form-field-flex {
+    width: 15px !important;
+}

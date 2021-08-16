@@ -1,0 +1,178 @@
+a{
+    text-decoration: none;
+}
+
+.root{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0,0.08);
+    min-height: 100%;
+}
+
+.model{
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.contentHeader{
+    width: 100%;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 24px 40px 0 40px;
+    border-radius: 8px;
+    background-color: white;
+}
+
+.tabsItem{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    flex: 1 1 50%;
+    padding: 0 0 16px 0;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    color: rgba(0,0,0,0.48);
+}
+
+.tabsItem{
+    color: #000;
+}
+
+.tabsItem.active {
+    border-color: white;
+    border-bottom-color: #1b8dfb;
+}
+
+.tabsItem:hover {
+    border-top-color: white;
+    border-left: white;
+    border-right: white;
+}
+
+.contentWrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    overflow: hidden;
+    padding-bottom: 24px;
+}
+
+.form{
+    min-width: 100%;
+}
+
+.form-control{
+    padding: 12px 16px;
+    margin-top: 20px;
+}
+
+.formOptions{
+    display: flex;
+    justify-content: flex-end;
+    min-width: 100%;
+    margin: 16px 0 0 0;
+}
+
+.formOptions a{
+    color: #0095cc;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button{
+    background-color: #1b8dfb;
+    height: 48px;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 20px;
+    border-radius: 2px;
+    border: none;
+    color: #fff;
+    width: 100%;
+    cursor: pointer;
+    background-clip: padding-box;
+    appearance: none;
+}
+
+.socialBefore{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    text-align: center;
+    position: relative;
+    width: 100%;
+}
+
+.socialBeforeLabel{
+    background-color: #fff;
+    padding: 0 12px;
+    font-size: 15px;
+    line-height: 21px;
+    color: rgba(0,0,0,0.48);
+    width: 100%;
+}
+
+.line {
+    border-top: 1px solid rgba(0,0,0,0.08);
+    width: 50%;
+}
+
+.socialList{
+    display: flex;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.socialItem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 49px;
+    width: 50%;
+    margin: 0 4px;
+    border-radius: 2px;
+    background: url(../../../../images/google.svg) no-repeat center center;
+    background-color: #e9ecfc;
+    background-size: 24px 24px;
+    cursor: pointer;
+}
+
+.faceBook{
+    background-color: #3b5999;
+    background-image: url(../../../../images/fb.png);
+}
+
+.backButton{
+    padding: 16px 16px 16px 0;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-self: flex-start;
+    font-size: 15px;
+    line-height: 24px;
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+img, svg{
+    vertical-align: top; 
+}
+
+.backButtonIcon{
+    width: 24px;
+    height: 24px;
+    background-color: #c1c2c7;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.backButtonIcon svg{
+    transform: rotate(180deg);
+}

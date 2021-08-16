@@ -1,0 +1,16 @@
+<input
+  #search
+  class="form-control mt-4"
+  type="text"
+  style="width: auto"
+  placeholder="Search..."
+  (keydown.enter)="onSearch(search.value)"
+/>
+<ng2-smart-table
+  [settings]="settings"
+  [source]="source"
+  (createConfirm)="add($event)"
+  (deleteConfirm)="delete($event)"
+  (editConfirm)="edit($event)"
+  class="mt-5"
+></ng2-smart-table>

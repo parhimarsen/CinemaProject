@@ -1,0 +1,54 @@
+<div class="d-flex custom-duration-picker">
+  <input
+    matInput
+    class="duration-input"
+    style="text-align: end"
+    name="hours"
+    [(ngModel)]="hours"
+    placeholder="00"
+    type="text"
+    (ngModelChange)="check('hours')"
+    [disabled]="disabled"
+    required
+    (keyup)="updateValue()"
+    (keydown.enter)="onEdited.emit($event)"
+    (keydown.esc)="onStopEditing.emit()"
+  />
+  <span>h</span>
+  <input
+    matInput
+    class="duration-input"
+    style="text-align: end"
+    name="minutes"
+    [(ngModel)]="minutes"
+    placeholder="00"
+    type="text"
+    (ngModelChange)="check('minutes')"
+    [disabled]="disabled"
+    required
+    (keyup)="updateValue()"
+    (keydown.enter)="onEdited.emit($event)"
+    (keydown.esc)="onStopEditing.emit()"
+  />
+  <span>m</span>
+  <input
+    matInput
+    class="duration-input"
+    style="text-align: end"
+    name="seconds"
+    [(ngModel)]="seconds"
+    placeholder="00"
+    type="text"
+    (ngModelChange)="check('seconds')"
+    [disabled]="disabled"
+    required
+    (keyup)="updateValue()"
+    (keydown.enter)="onEdited.emit($event)"
+    (keydown.esc)="onStopEditing.emit()"
+  />
+  <span>s</span>
+  <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
+</div>
+<mat-error *ngIf="durationString === '00:00:00'">
+  <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
+</mat-error>

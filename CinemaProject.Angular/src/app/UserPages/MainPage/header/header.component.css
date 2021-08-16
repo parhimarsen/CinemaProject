@@ -1,0 +1,28 @@
+header{
+    background-color: #e5f5fc;
+}
+
+header form input{
+    outline: none;
+    border: 1px solid #a3bbc5;
+    border-radius: 3px;
+}
+
+.search{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0089bb;
+    height: 40px;
+}
+
+.search form{
+    height: 30px;
+}
+
+.search form input{
+    border: 0;
+    outline: none;
+    font: 20px/20px Proxima;
+    padding: 7px;
+}

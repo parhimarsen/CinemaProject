@@ -1,0 +1,11 @@
+<label class="seat">
+  <input
+    type="radio"
+    name="radioname"
+    value="seat"
+    (click)="selectSeat($event)"
+  />
+  <div [ngStyle]="{ 'background-color': seat.color }">
+    {{ seat.numberOfSeat }}
+  </div>
+</label>

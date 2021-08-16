@@ -1,0 +1,22 @@
+.seat{
+    display : block;
+}
+
+.seat > input{ 
+    visibility: hidden; 
+    position: absolute; 
+}
+
+.seat > input + div{
+    cursor:pointer;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    background: silver;
+    margin: 5px;
+}
+
+.seat > input:checked + div{
+    background-color: rgb(255, 255, 255)!important;
+}

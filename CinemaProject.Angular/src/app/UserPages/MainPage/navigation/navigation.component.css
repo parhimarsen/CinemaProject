@@ -1,0 +1,11 @@
+.nav-item a{
+    color: white;
+}
+
+nav li{
+    margin: 2px 10px 2px 0; 
+}
+
+.navbar{
+    justify-content: space-around;
+}
