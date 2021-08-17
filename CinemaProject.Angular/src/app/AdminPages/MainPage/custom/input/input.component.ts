@@ -3,111 +3,66 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
-  EventEmitter,
-  forwardRef,
-  OnInit,
-  Input,
+  ChangeDetectorRef,
 } from '@angular/core';
-
 import { DefaultEditor } from 'ng2-smart-table';
 
-import {
-  ControlValueAccessor,
-  Validators,
-  NG_VALUE_ACCESSOR,
-  FormControl,
-} from '@angular/forms';
-
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { InputValidator } from '../validators/input-validator';
-import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
 
 @Component({
   selector: 'app-label',
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.css'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputComponent),
-      multi: true,
-    },
-  ],
 })
-export class InputComponent
-  extends DefaultEditor
-  implements OnInit, AfterViewInit, ControlValueAccessor
-{
+export class InputComponent extends DefaultEditor implements AfterViewInit {
   //Get data from hidden div => in ng2-smart-table documentation
   @ViewChild('htmlValue') htmlValue!: ElementRef;
+  //Value of Input
+  value!: string;
   //Validation
-  @Input() formControl!: FormControl;
-  static onAdd: EventEmitter<any> = new EventEmitter<any>();
-  matcher: MyErrorStateMatcher = new MyErrorStateMatcher(false);
-  isAdded: boolean = false;
+  formGroup: FormGroup;
 
-  onChangeCallback = (_: any) => {
-    this.cell.newValue = _;
-  };
-  onTouchCallback = () => {};
-
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
     super();
-  }
-
-  ngOnInit(): void {
-    this.formControl = new FormControl('', {
-      validators: [
+    this.formGroup = new FormGroup({
+      value: new FormControl({ value: '', disabled: false }, [
         Validators.required,
         InputValidator.spacesValidator,
         InputValidator.numbersValidator,
-      ],
+      ]),
     });
-    this.formControl.valueChanges.subscribe(() => {
-      if (this.isAdded) {
-        this.matcher = new MyErrorStateMatcher(false);
-        this.isAdded = false;
-        this.formControl.setValue(this.formControl.value.trim());
-      }
-
-      if (this.formControl.valid) {
-        this.onChangeCallback(this.formControl.value);
-      } else {
-        this.onChangeCallback('');
-      }
-    });
+    this.formGroup.markAllAsTouched();
   }
 
   ngAfterViewInit(): void {
     if (this.cell.newValue !== '') {
-      this.writeValue(this.getValue());
+      this.value = this.getValue();
     }
-    InputComponent.onAdd.subscribe(() => {
-      if (this.formControl.invalid) {
-        this.matcher = new MyErrorStateMatcher(true);
-        this.isAdded = true;
-      }
-    });
-    this.onEdited.subscribe(() => {
-      if (this.formControl.invalid) {
-        this.matcher = new MyErrorStateMatcher(true);
-        this.isAdded = true;
-      }
-    });
+    this.cdr.detectChanges();
   }
 
-  writeValue(value: string): void {
-    this.formControl.setValue(value);
+  updateValue(event: any): void {
+    if (this.formGroup.controls['value'].hasError('spacesValidator')) {
+      InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = false;
+    } else {
+      InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = true;
+    }
+
+    if (this.formGroup.controls['value'].hasError('numbersValidator')) {
+      InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = false;
+    } else {
+      InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = true;
+    }
+
+    if (this.value && event.code !== 'Space') {
+      this.value = this.value.replace(/\s+/g, ' ');
+    }
+
+    this.cell.newValue = this.value;
   }
 
-  registerOnChange(fn: any): void {
-    this.onChangeCallback = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouchCallback = fn;
-  }
-
-  onKeyPress(event: any): void {
+  validate(event: any): void {
     var theEvent = event || window.event;
     var key = theEvent.keyCode || theEvent.which;
     key = String.fromCharCode(key);
