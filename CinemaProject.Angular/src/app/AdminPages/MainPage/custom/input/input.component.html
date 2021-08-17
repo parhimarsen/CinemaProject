@@ -1,28 +1,28 @@
 <mat-form-field class="example-form-field" appearance="fill">
-  <div [formGroup]="formGroup">
-    <input
-      [(ngModel)]="value"
-      formControlName="value"
-      matInput
-      type="text"
-      [name]="cell.getId()"
-      [disabled]="!cell.isEditable()"
-      [placeholder]="cell.getTitle()"
-      (click)="onClick.emit($event)"
-      (keypress)="validate($event)"
-      (keyup)="updateValue($event)"
-      (keydown.enter)="onEdited.emit($event)"
-      (keydown.esc)="onStopEditing.emit()"
-    />
-  </div>
+  <input
+    [formControl]="formControl"
+    matInput
+    type="text"
+    [name]="cell.getId()"
+    [errorStateMatcher]="matcher"
+    [disabled]="!cell.isEditable()"
+    [placeholder]="cell.getTitle()"
+    (keypress)="onKeyPress($event)"
+    (click)="onClick.emit($event)"
+    (keydown.enter)="onEdited.emit($event)"
+  />
   <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
 </mat-form-field>
-<mat-error *ngIf="formGroup.controls['value'].hasError('required')">
+<mat-error *ngIf="formControl.hasError('required') && matcher.isErrorState()">
   <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
 </mat-error>
-<mat-error *ngIf="formGroup.controls['value'].hasError('spacesValidator')">
+<mat-error
+  *ngIf="formControl.hasError('spacesValidator') && matcher.isErrorState()"
+>
   <span>Field from spaces</span>
 </mat-error>
-<mat-error *ngIf="formGroup.controls['value'].hasError('numbersValidator')">
+<mat-error
+  *ngIf="formControl.hasError('numbersValidator') && matcher.isErrorState()"
+>
   <span>Field from numbers</span>
 </mat-error>

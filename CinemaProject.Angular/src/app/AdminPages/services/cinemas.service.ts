@@ -231,25 +231,17 @@ export class CinemasService {
 
   add(event: any): void {
     let cinema = event.newData;
-    let isValid = true;
 
-    for (let field in InputValidator.isNumbersValid) {
-      if (!InputValidator.isNumbersValid[field]) return;
-    }
-    for (let field in InputValidator.isSpacesValid) {
-      if (!InputValidator.isSpacesValid[field]) return;
-    }
+    InputComponent.onAdd.emit();
+    SelectEditComponent.onAdd.emit();
 
     for (let key in cinema) {
       if (key === 'halls' || key === 'typesOfSeat') continue;
       if (cinema[key] === '') {
-        isValid = false;
         break;
       }
-      cinema[key] = cinema[key].trim();
+      if (cinema[key]) cinema[key] = cinema[key].trim();
     }
-
-    if (!isValid) return;
 
     let cityName: string = cinema.cityName!;
     let cityId = this.cities.find((city) => city.name === cityName)?.id;
