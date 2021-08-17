@@ -8,10 +8,7 @@
     [disabled]="!cell.isEditable()"
     [placeholder]="cell.getTitle()"
     (keypress)="onKeyPress($event)"
-    (click)="onClick.emit($event)"
-    (keydown.enter)="onEdited.emit($event)"
   />
-  <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
 </mat-form-field>
 <mat-error *ngIf="formControl.hasError('required') && matcher.isErrorState()">
   <span>{{ cell.getTitle() }}</span> is <strong>required</strong>

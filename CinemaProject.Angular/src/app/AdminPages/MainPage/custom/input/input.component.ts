@@ -1,24 +1,17 @@
 import {
   Component,
-  AfterViewInit,
   ElementRef,
   ViewChild,
-  EventEmitter,
   forwardRef,
-  OnInit,
   Input,
 } from '@angular/core';
 
-import { DefaultEditor } from 'ng2-smart-table';
-
 import {
   ControlValueAccessor,
-  Validators,
   NG_VALUE_ACCESSOR,
   FormControl,
 } from '@angular/forms';
 
-import { InputValidator } from '../validators/input-validator';
 import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
 
 @Component({
@@ -33,70 +26,26 @@ import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
     },
   ],
 })
-export class InputComponent
-  extends DefaultEditor
-  implements OnInit, AfterViewInit, ControlValueAccessor
-{
-  //Get data from hidden div => in ng2-smart-table documentation
+export class InputComponent implements ControlValueAccessor {
   @ViewChild('htmlValue') htmlValue!: ElementRef;
-  //Validation
-  @Input() formControl!: FormControl;
-  static onAdd: EventEmitter<any> = new EventEmitter<any>();
-  matcher: MyErrorStateMatcher = new MyErrorStateMatcher(false);
+
+  @Input() formControl: FormControl = new FormControl();
+  @Input() cell: any;
+  @Input() matcher: MyErrorStateMatcher = new MyErrorStateMatcher(false);
   isAdded: boolean = false;
+
+  constructor() {}
 
   onChangeCallback = (_: any) => {
     this.cell.newValue = _;
   };
+
   onTouchCallback = () => {};
 
-  constructor() {
-    super();
-  }
-
-  ngOnInit(): void {
-    this.formControl = new FormControl('', {
-      validators: [
-        Validators.required,
-        InputValidator.spacesValidator,
-        InputValidator.numbersValidator,
-      ],
-    });
-    this.formControl.valueChanges.subscribe(() => {
-      if (this.isAdded) {
-        this.matcher = new MyErrorStateMatcher(false);
-        this.isAdded = false;
-        this.formControl.setValue(this.formControl.value.trim());
-      }
-
-      if (this.formControl.valid) {
-        this.onChangeCallback(this.formControl.value);
-      } else {
-        this.onChangeCallback('');
-      }
-    });
-  }
-
-  ngAfterViewInit(): void {
-    if (this.cell.newValue !== '') {
-      this.writeValue(this.getValue());
-    }
-    InputComponent.onAdd.subscribe(() => {
-      if (this.formControl.invalid) {
-        this.matcher = new MyErrorStateMatcher(true);
-        this.isAdded = true;
-      }
-    });
-    this.onEdited.subscribe(() => {
-      if (this.formControl.invalid) {
-        this.matcher = new MyErrorStateMatcher(true);
-        this.isAdded = true;
-      }
-    });
-  }
-
-  writeValue(value: string): void {
-    this.formControl.setValue(value);
+  writeValue(value: any): void {
+    value
+      ? this.formControl.setValue(value)
+      : this.formControl.setValue(this.cell.getValue());
   }
 
   registerOnChange(fn: any): void {
@@ -116,9 +65,5 @@ export class InputComponent
       theEvent.returnValue = false;
       if (theEvent.preventDefault) theEvent.preventDefault();
     }
-  }
-
-  getValue(): string {
-    return this.htmlValue.nativeElement.innerText;
   }
 }

@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CitiesService } from './cities.service';
 import { SelectComponent } from '../MainPage/custom/select/select.component';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 
 import { Cinema, CinemaView } from '../Models/cinema';
@@ -166,7 +166,7 @@ export class CinemasService {
             filter: false,
             editor: {
               type: 'custom',
-              component: InputComponent,
+              component: Ng2InputComponent,
             },
           },
           cityName: {
@@ -232,7 +232,7 @@ export class CinemasService {
   add(event: any): void {
     let cinema = event.newData;
 
-    InputComponent.onAdd.emit();
+    Ng2InputComponent.onAdd.emit();
     SelectEditComponent.onAdd.emit();
 
     for (let key in cinema) {

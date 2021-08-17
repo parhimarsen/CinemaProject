@@ -25,6 +25,7 @@ import { CinemasService } from './services/cinemas.service';
 import { FilmsService } from './services/films.service';
 import { HallsService } from './services/halls.service';
 import { DatePickerComponent } from './MainPage/custom/date-picker/date-picker.component';
+import { Ng2InputComponent } from './MainPage/custom/input/ng2-input.component';
 import { InputComponent } from './MainPage/custom/input/input.component';
 import { DurationPickerComponent } from './MainPage/custom/duration-picker/duration-picker.component';
 import { SelectComponent } from './MainPage/custom/select/select.component';
@@ -91,6 +92,7 @@ const routes: Routes = [
     AdminHeaderComponent,
     TableComponent,
     DatePickerComponent,
+    Ng2InputComponent,
     InputComponent,
     DurationPickerComponent,
     SelectComponent,

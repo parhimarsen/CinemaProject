@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { City } from '../Models/city';
 import { LocalDataSource } from 'ng2-smart-table';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { InputValidator } from '../MainPage/custom/validators/input-validator';
 
 @Injectable({
@@ -86,7 +86,7 @@ export class CitiesService {
             filter: false,
             editor: {
               type: 'custom',
-              component: InputComponent,
+              component: Ng2InputComponent,
             },
           },
         },

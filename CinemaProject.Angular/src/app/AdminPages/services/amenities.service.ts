@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { CurrencyInputComponent } from '../MainPage/custom/currency-input/currency-input.component';
 
 import { Amenity, AmenityView } from '../Models/amenity';
@@ -114,7 +114,7 @@ export class AmenitiesService {
             filter: false,
             editor: {
               type: 'custom',
-              component: InputComponent,
+              component: Ng2InputComponent,
             },
           },
           cost: {

@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DatePickerComponent } from '../MainPage/custom/date-picker/date-picker.component';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { DurationPickerComponent } from '../MainPage/custom/duration-picker/duration-picker.component';
 
 import { Film, FilmView } from '../Models/film';
@@ -121,7 +121,7 @@ export class FilmsService {
           filter: false,
           editor: {
             type: 'custom',
-            component: InputComponent,
+            component: Ng2InputComponent,
           },
         },
         country: {
@@ -129,7 +129,7 @@ export class FilmsService {
           filter: false,
           editor: {
             type: 'custom',
-            component: InputComponent,
+            component: Ng2InputComponent,
           },
         },
         releaseDate: {
@@ -153,7 +153,7 @@ export class FilmsService {
           filter: false,
           editor: {
             type: 'custom',
-            component: InputComponent,
+            component: Ng2InputComponent,
           },
         },
       },

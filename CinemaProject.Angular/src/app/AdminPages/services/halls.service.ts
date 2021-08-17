@@ -9,7 +9,7 @@ import { CinemasService } from './cinemas.service';
 
 import { Hall, HallView } from '../Models/hall';
 import { Cinema } from '../Models/cinema';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 import { Seat } from '../Models/seat';
 import { InputValidator } from '../MainPage/custom/validators/input-validator';
@@ -188,7 +188,7 @@ export class HallsService {
             filter: false,
             editor: {
               type: 'custom',
-              component: InputComponent,
+              component: Ng2InputComponent,
             },
           },
           cinemaName: {
