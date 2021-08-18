@@ -11,8 +11,9 @@ namespace CinemaProject.DAL.Repositories
         public UsersRepository UsersRepository => new UsersRepository(_context);
         public IGenericRepository<RefreshTokenEntity> RefreshTokensRepository => new GenericRepository<RefreshTokenEntity>(_context);
         public IGenericRepository<TicketEntity> TicketsRepository => new GenericRepository<TicketEntity>(_context);
-        public IGenericRepository<FoodEntity> FoodsRepository => new GenericRepository<FoodEntity>(_context);
-        public TicketFoodsRepository TicketFoodsRepository => new TicketFoodsRepository(_context);
+        public IGenericRepository<AmenityEntity> AmenitiesRepository => new GenericRepository<AmenityEntity>(_context);
+        public TicketAmenitiesRepository TicketAmenitiesRepository => new TicketAmenitiesRepository(_context);
+        public SessionAmenitiesRepository SessionAmenitiesRepository => new SessionAmenitiesRepository(_context);
         public IGenericRepository<FilmEntity> FilmsRepository => new GenericRepository<FilmEntity>(_context);
         public CastsRepository CastsRepository => new CastsRepository(_context);
         public IGenericRepository<ActorEntity> ActorsRepository => new GenericRepository<ActorEntity>(_context);

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace CinemaProject.BLL.Services
 {
@@ -60,6 +61,7 @@ namespace CinemaProject.BLL.Services
             {
                 Id = Guid.NewGuid(),
                 Name = typeOfSeat.Name,
+                CinemaId = typeOfSeat.CinemaId,
                 ExtraPaymentPercent = typeOfSeat.ExtraPaymentPercent
             };
 
@@ -80,6 +82,22 @@ namespace CinemaProject.BLL.Services
 
             await _unitOfWork.TypesOfSeatRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
+
+            _cache.Remove(typesOfSeatCacheKey);
+        }
+
+        public async Task RemoveRangeAsync(Guid cinemaId, TypeOfSeat[] typesOfSeat)
+        {
+            if(!await _unitOfWork.CinemasRepository.ExistsAsync(cinemaId))
+            {
+                return;
+            }
+
+            IQueryable<TypeOfSeatEntity> typeOfSeatQuery = _unitOfWork.TypesOfSeatRepository.GetAll();
+
+            typeOfSeatQuery
+                .Where(typeOfSeat => typeOfSeat.CinemaId == cinemaId)
+                .Delete();
 
             _cache.Remove(typesOfSeatCacheKey);
         }

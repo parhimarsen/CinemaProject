@@ -11,10 +11,12 @@ namespace CinemaProject.BLL.Services
     public class SessionService
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly AmenityService _amenityService;
 
-        public SessionService(UnitOfWork unitOfWork)
+        public SessionService(UnitOfWork unitOfWork, AmenityService amenityService)
         {
             _unitOfWork = unitOfWork;
+            _amenityService = amenityService;
         }
 
         public IQueryable<Session> GetAll()
@@ -23,6 +25,9 @@ namespace CinemaProject.BLL.Services
                .Select(session => new Session
                {
                    Id = session.Id,
+                   CinemaName = session.CinemaName,
+                   FilmName = session.FilmName,
+                   HallName = session.HallName,
                    ShowStart = session.ShowStart,
                    ShowEnd = session.ShowEnd,
                    Cost = session.Cost,
@@ -56,15 +61,26 @@ namespace CinemaProject.BLL.Services
             SessionEntity newSessionEntity = new SessionEntity
             {
                 Id = Guid.NewGuid(),
+                FilmName = session.FilmName,
+                CinemaName = session.CinemaName,
+                HallName = session.HallName,
                 ShowStart = session.ShowStart,
                 ShowEnd = session.ShowStart.Add(filmEntity.Duration),
                 Cost = session.Cost,
                 FilmId = session.FilmId,
-                HallId = session.HallId
+                HallId = session.HallId,
             };
 
             await _unitOfWork.SessionsRepository.InsertAsync(newSessionEntity);
             await _unitOfWork.SaveAsync();
+
+            if (session.AffordableAmenities != null)
+            {
+                foreach (Amenity amenity in session.AffordableAmenities)
+                {
+                    await _amenityService.InsertToSessionAsync(newSessionEntity.Id, amenity);
+                }
+            }
 
             return newSessionEntity.ToModel();
         }
@@ -89,11 +105,16 @@ namespace CinemaProject.BLL.Services
 
             SessionEntity sessionEntity = await _unitOfWork.SessionsRepository.GetAsync(session.Id);
 
+            FilmEntity filmEntity = await _unitOfWork.FilmsRepository.GetAsync(session.FilmId);
+
             sessionEntity.ShowStart = session.ShowStart;
-            sessionEntity.ShowEnd = session.ShowEnd;
+            sessionEntity.ShowEnd = session.ShowStart.Add(filmEntity.Duration);
             sessionEntity.HallId = session.HallId;
             sessionEntity.FilmId = session.FilmId;
             sessionEntity.Cost = session.Cost;
+            sessionEntity.FilmName = session.FilmName;
+            sessionEntity.CinemaName = session.CinemaName;
+            sessionEntity.HallName = session.HallName;
 
             await _unitOfWork.SessionsRepository.UpdateAsync(sessionEntity.Id);
             await _unitOfWork.SaveAsync();

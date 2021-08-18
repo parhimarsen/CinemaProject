@@ -9,5 +9,7 @@ namespace CinemaProject.BLL.Models
         public Guid UserId { get; set; }
         public Guid SessionId { get; set; }
         public Guid SeatId { get; set; }
+
+        public Amenity[] Amenities { get; set; }
     }
 }

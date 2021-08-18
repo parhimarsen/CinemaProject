@@ -19,12 +19,14 @@ namespace CinemaProject.BLL.Services
 
         public IQueryable<Cinema> GetAll()
         {
-            return _unitOfWork.CinemasRepository.GetAll()
+            return _unitOfWork.CinemasRepository.GetWithInclude(cinema => cinema.Halls)
                 .Select(cinema => new Cinema
                 {
                     Id = cinema.Id,
                     Name = cinema.Name,
-                    CityId = cinema.CityId
+                    CityId = cinema.CityId,
+                    Halls = cinema.Halls.ToModel(),
+                    TypesOfSeat = cinema.TypesOfSeat.ToModel()
                 });
         }
 

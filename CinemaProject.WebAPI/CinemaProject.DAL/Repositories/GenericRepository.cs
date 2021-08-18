@@ -59,7 +59,7 @@ namespace CinemaProject.DAL.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(Guid id)
+        public async Task<bool> ExistsAsync(Guid? id)
         {
             T item = await GetAsync(id);
 

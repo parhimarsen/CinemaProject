@@ -17,6 +17,18 @@ namespace CinemaProject.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
+        public IQueryable<Hall> GetAll()
+        {
+            return _unitOfWork.HallsRepository
+                .GetAll()
+                .Select(hall => new Hall
+                {
+                    Id = hall.Id,
+                    Name = hall.Name,
+                    CinemaId = hall.CinemaId,
+                });
+        }
+
         public async Task<IQueryable<Hall>> GetAllOfCinemaAsync(Guid cinemaId)
         {
             if (!await _unitOfWork.CinemasRepository.ExistsAsync(cinemaId))
@@ -26,7 +38,8 @@ namespace CinemaProject.BLL.Services
 
             return _unitOfWork.HallsRepository
                 .GetAll()
-                .Select(hall => new Hall {
+                .Select(hall => new Hall
+                {
                     Id = hall.Id,
                     Name = hall.Name,
                     CinemaId = hall.CinemaId,

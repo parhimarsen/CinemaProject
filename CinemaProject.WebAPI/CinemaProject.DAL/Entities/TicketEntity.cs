@@ -19,6 +19,6 @@ namespace CinemaProject.DAL.Entities
         public SessionEntity Session { get; set; }
 
         public IList<TicketSeatEntity> Seats { get; set; }
-        public IList<TicketFoodEntity> Food { get; set; }
+        public IList<TicketAmenityEntity> Amenities { get; set; }
     }
 }

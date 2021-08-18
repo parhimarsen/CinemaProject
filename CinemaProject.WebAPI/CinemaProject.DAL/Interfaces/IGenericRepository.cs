@@ -14,6 +14,6 @@ namespace CinemaProject.DAL.Interfaces
         Task<T> InsertAsync(T item);
         Task RemoveAsync(Guid id);
         Task UpdateAsync(Guid id);
-        Task<bool> ExistsAsync(Guid id);
+        Task<bool> ExistsAsync(Guid? id);
     }
 }

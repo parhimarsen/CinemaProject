@@ -43,7 +43,7 @@ namespace CinemaProject.WebAPI
             services.AddScoped<UnitOfWork>();
             services.AddScoped<UserService>();
             services.AddScoped<TicketService>();
-            services.AddScoped<FoodService>();
+            services.AddScoped<AmenityService>();
             services.AddScoped<ActorService>();
             services.AddScoped<CinemaService>();
             services.AddScoped<CityService>();
@@ -132,7 +132,7 @@ namespace CinemaProject.WebAPI
             ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<User>("Users");
             builder.EntitySet<Ticket>("Tickets");
-            builder.EntitySet<Food>("Foods");
+            builder.EntitySet<Amenity>("Amenities");
             builder.EntitySet<Actor>("Actors");
             builder.EntitySet<Cinema>("Cinemas");
             builder.EntitySet<City>("Cities");

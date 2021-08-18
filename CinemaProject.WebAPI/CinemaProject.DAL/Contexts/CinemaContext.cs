@@ -11,8 +11,8 @@ namespace CinemaProject.DAL.Contexts
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
         public DbSet<TicketEntity> Tickets { get; set; }
-        public DbSet<TicketFoodEntity> TicketFood { get; set; }
-        public DbSet<FoodEntity> Food { get; set; }
+        public DbSet<TicketAmenityEntity> TicketFood { get; set; }
+        public DbSet<AmenityEntity> Food { get; set; }
         public DbSet<SessionEntity> Sessions { get; set; }
         public DbSet<FilmEntity> Films { get; set; }
         public DbSet<CastEntity> Cast { get; set; }
@@ -46,35 +46,47 @@ namespace CinemaProject.DAL.Contexts
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<TicketFoodEntity>().HasKey(e => new { e.TicketId, e.FoodId });
+            modelBuilder.Entity<TicketAmenityEntity>().HasKey(e => new { e.TicketId, e.AmenityId });
 
-            modelBuilder.Entity<TicketFoodEntity>()
-                .HasOne(e => e.Food)
+            modelBuilder.Entity<TicketAmenityEntity>()
+                .HasOne(e => e.Amenity)
                 .WithMany(e => e.Tickets)
-                .HasForeignKey(e => e.FoodId);
+                .HasForeignKey(e => e.AmenityId);
 
-            modelBuilder.Entity<TicketFoodEntity>()
+            modelBuilder.Entity<TicketAmenityEntity>()
                 .HasOne(e => e.Ticket)
-                .WithMany(e => e.Food)
+                .WithMany(e => e.Amenities)
                 .HasForeignKey(e => e.TicketId);
+
+            modelBuilder.Entity<SessionAmenityEntity>().HasKey(e => new { e.SessionId, e.AmenityId });
+
+            modelBuilder.Entity<SessionAmenityEntity>()
+                .HasOne(e => e.Amenity)
+                .WithMany(e => e.Sessions)
+                .HasForeignKey(e => e.AmenityId);
+
+            modelBuilder.Entity<SessionAmenityEntity>()
+                .HasOne(e => e.Session)
+                .WithMany(e => e.Amenities)
+                .HasForeignKey(e => e.SessionId);
 
             modelBuilder.Entity<TicketEntity>()
                 .HasOne(e => e.Session)
                 .WithMany(e => e.Tickets)
                 .HasForeignKey(e => e.SessionId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<SessionEntity>()
                 .HasOne(e => e.Film)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.FilmId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<SessionEntity>()
                 .HasOne(e => e.Hall)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.HallId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<FilmGenreEntity>().HasKey(e => new { e.FilmId, e.GenreId });
 
@@ -85,7 +97,8 @@ namespace CinemaProject.DAL.Contexts
 
             modelBuilder.Entity<FilmGenreEntity>()
                 .HasOne(e => e.Genre)
-                .WithMany(e => e.Films);
+                .WithMany(e => e.Films)
+                .HasForeignKey(e => e.GenreId);
 
             modelBuilder.Entity<CastEntity>().HasKey(e => new { e.FilmId, e.ActorId });
 
@@ -110,6 +123,12 @@ namespace CinemaProject.DAL.Contexts
                 .WithMany(e => e.Cinemas)
                 .HasForeignKey(e => e.CityId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<TypeOfSeatEntity>()
+                .HasOne(e => e.Cinema)
+                .WithMany(e => e.TypesOfSeat)
+                .HasForeignKey(e => e.CinemaId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<SeatEntity>()
                 .HasOne(e => e.Hall)

@@ -11,6 +11,7 @@ namespace CinemaProject.DAL.Entities
         public Guid? CityId { get; set; }
         public string Name { get; set; }
 
+        public IList<TypeOfSeatEntity> TypesOfSeat { get; set; }
 #nullable enable
         public CityEntity? City { get; set; }
 #nullable enable

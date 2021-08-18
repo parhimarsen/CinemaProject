@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CinemaProject.DAL.Entities
 {
-    [Table("TicketFood")]
-    public class TicketFoodEntity
+    [Table("TicketAmenity")]
+    public class TicketAmenityEntity
     {
         public Guid TicketId { get; set; }
-        public Guid FoodId { get; set; }
+        public Guid AmenityId { get; set; }
 
         public TicketEntity Ticket { get; set; }
-        public FoodEntity Food { get; set; }
+        public AmenityEntity Amenity { get; set; }
     }
 }
