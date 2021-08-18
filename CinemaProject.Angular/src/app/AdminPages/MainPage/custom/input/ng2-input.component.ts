@@ -13,6 +13,7 @@ import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
     [formControl]="formControl"
     [cell]="cell"
     [matcher]="matcher"
+    [onEdited]="onEdited"
   ></app-label>`,
   styles: [],
 })
@@ -45,6 +46,15 @@ export class Ng2InputComponent
 
       if (this.formControl.valid) {
         this.cell.newValue = this.formControl.value;
+        InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = true;
+        InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = true;
+      } else {
+        if (this.formControl.hasError('spacesValidator')) {
+          InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = false;
+        }
+        if (this.formControl.hasError('numbersValidator')) {
+          InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = false;
+        }
       }
     });
   }

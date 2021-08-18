@@ -4,6 +4,7 @@ import {
   ViewChild,
   forwardRef,
   Input,
+  EventEmitter,
 } from '@angular/core';
 
 import {
@@ -27,11 +28,10 @@ import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
   ],
 })
 export class InputComponent implements ControlValueAccessor {
-  @ViewChild('htmlValue') htmlValue!: ElementRef;
-
   @Input() formControl: FormControl = new FormControl();
   @Input() cell: any;
   @Input() matcher: MyErrorStateMatcher = new MyErrorStateMatcher(false);
+  @Input() onEdited!: EventEmitter<any>;
   isAdded: boolean = false;
 
   constructor() {}

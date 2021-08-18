@@ -8,6 +8,7 @@
     [disabled]="!cell.isEditable()"
     [placeholder]="cell.getTitle()"
     (keypress)="onKeyPress($event)"
+    (keydown.enter)="onEdited.emit($event)"
   />
 </mat-form-field>
 <mat-error *ngIf="formControl.hasError('required') && matcher.isErrorState()">
