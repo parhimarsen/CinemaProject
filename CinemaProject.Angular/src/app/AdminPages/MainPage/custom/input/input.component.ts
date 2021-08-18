@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  ViewChild,
-  forwardRef,
-  Input,
-  EventEmitter,
-} from '@angular/core';
+import { Component, forwardRef, Input, EventEmitter } from '@angular/core';
 
 import {
   ControlValueAccessor,

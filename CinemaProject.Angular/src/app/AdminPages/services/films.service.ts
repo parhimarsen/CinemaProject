@@ -196,6 +196,10 @@ export class FilmsService {
     let newFilm = event.newData;
     let isValid = true;
 
+    Ng2InputComponent.onAdd.emit();
+    DatePickerComponent.onAdd.emit();
+    DurationPickerComponent.onAdd.emit();
+
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;
     }
@@ -240,6 +244,10 @@ export class FilmsService {
     let newFilm = event.newData;
     let isValid = true;
 
+    Ng2InputComponent.onAdd.emit();
+    DatePickerComponent.onAdd.emit();
+    DurationPickerComponent.onAdd.emit();
+
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;
     }
@@ -266,8 +274,8 @@ export class FilmsService {
       newFilm.duration,
       newFilm.director
     );
-    this.putRequest(newFilm as Film).subscribe(() => {
-      this.refreshData();
-    });
+    // this.putRequest(newFilm as Film).subscribe(() => {
+    //   this.refreshData();
+    // });
   }
 }

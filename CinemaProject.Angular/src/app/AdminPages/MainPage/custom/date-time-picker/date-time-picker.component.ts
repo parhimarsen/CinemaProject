@@ -16,9 +16,7 @@ import { DateTimeValidator } from '../validators/date-time-validator';
   templateUrl: './date-time-picker.component.html',
   styleUrls: ['./date-time-picker.component.css'],
 })
-export class DateTimePickerComponent
-  extends DefaultEditor
-  implements AfterViewInit
+export class DateTimePickerComponent extends DefaultEditor implements AfterViewInit
 {
   @ViewChild('picker') picker: any;
   @ViewChild('htmlValue') htmlValue!: ElementRef;

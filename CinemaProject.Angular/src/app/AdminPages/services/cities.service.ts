@@ -117,6 +117,8 @@ export class CitiesService {
     let newCity = event.newData;
     let isValid = true;
 
+    Ng2InputComponent.onAdd.emit();
+
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;
     }

@@ -4,14 +4,12 @@
     <input
       #inputValue
       formControlName="value"
-      [(ngModel)]="releaseDate"
       matInput
       [matDatepicker]="picker"
       [name]="cell.getId()"
       [disabled]="!cell.isEditable()"
       (keyup)="validate($event)"
       (click)="onClick.emit($event)"
-      (ngModelChange)="updateValue()"
       (keydown.enter)="onEdited.emit($event)"
       (keydown.esc)="onStopEditing.emit()"
     />
@@ -21,6 +19,6 @@
   <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
 </mat-form-field>
 
-<mat-error *ngIf="formGroup.controls['value'].hasError('required')">
+<mat-error *ngIf="formGroup.controls['value'].hasError('required') && isAdded">
   <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
 </mat-error>

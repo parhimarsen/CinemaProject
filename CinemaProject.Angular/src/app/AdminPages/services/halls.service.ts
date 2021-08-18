@@ -232,6 +232,9 @@ export class HallsService {
     //Cant Validate in different way => the solution of ng2-smart-table validation is too complicated
     let isValid = true;
 
+    Ng2InputComponent.onAdd.emit();
+    SelectEditComponent.onAdd.emit();
+
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;
     }
@@ -274,6 +277,8 @@ export class HallsService {
   edit(event: any): void {
     let newHall = event.newData;
     let isValid = true;
+
+    Ng2InputComponent.onAdd.emit();
 
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;

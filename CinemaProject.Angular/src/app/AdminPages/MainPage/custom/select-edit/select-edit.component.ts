@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { CinemasService } from 'src/app/AdminPages/services/cinemas.service';
 import { CitiesService } from 'src/app/AdminPages/services/cities.service';
 import { FilmsService } from 'src/app/AdminPages/services/films.service';
-import { Cinema, CinemaView } from 'src/app/AdminPages/Models/cinema';
+import { CinemaView } from 'src/app/AdminPages/Models/cinema';
 import { HallView } from 'src/app/AdminPages/Models/hall';
 import { forkJoin } from 'rxjs';
 
@@ -23,9 +23,7 @@ import { forkJoin } from 'rxjs';
   templateUrl: './select-edit.component.html',
   styleUrls: ['./select-edit.component.css'],
 })
-export class SelectEditComponent
-  extends DefaultEditor
-  implements AfterViewInit
+export class SelectEditComponent extends DefaultEditor implements AfterViewInit
 {
   //Get value from hidden div
   @ViewChild('htmlValue') htmlValue!: ElementRef;
@@ -34,7 +32,9 @@ export class SelectEditComponent
   //Needed for adding Halls in drop-down list after Cinema was selected in another drop-down list
   static onSelectCinema: EventEmitter<any>;
   //Validation
-  formGroup: FormGroup;
+  formGroup!: FormGroup;
+  static onAdd: EventEmitter<any> = new EventEmitter<any>();
+  isAdded = false;
   selectedValue!: string | undefined;
   url: string[];
   savedCinemaName!: string;
@@ -56,7 +56,10 @@ export class SelectEditComponent
         Validators.required
       ),
     });
-    this.formGroup.markAllAsTouched();
+    SelectEditComponent.onAdd.subscribe(() => {
+      this.isAdded = true;
+      this.formGroup.controls['value'].markAsTouched();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -131,6 +134,12 @@ export class SelectEditComponent
         this.value.forEach((cinema) => {
           if (cinema.name === this.selectedValue) {
             SelectEditComponent.onSelectCinema.emit(cinema);
+            this.cell.newValue = cinema;
+          }
+        });
+      } else {
+        this.value.forEach((cinema) => {
+          if (cinema.name === this.selectedValue) {
             this.cell.newValue = cinema;
           }
         });

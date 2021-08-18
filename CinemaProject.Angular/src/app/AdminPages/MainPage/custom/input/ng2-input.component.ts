@@ -17,9 +17,7 @@ import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
   ></app-label>`,
   styles: [],
 })
-export class Ng2InputComponent
-  extends DefaultEditor
-  implements OnInit, AfterViewInit
+export class Ng2InputComponent extends DefaultEditor implements OnInit, AfterViewInit
 {
   formControl!: FormControl;
   static onAdd: EventEmitter<any> = new EventEmitter<any>();
@@ -45,7 +43,6 @@ export class Ng2InputComponent
       }
 
       if (this.formControl.valid) {
-        this.cell.newValue = this.formControl.value;
         InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = true;
         InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = true;
       } else {
@@ -56,6 +53,8 @@ export class Ng2InputComponent
           InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = false;
         }
       }
+
+      this.cell.newValue = this.formControl.value;
     });
   }
 

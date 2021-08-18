@@ -1,9 +1,9 @@
 import {
   Component,
   AfterViewInit,
-  Input,
   ViewChild,
   ElementRef,
+  EventEmitter,
   ChangeDetectorRef,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -15,14 +15,13 @@ import * as moment from 'moment';
   templateUrl: './date-picker.component.html',
   styleUrls: ['./date-picker.component.css'],
 })
-export class DatePickerComponent
-  extends DefaultEditor
-  implements AfterViewInit
+export class DatePickerComponent extends DefaultEditor implements AfterViewInit
 {
   @ViewChild('inputValue') inputValue!: ElementRef;
   @ViewChild('htmlValue') htmlValue!: ElementRef;
-  @Input() releaseDate!: Date;
-  @Input() formGroup: FormGroup;
+  formGroup: FormGroup;
+  static onAdd: EventEmitter<any> = new EventEmitter<any>();
+  isAdded = false;
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
@@ -32,24 +31,33 @@ export class DatePickerComponent
         Validators.required
       ),
     });
-    this.formGroup.markAllAsTouched();
+    this.formGroup.controls['value'].valueChanges.subscribe(() => {
+      const releaseDate = this.formGroup.controls['value'].value;
+      if (
+        releaseDate != undefined &&
+        releaseDate.toString() !== 'Invalid Date'
+      ) {
+        this.cell.newValue =
+          moment(releaseDate).format().toString().split('+')[0] + '.000Z';
+      }
+    });
+
+    DatePickerComponent.onAdd.subscribe(() => {
+      this.isAdded = true;
+      this.formGroup.markAllAsTouched();
+    });
   }
 
   ngAfterViewInit(): void {
     if (this.cell.newValue !== '') {
-      this.releaseDate = new Date(
-        this.getValue().split('-').reverse().join('-')
+      this.formGroup.controls['value'].setValue(
+        new Date(this.getValue().split('-').reverse().join('-'))
       );
     }
     this.cdr.detectChanges();
   }
 
-  updateValue() {
-    if (this.releaseDate != undefined) {
-      this.cell.newValue =
-        moment(this.releaseDate).format().toString().split('+')[0] + '.000Z';
-    }
-  }
+  updateValue() {}
 
   validate(event: any) {
     if (
