@@ -15,15 +15,18 @@ namespace CinemaProject.WebAPI.Controllers
         private readonly CinemaService _cinemaService;
         private readonly HallService _hallService;
         private readonly CityService _cityService;
+        private readonly TypeOfSeatService _typeOfSeatService;
 
         public CinemasController(
             CinemaService cinemaService,
             CityService cityService,
-            HallService hallService)
+            HallService hallService,
+            TypeOfSeatService typeOfSeatService)
         {
             _cinemaService = cinemaService;
             _cityService = cityService;
             _hallService = hallService;
+            _typeOfSeatService = typeOfSeatService;
         }
 
         // GET: api/Cinemas
@@ -83,6 +86,15 @@ namespace CinemaProject.WebAPI.Controllers
         public async Task<IActionResult> DeleteCinema(Guid id)
         {
             await _cinemaService.RemoveAsync(id);
+
+            return NoContent();
+        }
+
+        // POST: api/Cinemas/5/TypesOfSeatRange
+        [HttpPost("{id}/TypesOfSeatRange")]
+        public async Task<IActionResult> DeleteCinema(Guid id, TypeOfSeat[] model)
+        {
+            await _typeOfSeatService.RemoveRangeAsync(id, model);
 
             return NoContent();
         }

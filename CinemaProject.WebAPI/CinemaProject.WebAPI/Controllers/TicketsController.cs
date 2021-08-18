@@ -11,12 +11,12 @@ namespace CinemaProject.WebAPI.Controllers
     public class TicketsController : ControllerBase
     {
         private readonly TicketService _ticketService;
-        private readonly FoodService _foodService;
+        private readonly AmenityService _amenityService;
 
-        public TicketsController(TicketService ticketService, FoodService foodService)
+        public TicketsController(TicketService ticketService, AmenityService amenityService)
         {
             _ticketService = ticketService;
-            _foodService = foodService;
+            _amenityService = amenityService;
         }
 
         // GET: api/Tickets/5
@@ -28,13 +28,13 @@ namespace CinemaProject.WebAPI.Controllers
             return Ok(ticket);
         }
 
-        // GET: api/Tickets/5/Foods
-        [HttpGet("{id}/Foods")]
-        public async Task<IActionResult> GetFoodOfTicket(Guid id)
+        // GET: api/Tickets/5/Amenities
+        [HttpGet("{id}/Amenities")]
+        public async Task<IActionResult> GetAmenitiesOfTicket(Guid id)
         {
-            Food[] foodsOfTicket = await _foodService.GetAllOfTicketAsync(id);
+            Amenity[] amenitiesOfTicket = await _amenityService.GetAllOfTicketAsync(id);
 
-            return Ok(foodsOfTicket);
+            return Ok(amenitiesOfTicket);
         }
 
         // POST: api/Tickets
@@ -46,16 +46,16 @@ namespace CinemaProject.WebAPI.Controllers
             return Ok(response);
         }
 
-        // POST: api/Tickets/5/Foods/5
-        [HttpPost("{ticketId}/Foods/{foodId}")]
-        public async Task<IActionResult> PostFood(Guid ticketId, Guid foodId)
+        // POST: api/Tickets/5/Amenities/5
+        [HttpPost("{ticketId}/Amenities/{amenityId}")]
+        public async Task<IActionResult> PostAmenity(Guid ticketId, Guid amenityId)
         {
-            bool response = await _foodService.InsertToTicketAsync(ticketId, foodId);
+            bool response = await _amenityService.InsertToTicketAsync(ticketId, amenityId);
 
             if (response)
-                return Ok("Food added to ticket");
+                return Ok("Amenity added to ticket");
             else
-                return BadRequest("This Ticket of Food not exist");
+                return BadRequest("This Ticket of Amenity not exist");
         }
 
         // POST: api/Tickets/5/confirm
@@ -88,11 +88,11 @@ namespace CinemaProject.WebAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Tickets/5/Foods/5
-        [HttpDelete("{ticketId}/Foods/{foodId}")]
-        public async Task<IActionResult> DeleteFood(Guid ticketId, Guid foodId)
+        // DELETE: api/Tickets/5/Amenities/5
+        [HttpDelete("{ticketId}/Amenities/{amenityId}")]
+        public async Task<IActionResult> DeleteAmenity(Guid ticketId, Guid amenityId)
         {
-            await _foodService.RemoveFromTicketAsync(ticketId, foodId);
+            await _amenityService.RemoveFromTicketAsync(ticketId, amenityId);
 
             return NoContent();
         }

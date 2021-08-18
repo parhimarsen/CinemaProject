@@ -35,6 +35,15 @@ namespace CinemaProject.WebAPI.Controllers
             return Ok(response);
         }
 
+        // PUT: api/Seats
+        [HttpPut]
+        public async Task<IActionResult> PutSeat(Seat model)
+        {
+            await _seatService.UpdateAsync(model);
+
+            return NoContent();
+        }
+
         // DELETE: api/Seats/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSeat(Guid id)

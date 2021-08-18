@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CitiesService } from './cities.service';
 import { SelectComponent } from '../MainPage/custom/select/select.component';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 
 import { Cinema, CinemaView } from '../Models/cinema';
@@ -166,7 +166,7 @@ export class CinemasService {
             filter: false,
             editor: {
               type: 'custom',
-              component: InputComponent,
+              component: Ng2InputComponent,
             },
           },
           cityName: {
@@ -233,6 +233,9 @@ export class CinemasService {
     let cinema = event.newData;
     let isValid = true;
 
+    Ng2InputComponent.onAdd.emit();
+    SelectEditComponent.onAdd.emit();
+
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;
     }
@@ -246,7 +249,7 @@ export class CinemasService {
         isValid = false;
         break;
       }
-      cinema[key] = cinema[key].trim();
+      if (cinema[key]) cinema[key] = cinema[key].trim();
     }
 
     if (!isValid) return;
@@ -295,6 +298,8 @@ export class CinemasService {
   edit(event: any): void {
     let newCinema = event.newData;
     let isValid = true;
+
+    Ng2InputComponent.onAdd.emit();
 
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;

@@ -347,6 +347,8 @@ export class SessionsService {
     let newSession = event.newData;
     let isValid = true;
 
+    SelectEditComponent.onAdd.emit();
+
     for (let field in DateTimeValidator.isDateValid) {
       if (!DateTimeValidator.isDateValid[field]) return;
     }

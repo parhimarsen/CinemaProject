@@ -49,6 +49,6 @@
   <span>s</span>
   <div [hidden]="true" [innerHTML]="cell.getValue()" #htmlValue></div>
 </div>
-<mat-error *ngIf="durationString === '00:00:00'">
+<mat-error *ngIf="durationString === '00:00:00' && isAdded">
   <span>{{ cell.getTitle() }}</span> is <strong>required</strong>
 </mat-error>

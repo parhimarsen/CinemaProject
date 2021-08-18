@@ -11,10 +11,12 @@ namespace CinemaProject.BLL.Services
     public class TicketService
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly AmenityService _amenityService;
 
-        public TicketService(UnitOfWork unitOfWork)
+        public TicketService(UnitOfWork unitOfWork, AmenityService amenityService)
         {
             _unitOfWork = unitOfWork;
+            _amenityService = amenityService;
         }
 
         public async Task<IQueryable<Ticket>> GetAllOfUserAsync(Guid userId)
@@ -70,6 +72,14 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.TicketsRepository.InsertAsync(newTicket);
             await _unitOfWork.SaveAsync();
 
+            if (ticket.Amenities != null)
+            {
+                foreach (Amenity amenity in ticket.Amenities)
+                {
+                    await _amenityService.InsertToTicketAsync(newTicket.Id, amenity.Id);
+                }
+            }
+
             return newTicket.ToModel();
         }
 
@@ -109,7 +119,7 @@ namespace CinemaProject.BLL.Services
             {
                 SeatId = ticketEntity.SeatId,
                 TicketId = id,
-                CostWithPercent = sessionEntity.Cost * (1M + Convert.ToDecimal(typeOfSeatEntity.ExtraPaymentPercent) / 100M)
+                CostWithPercent = sessionEntity.Cost * (1M + Convert.ToDecimal(typeOfSeatEntity.ExtraPaymentPercent) / 100M),
             };
 
             await _unitOfWork.TicketSeatsRepository.InsertAsync(reservation);

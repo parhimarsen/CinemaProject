@@ -9,7 +9,7 @@ import { CinemasService } from './cinemas.service';
 
 import { Hall, HallView } from '../Models/hall';
 import { Cinema } from '../Models/cinema';
-import { InputComponent } from '../MainPage/custom/input/input.component';
+import { Ng2InputComponent } from '../MainPage/custom/input/ng2-input.component';
 import { SelectEditComponent } from '../MainPage/custom/select-edit/select-edit.component';
 import { Seat } from '../Models/seat';
 import { InputValidator } from '../MainPage/custom/validators/input-validator';
@@ -188,7 +188,7 @@ export class HallsService {
             filter: false,
             editor: {
               type: 'custom',
-              component: InputComponent,
+              component: Ng2InputComponent,
             },
           },
           cinemaName: {
@@ -232,6 +232,9 @@ export class HallsService {
     //Cant Validate in different way => the solution of ng2-smart-table validation is too complicated
     let isValid = true;
 
+    Ng2InputComponent.onAdd.emit();
+    SelectEditComponent.onAdd.emit();
+
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;
     }
@@ -274,6 +277,8 @@ export class HallsService {
   edit(event: any): void {
     let newHall = event.newData;
     let isValid = true;
+
+    Ng2InputComponent.onAdd.emit();
 
     for (let field in InputValidator.isNumbersValid) {
       if (!InputValidator.isNumbersValid[field]) return;

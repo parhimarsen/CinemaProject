@@ -1,68 +1,55 @@
-import {
-  Component,
-  AfterViewInit,
-  ElementRef,
-  ViewChild,
-  ChangeDetectorRef,
-} from '@angular/core';
-import { DefaultEditor } from 'ng2-smart-table';
+import { Component, forwardRef, Input, EventEmitter } from '@angular/core';
 
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { InputValidator } from '../validators/input-validator';
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  FormControl,
+} from '@angular/forms';
+
+import { MyErrorStateMatcher } from '../validators/my-error-state-matcher';
 
 @Component({
   selector: 'app-label',
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.css'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => InputComponent),
+      multi: true,
+    },
+  ],
 })
-export class InputComponent extends DefaultEditor implements AfterViewInit {
-  //Get data from hidden div => in ng2-smart-table documentation
-  @ViewChild('htmlValue') htmlValue!: ElementRef;
-  //Value of Input
-  value!: string;
-  //Validation
-  formGroup: FormGroup;
+export class InputComponent implements ControlValueAccessor {
+  @Input() formControl: FormControl = new FormControl();
+  @Input() cell: any;
+  @Input() matcher: MyErrorStateMatcher = new MyErrorStateMatcher(false);
+  @Input() onEdited!: EventEmitter<any>;
+  isAdded: boolean = false;
 
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-    this.formGroup = new FormGroup({
-      value: new FormControl({ value: '', disabled: false }, [
-        Validators.required,
-        InputValidator.spacesValidator,
-        InputValidator.numbersValidator,
-      ]),
-    });
-    this.formGroup.markAllAsTouched();
+  constructor() {}
+
+  onChangeCallback = (_: any) => {
+    this.cell.newValue = _;
+  };
+
+  onTouchCallback = () => {};
+
+  writeValue(value: any): void {
+    value
+      ? this.formControl.setValue(value)
+      : this.formControl.setValue(this.cell.getValue());
   }
 
-  ngAfterViewInit(): void {
-    if (this.cell.newValue !== '') {
-      this.value = this.getValue();
-    }
-    this.cdr.detectChanges();
+  registerOnChange(fn: any): void {
+    this.onChangeCallback = fn;
   }
 
-  updateValue(event: any): void {
-    if (this.formGroup.controls['value'].hasError('spacesValidator')) {
-      InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = false;
-    } else {
-      InputValidator.isSpacesValid[`${this.cell.getTitle()}`] = true;
-    }
-
-    if (this.formGroup.controls['value'].hasError('numbersValidator')) {
-      InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = false;
-    } else {
-      InputValidator.isNumbersValid[`${this.cell.getTitle()}`] = true;
-    }
-
-    if (this.value && event.code !== 'Space') {
-      this.value = this.value.replace(/\s+/g, ' ');
-    }
-
-    this.cell.newValue = this.value;
+  registerOnTouched(fn: any): void {
+    this.onTouchCallback = fn;
   }
 
-  validate(event: any): void {
+  onKeyPress(event: any): void {
     var theEvent = event || window.event;
     var key = theEvent.keyCode || theEvent.which;
     key = String.fromCharCode(key);
@@ -71,9 +58,5 @@ export class InputComponent extends DefaultEditor implements AfterViewInit {
       theEvent.returnValue = false;
       if (theEvent.preventDefault) theEvent.preventDefault();
     }
-  }
-
-  getValue(): string {
-    return this.htmlValue.nativeElement.innerText;
   }
 }

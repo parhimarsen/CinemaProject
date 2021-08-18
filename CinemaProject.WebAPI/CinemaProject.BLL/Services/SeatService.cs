@@ -111,5 +111,67 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.SeatsRepository.RemoveAsync(id);
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task RemoveRangeAsync(Guid hallId, Seat[] seats)
+        {
+            if (!await _unitOfWork.HallsRepository.ExistsAsync(hallId))
+            {
+                return;
+            }
+
+            foreach (Seat seat in seats)
+            {
+                await _unitOfWork.SeatsRepository.RemoveAsync(seat.Id);
+                await _unitOfWork.SaveAsync();
+            }
+        }
+
+        public async Task UpdateAsync(Seat seat)
+        {
+            if (!await _unitOfWork.SeatsRepository.ExistsAsync(seat.Id))
+            {
+                return;
+            }
+
+            SeatEntity seatEntity = await _unitOfWork.SeatsRepository.GetAsync(seat.Id);
+
+            seatEntity.NumberOfSeat = seat.NumberOfSeat;
+            seatEntity.Row = seat.Row;
+            seatEntity.Column = seat.Column;
+            seatEntity.HallId = seat.HallId;
+            seatEntity.TypeOfSeatId = seat.TypeOfSeatId;
+
+            await _unitOfWork.SeatsRepository.UpdateAsync(seat.Id);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task UpdateRange(Guid hallId, Seat[] seats)
+        {
+            if (!await _unitOfWork.HallsRepository.ExistsAsync(hallId))
+            {
+                return;
+            }
+
+            SeatEntity seatEntity;
+
+            foreach (Seat seat in seats)
+            {
+                if (!await _unitOfWork.SeatsRepository.ExistsAsync(seat.Id))
+                {
+                    return;
+                }
+
+                seatEntity = await _unitOfWork.SeatsRepository.GetAsync(seat.Id);
+
+                seatEntity.NumberOfSeat = seat.NumberOfSeat;
+                seatEntity.Column = seat.Column;
+                seatEntity.Row = seat.Row;
+                seatEntity.HallId = seat.HallId;
+                seatEntity.TypeOfSeatId = seat.TypeOfSeatId;
+
+                await _unitOfWork.SeatsRepository.UpdateAsync(seat.Id);
+                await _unitOfWork.SaveAsync();
+            }
+        }
     }
 }

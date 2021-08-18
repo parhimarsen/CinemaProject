@@ -21,6 +21,13 @@ namespace CinemaProject.WebAPI.Controllers
             _seatService = seatService;
         }
 
+        // GET: api/Halls
+        [HttpGet]
+        public IQueryable<Hall> GetHalls()
+        {
+            return _hallService.GetAll();
+        }
+
         // GET: api/Halls/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetHall(Guid id)
@@ -56,11 +63,29 @@ namespace CinemaProject.WebAPI.Controllers
             return Ok(response);
         }
 
+        // POST: api/Halls/5/SeatsRange
+        [HttpPost("{id}/SeatsRange")]
+        public async Task<IActionResult> DeleteSeats(Guid id, Seat[] model)
+        {
+            await _seatService.RemoveRangeAsync(id, model);
+
+            return NoContent();
+        }
+
         // PUT: api/Halls
         [HttpPut]
         public async Task<IActionResult> PutHall(Hall model)
         {
             await _hallService.UpdateAsync(model);
+
+            return NoContent();
+        }
+
+        // PUT: api/Halls/5/Seats
+        [HttpPut("{id}/Seats")]
+        public async Task<IActionResult> PutSeats(Guid id, Seat[] model)
+        {
+            await _seatService.UpdateRange(id, model);
 
             return NoContent();
         }

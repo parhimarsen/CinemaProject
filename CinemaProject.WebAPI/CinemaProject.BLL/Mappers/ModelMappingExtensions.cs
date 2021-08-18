@@ -31,6 +31,30 @@ namespace CinemaProject.BLL.Mappers
             return tickets.ToArray();
         }
 
+        public static Hall[] ToModel(this IEnumerable<HallEntity> hallsEntity)
+        {
+            List<Hall> halls = new List<Hall>();
+
+            foreach (HallEntity hallEntity in hallsEntity)
+            {
+                halls.Add(hallEntity.ToModel());
+            }
+
+            return halls.ToArray();
+        }
+
+        public static TypeOfSeat[] ToModel(this IEnumerable<TypeOfSeatEntity> typesOfSeatEntity)
+        {
+            List<TypeOfSeat> typesOfSeat = new List<TypeOfSeat>();
+
+            foreach (TypeOfSeatEntity typeOfSeatEntity in typesOfSeatEntity)
+            {
+                typesOfSeat.Add(typeOfSeatEntity.ToModel());
+            }
+
+            return typesOfSeat.ToArray();
+        }
+
         public static Ticket ToModel(this TicketEntity @this)
         {
             return new Ticket
@@ -43,9 +67,9 @@ namespace CinemaProject.BLL.Mappers
             };
         }
 
-        public static Food ToModel(this FoodEntity @this)
+        public static Amenity ToModel(this AmenityEntity @this)
         {
-            return new Food
+            return new Amenity
             {
                 Id = @this.Id,
                 Name = @this.Name,
@@ -89,6 +113,9 @@ namespace CinemaProject.BLL.Mappers
             return new Session
             {
                 Id = @this.Id,
+                FilmName = @this.FilmName,
+                CinemaName = @this.CinemaName,
+                HallName = @this.HallName,
                 ShowStart = @this.ShowStart,
                 ShowEnd = @this.ShowEnd,
                 Cost = @this.Cost,
@@ -125,6 +152,7 @@ namespace CinemaProject.BLL.Mappers
             {
                 Id = @this.Id,
                 Name = @this.Name,
+                CinemaId = @this.CinemaId,
                 ExtraPaymentPercent = @this.ExtraPaymentPercent
             };
         }

@@ -15,9 +15,7 @@ import { DefaultEditor } from 'ng2-smart-table';
   templateUrl: './duration-picker.component.html',
   styleUrls: ['./duration-picker.component.css'],
 })
-export class DurationPickerComponent
-  extends DefaultEditor
-  implements AfterViewInit
+export class DurationPickerComponent extends DefaultEditor implements AfterViewInit
 {
   @ViewChild('htmlValue') htmlValue!: ElementRef;
   @Input() durationString: string;
@@ -25,6 +23,8 @@ export class DurationPickerComponent
 
   @Output() durationStringChange: EventEmitter<string> =
     new EventEmitter<string>();
+  static onAdd: EventEmitter<any> = new EventEmitter<any>();
+  isAdded = false;
 
   hours: any;
   minutes: any;
@@ -33,11 +33,16 @@ export class DurationPickerComponent
   constructor(private cdr: ChangeDetectorRef) {
     super();
     this.durationString = '00:00:00';
+    DurationPickerComponent.onAdd.subscribe(() => (this.isAdded = true));
   }
 
   ngAfterViewInit(): void {
     if (this.cell.newValue !== '') {
       this.durationString = this.getValue();
+      if(this.durationString === '')
+      {
+        this.durationString = '00:00:00';
+      }
     }
     if (this.durationString) {
       let splitDuration = this.durationString.split(':');
