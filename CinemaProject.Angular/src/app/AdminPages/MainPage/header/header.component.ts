@@ -1,4 +1,13 @@
-import { Component, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  ChangeDetectorRef,
+  OnInit,
+} from '@angular/core';
+import {
+  ACCESS_TOKEN_KEY,
+  AuthService,
+} from 'src/app/UserPages/AuthorizationPage/services/auth.service';
 import { HeaderService } from '../../services/header.service';
 
 @Component({
@@ -6,16 +15,22 @@ import { HeaderService } from '../../services/header.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements AfterViewInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   userName!: string;
   tables!: any[];
-  editedNames: any[];
+  editedNames!: any[];
 
   constructor(
     private headerService: HeaderService,
+    private authenticationService: AuthService,
     private cd: ChangeDetectorRef
-  ) {
-    this.userName = headerService.userName;
+  ) {}
+
+  ngOnInit() {
+    const jwtToken = JSON.parse(
+      atob(localStorage.getItem(ACCESS_TOKEN_KEY)!.split('.')[1])
+    );
+    this.userName = jwtToken.login;
     this.editedNames = [];
   }
 
@@ -29,5 +44,9 @@ export class HeaderComponent implements AfterViewInit {
 
   selectTable(selectedTable: any) {
     this.headerService.selectTable(selectedTable);
+  }
+
+  logOut() {
+    this.authenticationService.logout();
   }
 }
