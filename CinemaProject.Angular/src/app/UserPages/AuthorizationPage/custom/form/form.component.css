@@ -1,0 +1,36 @@
+.form{
+    min-width: 100%;
+}
+
+.form-control{
+    padding: 12px 16px;
+    margin-top: 20px;
+}
+
+.formOptions{
+    display: flex;
+    justify-content: flex-end;
+    min-width: 100%;
+    margin: 16px 0 0 0;
+}
+
+.formOptions a{
+    color: #0095cc;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button{
+    background-color: #1b8dfb;
+    height: 48px;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 20px;
+    border-radius: 2px;
+    border: none;
+    color: #fff;
+    width: 100%;
+    cursor: pointer;
+    background-clip: padding-box;
+    appearance: none;
+}
