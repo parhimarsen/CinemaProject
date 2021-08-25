@@ -2,7 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { AbstractControl } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
-import { MyFormControl } from '../../auth-form/auth-form.component';
+import {
+  AuthFormComponent,
+  MyFormControl,
+} from '../../auth-form/auth-form.component';
 import { MyErrorStateMatcher } from '../validators/error-state-matcher';
 
 @Component({
@@ -14,8 +17,8 @@ export class FormComponent implements OnInit {
   @Input() formGroup!: FormGroup;
   @Output() onSubmit = new EventEmitter<any>();
   controls: MyFormControl[] = [];
-  confirmPasswordControl!: MyFormControl;
   nameOfForm!: string;
+  submited: boolean = false;
 
   constructor() {}
 
@@ -42,10 +45,6 @@ export class FormComponent implements OnInit {
         myControl.type = 'text';
       }
 
-      if (myControl.value === 'confirmPassword') {
-        this.confirmPasswordControl = myControl;
-      }
-
       //Set placeholder from value of control of FormArray
       myControl.placeholder =
         myControl.value[0].toUpperCase() + myControl.value.slice(1);
@@ -59,7 +58,23 @@ export class FormComponent implements OnInit {
     return (this.formGroup.get(this.nameOfForm) as FormArray).controls;
   }
 
+  passwordChange() {
+    this.submited = false;
+    if (this.controls.length >= 4) {
+      this.controls[3].matcher.isValid = false;
+    }
+  }
+
   submit() {
+    AuthFormComponent.isSessionExpired = false;
+    AuthFormComponent.isWrongLoginorPassword = false;
+    AuthFormComponent.isEmailExist = false;
+
+    this.submited = true;
+    if (this.formGroup.hasError('confirmedValidator')) {
+      this.controls[3].matcher.isValid = true;
+    }
+
     let myControls = this.getControls();
 
     Object.keys(myControls).forEach((index: string) => {

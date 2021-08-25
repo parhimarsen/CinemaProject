@@ -9,10 +9,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { first } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { MyErrorStateMatcher } from '../custom/validators/error-state-matcher';
 import { ConfirmedValidator } from '../custom/validators/confirmed.validator';
+import { Login } from 'src/app/Models/login';
+import { Registration } from 'src/app/Models/registration';
 
 @Component({
   selector: 'app-auth-form',
@@ -23,6 +24,7 @@ export class AuthFormComponent implements OnInit {
   authFormComponent = AuthFormComponent;
   static isSessionExpired = false;
   static isWrongLoginorPassword = false;
+  static isEmailExist = false;
   loginForm!: FormGroup;
   registrationForm!: FormGroup;
   loading = false;
@@ -67,15 +69,14 @@ export class AuthFormComponent implements OnInit {
     );
   }
 
-  login(formData: any) {
+  login(formData: Login) {
     if (this.loginForm.invalid) {
       return;
     }
 
     this.loading = true;
     this.authenticationService
-      .login(formData.login, formData.password)
-      .pipe(first())
+      .login(formData)
       .subscribe({
         next: () => {
           this.router.navigate(['/user/main']);
@@ -87,20 +88,14 @@ export class AuthFormComponent implements OnInit {
       });
   }
 
-  register(formData: any) {
+  register(formData: Registration) {
     if (this.registrationForm.invalid) {
       return;
     }
 
     this.loading = true;
     this.authenticationService
-      .register(
-        formData.email,
-        formData.login,
-        formData.password,
-        formData.confirmPassword
-      )
-      .pipe(first())
+      .register(formData)
       .subscribe({
         next: () => {
           this.router.navigate(['/user/main']);

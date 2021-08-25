@@ -3,7 +3,10 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Login } from 'src/app/Models/login';
+import { Registration } from 'src/app/Models/registration';
 import { Token } from 'src/app/Models/token';
+import { environment } from 'src/environments/environment';
 
 export const REFRESH_TOKEN_KEY = 'refresh_token';
 export const ACCESS_TOKEN_KEY = 'access_token';
@@ -12,29 +15,18 @@ export const ACCESS_TOKEN_KEY = 'access_token';
   providedIn: 'root',
 })
 export class AuthService {
-  url = 'https://localhost:44356/api/Users';
-
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   };
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  register(
-    email: string,
-    login: string,
-    password: string,
-    confirmPassword: string
-  ): Observable<Token> {
+  register(registrationData: Registration): Observable<Token> {
     return this.http
-      .post<any>(
-        `${this.url}/register`,
-        {
-          email: email,
-          login: login,
-          password: password,
-          confirmPassword: confirmPassword,
-        },
+      .post<Token>(
+        `${environment.AUTH_URL}/register`,
+
+        registrationData,
         this.httpOptions
       )
       .pipe(
@@ -42,19 +34,16 @@ export class AuthService {
           localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
           localStorage.setItem(ACCESS_TOKEN_KEY, response.jwtToken);
           this.startRefreshTokenTimer();
-          return response.user;
+          return response;
         })
       );
   }
 
-  login(login: string, password: string): Observable<Token> {
+  login(loginData: Login): Observable<Token> {
     return this.http
-      .post<any>(
-        `${this.url}/authenticate`,
-        {
-          login: login,
-          password: password,
-        },
+      .post<Token>(
+        `${environment.AUTH_URL}/authenticate`,
+        loginData,
         this.httpOptions
       )
       .pipe(
@@ -62,7 +51,7 @@ export class AuthService {
           localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
           localStorage.setItem(ACCESS_TOKEN_KEY, response.jwtToken);
           this.startRefreshTokenTimer();
-          return response.user;
+          return response;
         })
       );
   }
@@ -70,8 +59,8 @@ export class AuthService {
   logout() {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     this.http
-      .post<any>(
-        `${this.url}/revoke-token`,
+      .post(
+        `${environment.AUTH_URL}/revoke-token`,
         { jwtToken: refreshToken },
         this.httpOptions
       )
@@ -82,11 +71,11 @@ export class AuthService {
     this.router.navigate(['/auth']);
   }
 
-  refreshToken() {
+  refreshToken(): Observable<Token> {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     return this.http
-      .post<any>(
-        `${this.url}/refresh-token`,
+      .post<Token>(
+        `${environment.AUTH_URL}/refresh-token`,
         { jwtToken: refreshToken },
         this.httpOptions
       )
@@ -95,7 +84,7 @@ export class AuthService {
           localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
           localStorage.setItem(ACCESS_TOKEN_KEY, response.jwtToken);
           this.startRefreshTokenTimer();
-          return response.user;
+          return response;
         })
       );
   }

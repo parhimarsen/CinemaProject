@@ -155,7 +155,7 @@ img, svg{
 
 .error p{
     margin: 0;
-    padding-bottom: 15px;
+    padding: 0px 10px 15px 10px;
 }
 
 .close{
@@ -171,7 +171,7 @@ img, svg{
 }
 
 :host ::ng-deep .mat-form-field-flex {
-    width: 100% !important;
+    width: 90% !important;
     background-color: white;
     padding: 0 !important;
     border: 0;

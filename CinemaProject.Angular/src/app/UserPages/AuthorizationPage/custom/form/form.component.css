@@ -1,26 +1,26 @@
-.form{
+.form {
     min-width: 100%;
 }
 
-.form-control{
+.form-control {
     padding: 12px 16px;
     margin-top: 20px;
 }
 
-.formOptions{
+.formOptions {
     display: flex;
     justify-content: flex-end;
     min-width: 100%;
     margin: 16px 0 0 0;
 }
 
-.formOptions a{
+.formOptions a {
     color: #0095cc;
     text-decoration: none;
     cursor: pointer;
 }
 
-.button{
+.button {
     background-color: #1b8dfb;
     height: 48px;
     font-size: 15px;
@@ -33,4 +33,14 @@
     cursor: pointer;
     background-clip: padding-box;
     appearance: none;
+}
+
+:host ::ng-deep .mat-form-field-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-right: 0 !important;
+}
+
+.submit {
+    width: 160px;
 }

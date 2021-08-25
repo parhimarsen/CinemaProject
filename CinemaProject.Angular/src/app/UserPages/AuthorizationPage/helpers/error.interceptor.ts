@@ -3,6 +3,7 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
+  HttpStatusCode,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
@@ -24,12 +25,18 @@ export class ErrorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((err) => {
-        if (err.status === 400) {
+        if (err.status === HttpStatusCode.BadRequest) {
           AuthFormComponent.isWrongLoginorPassword = true;
         }
 
+        if (err.status === HttpStatusCode.Conflict) {
+          AuthFormComponent.isEmailExist = true;
+        }
+
         if (
-          [401, 403].includes(err.status) &&
+          [HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden].includes(
+            err.status
+          ) &&
           localStorage.getItem(REFRESH_TOKEN_KEY) &&
           localStorage.getItem(ACCESS_TOKEN_KEY)
         ) {

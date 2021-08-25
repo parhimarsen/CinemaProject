@@ -1,8 +1,12 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
-} from '@angular/forms';
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MyFormControl } from '../../auth-form/auth-form.component';
 import { MyErrorStateMatcher } from '../validators/error-state-matcher';
 
@@ -23,15 +27,18 @@ export class InputComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder!: string;
   @Input() type!: string;
   @Input() matcher!: MyErrorStateMatcher;
+  @Output() onPasswordChange: EventEmitter<any> = new EventEmitter<any>();
 
   private onChangeCallback = (_: any) => {
     if (this.control.isSubmitted) {
+      if (this.control.placeholder.toLowerCase().includes('password')) {
+        this.onPasswordChange.emit();
+      }
       this.control.isSubmitted = false;
       this.matcher.isValid = false;
     }
   };
   private onTouchCallback = (_: any) => {};
-  invalid = false;
 
   constructor() {}
 

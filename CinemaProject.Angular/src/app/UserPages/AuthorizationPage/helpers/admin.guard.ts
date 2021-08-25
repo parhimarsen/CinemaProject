@@ -14,7 +14,7 @@ export class AdminGuard implements CanActivate {
         atob(localStorage.getItem(ACCESS_TOKEN_KEY)!.split('.')[1])
       );
 
-      if (tokenPayload.admin === 'False') {
+      if (!tokenPayload.isAdmin) {
         this.router.navigate(['/user/main']);
       }
       return true;

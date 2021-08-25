@@ -9,16 +9,17 @@
       [placeholder]="control.placeholder"
       [type]="control.type"
       [matcher]="control.matcher"
+      (onPasswordChange)="passwordChange()"
     ></custom-input>
   </div>
-  <mat-error *ngIf="formGroup.hasError('confirmedValidator')">
+  <mat-error *ngIf="formGroup.hasError('confirmedValidator') && submited">
     Password and Confirm Password must be match
   </mat-error>
   <div class="formOptions">
     <a>Forgot password</a>
   </div>
   <input
-    class="button"
+    class="button submit"
     type="submit"
     value="{{ nameOfForm[0].toUpperCase() + nameOfForm.slice(1, -8) }}"
   />

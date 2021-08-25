@@ -14,7 +14,7 @@ export class UserGuard implements CanActivate {
         atob(localStorage.getItem(ACCESS_TOKEN_KEY)!.split('.')[1])
       );
 
-      if (tokenPayload.admin === 'True') {
+      if (tokenPayload.isAdmin) {
         this.router.navigate(['/admin/cinemas']);
       }
       return true;

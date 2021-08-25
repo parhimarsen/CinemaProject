@@ -14,3 +14,6 @@
 <mat-error *ngIf="control.hasError('email') && control.isSubmitted">
   Example of email: test@gmail.com
 </mat-error>
+<mat-error *ngIf="control.hasError('minlength') && control.isSubmitted">
+  6 characters or more
+</mat-error>

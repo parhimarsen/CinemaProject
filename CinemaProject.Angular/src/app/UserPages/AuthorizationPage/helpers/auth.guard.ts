@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { ACCESS_TOKEN_KEY, AuthService } from '../services/auth.service';
+import { ACCESS_TOKEN_KEY } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
         atob(localStorage.getItem(ACCESS_TOKEN_KEY)!.split('.')[1])
       );
 
-      if (tokenPayload.admin === 'True') {
+      if (tokenPayload.isAdmin) {
         this.router.navigate(['/admin/cinemas']);
       } else {
         this.router.navigate(['/user/main']);
