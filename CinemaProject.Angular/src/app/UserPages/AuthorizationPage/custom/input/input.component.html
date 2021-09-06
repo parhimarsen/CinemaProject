@@ -1,0 +1,19 @@
+<mat-form-field class="example-form-field" appearance="fill">
+  <input
+    matInput
+    [errorStateMatcher]="matcher"
+    type="{{ type }}"
+    placeholder="{{ placeholder }}"
+    value=""
+    [formControl]="control"
+  />
+</mat-form-field>
+<mat-error *ngIf="control.hasError('required') && control.isSubmitted">
+  {{ placeholder }} is required
+</mat-error>
+<mat-error *ngIf="control.hasError('email') && control.isSubmitted">
+  Example of email: test@gmail.com
+</mat-error>
+<mat-error *ngIf="control.hasError('minlength') && control.isSubmitted">
+  6 characters or more
+</mat-error>

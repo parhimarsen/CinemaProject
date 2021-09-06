@@ -40,6 +40,7 @@ import { DateTimePickerComponent } from './MainPage/custom/date-time-picker/date
 import { CitiesService } from './services/cities.service';
 import { EditableSelectComponent } from './MainPage/custom/editable-select/editable-select.component';
 import { ModalComponent } from './MainPage/custom/modal/modal.component';
+import { AdminGuard } from '../UserPages/AuthorizationPage/helpers/admin.guard';
 
 const CINEMAS_SERVICE_TOKEN = new InjectionToken<string>('CinemasService');
 const HALLS_SERVICE_TOKEN = new InjectionToken<string>('HallsService');
@@ -49,40 +50,45 @@ const SESSIONS_SERVICE_TOKEN = new InjectionToken<string>('SessionsService');
 const CITIES_SERVICE_TOKEN = new InjectionToken<string>('CitiesService');
 
 const routes: Routes = [
-  { path: 'admin', redirectTo: 'admin/cinemas', pathMatch: 'full' },
   {
-    path: 'admin/cinemas',
-    component: AdminMainComponent,
-    data: { requiredService: CINEMAS_SERVICE_TOKEN },
-  },
-  {
-    path: 'admin/halls',
-    component: AdminMainComponent,
-    data: { requiredService: HALLS_SERVICE_TOKEN },
-  },
-  {
-    path: 'admin/films',
-    component: AdminMainComponent,
-    data: { requiredService: FILMS_SERVICE_TOKEN },
-  },
-  {
-    path: 'admin/services',
-    component: AdminMainComponent,
-    data: { requiredService: SERVICES_SERVICE_TOKEN },
-  },
-  {
-    path: 'admin/sessions',
-    component: AdminMainComponent,
-    data: { requiredService: SESSIONS_SERVICE_TOKEN },
-  },
-  {
-    path: 'admin/cities',
-    component: AdminMainComponent,
-    data: { requiredService: CITIES_SERVICE_TOKEN },
-  },
-  {
-    path: 'admin/cinemas/:cinemaId/halls/:hallId',
-    component: HallComponent,
+    path: 'admin',
+    canActivate: [AdminGuard],
+    children: [
+      {
+        path: 'cinemas',
+        component: AdminMainComponent,
+        data: { requiredService: CINEMAS_SERVICE_TOKEN },
+      },
+      {
+        path: 'cinemas/:cinemaId/halls/:hallId',
+        component: HallComponent,
+      },
+      {
+        path: 'halls',
+        component: AdminMainComponent,
+        data: { requiredService: HALLS_SERVICE_TOKEN },
+      },
+      {
+        path: 'films',
+        component: AdminMainComponent,
+        data: { requiredService: FILMS_SERVICE_TOKEN },
+      },
+      {
+        path: 'services',
+        component: AdminMainComponent,
+        data: { requiredService: SERVICES_SERVICE_TOKEN },
+      },
+      {
+        path: 'sessions',
+        component: AdminMainComponent,
+        data: { requiredService: SESSIONS_SERVICE_TOKEN },
+      },
+      {
+        path: 'cities',
+        component: AdminMainComponent,
+        data: { requiredService: CITIES_SERVICE_TOKEN },
+      },
+    ],
   },
 ];
 
@@ -128,7 +134,6 @@ const routes: Routes = [
     {
       provide: CINEMAS_SERVICE_TOKEN,
       useClass: CinemasService,
-      //multi: true,
     },
     {
       provide: HALLS_SERVICE_TOKEN,

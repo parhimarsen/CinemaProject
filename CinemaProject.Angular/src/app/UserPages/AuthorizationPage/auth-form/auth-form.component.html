@@ -1,14 +1,32 @@
 <div class="root">
   <div class="model container">
-    <div routerLink="/user/main" class="backButton">
-      <div class="backButtonIcon">
-        <svg width="24" height="24">
-          <path
-            d="M9.3 7.5a.4.4 0 010-.7c.3-.2.6-.1.8 0l4.6 4.9v.6L10 17.1c-.2.2-.5.3-.7 0a.4.4 0 010-.6l4.2-4.5-4.3-4.5z"
-          ></path>
-        </svg>
-      </div>
-      Назад
+    <div
+      *ngIf="
+        authFormComponent.isSessionExpired ||
+        authFormComponent.isWrongLoginorPassword ||
+        authFormComponent.isEmailExist
+      "
+      class="error"
+    >
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="
+          authFormComponent.isSessionExpired = false;
+          authFormComponent.isWrongLoginorPassword = false;
+          authFormComponent.isEmailExist = false;
+        "
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p *ngIf="authFormComponent.isSessionExpired">Your session has expired</p>
+      <p *ngIf="authFormComponent.isWrongLoginorPassword">
+        Wrong Login or Password
+      </p>
+      <p *ngIf="authFormComponent.isEmailExist">
+        Account is already registered for this email
+      </p>
     </div>
     <div class="contentHeader bd-example">
       <nav>
@@ -23,7 +41,7 @@
             aria-controls="nav-login"
             aria-selected="true"
           >
-            Вход
+            Sign in
           </button>
           <button
             class="nav-link tabsItem"
@@ -35,7 +53,7 @@
             aria-controls="nav-register"
             aria-selected="false"
           >
-            Регистрация
+            Registration
           </button>
         </div>
       </nav>
@@ -47,33 +65,13 @@
           aria-labelledby="nav-login-tab"
         >
           <div class="contentWrapper">
-            <form class="needs-validation was-validated" novalidate>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                placeholder="E-mail"
-                value=""
-                required=""
-              />
-              <div class="invalid-feedback">Введите E-mail.</div>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                placeholder="Пароль"
-                value=""
-                required=""
-              />
-              <div class="invalid-feedback">Введите пароль.</div>
-              <div class="formOptions">
-                <a>Забыли пароль?</a>
-              </div>
-              <input class="button" type="submit" value="Войти" />
-            </form>
+            <custom-form
+              [formGroup]="loginForm"
+              (onSubmit)="login($event)"
+            ></custom-form>
             <div class="socialBefore">
               <div class="line"></div>
-              <span class="socialBeforeLabel">или войти через соцсети</span>
+              <span class="socialBeforeLabel">another options</span>
               <div class="line"></div>
             </div>
             <div class="socialList">
@@ -89,42 +87,13 @@
           aria-labelledby="nav-register-tab"
         >
           <div class="contentWrapper">
-            <form class="needs-validation was-validated" novalidate>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                placeholder="E-mail"
-                value=""
-                required=""
-              />
-              <div class="invalid-feedback">Введите E-mail.</div>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                placeholder="Пароль"
-                value=""
-                required=""
-              />
-              <div class="invalid-feedback">Введите пароль.</div>
-              <input
-                type="password"
-                class="form-control"
-                id="confirmPassword"
-                placeholder="Подтверждение пароля"
-                value=""
-                required=""
-              />
-              <div class="invalid-feedback">Подтвердите пароль.</div>
-              <div class="formOptions">
-                <a>Забыли пароль?</a>
-              </div>
-              <input class="button" type="submit" value="Войти" />
-            </form>
+            <custom-form
+              [formGroup]="registrationForm"
+              (onSubmit)="register($event)"
+            ></custom-form>
             <div class="socialBefore">
               <div class="line"></div>
-              <span class="socialBeforeLabel">или войти через соцсети</span>
+              <span class="socialBeforeLabel">another options</span>
               <div class="line"></div>
             </div>
             <div class="socialList">

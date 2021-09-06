@@ -60,3 +60,7 @@ header form input{
 .user-icon{
     border: 0;
 }
+
+:host ::ng-deep .dropdown-menu{
+    left: unset;
+}
