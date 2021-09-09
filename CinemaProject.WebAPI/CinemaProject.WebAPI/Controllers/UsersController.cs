@@ -1,6 +1,7 @@
 ﻿using CinemaProject.BLL.Models;
 using CinemaProject.BLL.Services;
 using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace CinemaProject.WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -22,6 +24,7 @@ namespace CinemaProject.WebAPI.Controllers
         }
 
         // POST: api/Users/authenticate
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
         {
@@ -36,20 +39,26 @@ namespace CinemaProject.WebAPI.Controllers
         }
 
         // POST: api/Users/register
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequest model)
         {
-            AuthenticateResponse response = await _userService.Register(model, Request.HttpContext.Connection.RemoteIpAddress.ToString());
+            RegistrationResponse response = await _userService.Register(model, Request.HttpContext.Connection.RemoteIpAddress.ToString());
+
+            if(response.Status == "This E-mail already exist")
+            {
+                return Conflict("This E-mail already exist");
+            }
 
             return Ok(response);
         }
 
         // POST: api/Users/refresh-token
+        [AllowAnonymous]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequest model)
         {
-            string refreshToken = model.JwtToken;
-            AuthenticateResponse response = await _userService.RefreshToken(refreshToken, Request.HttpContext.Connection.RemoteIpAddress.ToString());
+            AuthenticateResponse response = await _userService.RefreshToken(model.JwtToken, Request.HttpContext.Connection.RemoteIpAddress.ToString());
 
             if (response == null)
             {
@@ -60,6 +69,7 @@ namespace CinemaProject.WebAPI.Controllers
         }
 
         // POST: api/Users/revoke-token
+        [AllowAnonymous]
         [HttpPost("revoke-token")]
         public async Task<IActionResult> RevokeToken([FromBody] TokenRequest model)
         {
@@ -70,7 +80,7 @@ namespace CinemaProject.WebAPI.Controllers
                 return BadRequest(new { message = "Token is required" });
             }
 
-            bool response = await _userService.RevokeToken(token, Request.HttpContext.Connection.RemoteIpAddress.ToString());
+            bool response = await _userService.RevokeToken(token);
 
             if (!response)
             {
