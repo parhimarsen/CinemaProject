@@ -99,7 +99,14 @@ namespace CinemaProject.BLL.Services
                 return null;
             }
 
-            UserEntity user = await _unitOfWork.UsersRepository.GetAsync(authenticateUserEntity.Id);
+            UserEntity user = await _unitOfWork.UsersRepository
+                .GetAsync(authenticateUserEntity.Id);
+
+            //if (user.RefreshTokens.Count != 0)
+            //{
+            //    user.RefreshTokens.Remove(user.RefreshTokens.FirstOrDefault());
+            //    await _unitOfWork.SaveAsync();
+            //}
 
             string token = generateJwtToken(user);
             RefreshTokenEntity refreshToken = generateRefreshToken(ipAddress);
@@ -111,16 +118,16 @@ namespace CinemaProject.BLL.Services
             user.RefreshTokens.Add(refreshToken);
             await _unitOfWork.SaveAsync();
 
-            return new AuthenticateResponse(token, refreshToken.Token, user.ToModel());
+            return new AuthenticateResponse(token, refreshToken.Token);
         }
 
-        public async Task<AuthenticateResponse> Register(RegistrationRequest model, string ipAddress)
+        public async Task<RegistrationResponse> Register(RegistrationRequest model, string ipAddress)
         {
             IQueryable<UserEntity> userQuery = _unitOfWork.UsersRepository.GetAll();
 
             if (userQuery.Any(user => user.Email == model.Email))
             {
-                return null;
+                return new RegistrationResponse(null, null, "This E-mail already exist");
             }
 
             UserEntity newUser = new UserEntity
@@ -142,7 +149,7 @@ namespace CinemaProject.BLL.Services
             await _unitOfWork.UsersRepository.InsertAsync(newUser);
             await _unitOfWork.SaveAsync();
 
-            return new AuthenticateResponse(token, refreshToken.Token, newUser.ToModel());
+            return new RegistrationResponse(token, refreshToken.Token, "Registration is successful");
         }
 
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
@@ -163,33 +170,23 @@ namespace CinemaProject.BLL.Services
                 return null;
             }
 
-            RefreshTokenEntity newRefreshToken = generateRefreshToken(ipAddress);
-            refreshToken.Revoked = DateTime.UtcNow;
-            refreshToken.RevokedByIp = ipAddress;
-            refreshToken.ReplacedByToken = newRefreshToken.Token;
-
-            authenticatedUser.RefreshTokens.Add(newRefreshToken);
-            await _unitOfWork.SaveAsync();
-
             var jwtToken = generateJwtToken(authenticatedUser);
 
-            return new AuthenticateResponse(jwtToken, newRefreshToken.Token, authenticatedUser.ToModel());
+            return new AuthenticateResponse(jwtToken, refreshToken.Token);
         }
 
-        public async Task<bool> RevokeToken(string token, string ipAddress)
+        public async Task<bool> RevokeToken(string token)
         {
             RefreshTokenEntity refreshToken = _unitOfWork.RefreshTokensRepository
                 .GetAll()
                 .FirstOrDefault(t => t.Token == token);
 
-            if (!refreshToken.IsActive)
+            if (refreshToken == null)
             {
                 return false;
             }
 
-            refreshToken.Revoked = DateTime.UtcNow;
-            refreshToken.RevokedByIp = ipAddress;
-
+            await _unitOfWork.RefreshTokensRepository.RemoveAsync(refreshToken.Id);
             await _unitOfWork.SaveAsync();
 
             return true;
@@ -205,10 +202,10 @@ namespace CinemaProject.BLL.Services
                     new[]
                     {
                         new Claim("login", user.Login),
-                        new Claim("admin", user.IsAdmin.ToString())
+                        new Claim("isAdmin", user.IsAdmin.ToString(), ClaimValueTypes.Boolean)
                     }
                 ),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddSeconds(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
